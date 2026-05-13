@@ -8,11 +8,12 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import {
-  Search, ArrowRight, X,
+  Search, ArrowRight, X, Bookmark,
   Code, BarChart3, Palette, Heart, Scale, Wrench, Landmark, Rocket,
   Target, Brain, BookOpen, GraduationCap, Megaphone, Atom, Monitor, Shield, Cloud
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useWishlist } from "@/context/wishlist-context";
 
 const iconMap: Record<string, React.ElementType> = {
   Code, BarChart3, Palette, Brain, Heart, Landmark, Target,
@@ -22,6 +23,7 @@ const iconMap: Record<string, React.ElementType> = {
 export default function ExplorePage() {
   const [search, setSearch] = useState("");
   const [selectedField, setSelectedField] = useState<string | null>(null);
+  const { items: wishlistItems, add: addToWishlist, remove: removeFromWishlist } = useWishlist();
 
   const filtered = useMemo(() => {
     return allCareers.filter((c) => {
@@ -87,16 +89,36 @@ export default function ExplorePage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 pb-16">
           {filtered.map((career, i) => {
             const IconComponent = iconMap[career.icon] || Monitor;
+            const isSaved = wishlistItems.some(item => item.id === career.id);
             return (
               <motion.div
                 key={career.id}
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: Math.min(i * 0.03, 0.4) }}
+                className="relative group"
               >
-                <Link href={`/explore/${career.slug}`} className="group block h-full">
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    isSaved ? removeFromWishlist(career.id) : addToWishlist({
+                      id: career.id,
+                      title: career.title,
+                      url: `/explore/${career.slug}`,
+                      type: "career"
+                    });
+                  }}
+                  className={cn(
+                    "absolute top-5 right-5 z-10 p-2 rounded-full transition-all",
+                    isSaved ? "bg-foreground text-background" : "bg-transparent text-muted-foreground hover:bg-secondary hover:text-foreground opacity-0 group-hover:opacity-100"
+                  )}
+                >
+                  <Bookmark className={cn("h-4 w-4", isSaved && "fill-current")} />
+                </button>
+
+                <Link href={`/explore/${career.slug}`} className="block h-full">
                   <div className="surface surface-hover p-5 h-full flex flex-col">
-                    <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center justify-between mb-3 pr-10">
                       <span className="h-9 w-9 rounded-lg bg-secondary flex items-center justify-center">
                         <IconComponent className="h-4 w-4 text-foreground" />
                       </span>

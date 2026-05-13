@@ -7,14 +7,16 @@ import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import {
   Search, ExternalLink, Calendar, MapPin,
-  Globe, IndianRupee, Award, ChevronRight, X,
+  Globe, IndianRupee, Award, ChevronRight, X, Bookmark,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useWishlist } from "@/context/wishlist-context";
 
 export default function ScholarshipsPage() {
   const [search, setSearch] = useState("");
   const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
   const [selectedType, setSelectedType] = useState<string | null>(null);
+  const { items: wishlistItems, add: addToWishlist, remove: removeFromWishlist } = useWishlist();
 
   const filtered = useMemo(() => {
     return allScholarships.filter((s) => {
@@ -109,16 +111,37 @@ export default function ScholarshipsPage() {
 
         {/* Scholarship Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pb-16">
-          {filtered.map((s, i) => (
-            <motion.div
-              key={s.id}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: Math.min(i * 0.03, 0.4) }}
-            >
-              <div className="surface surface-hover p-6 h-full flex flex-col">
-                {/* Header */}
-                <div className="flex items-start justify-between mb-4">
+          {filtered.map((s, i) => {
+            const isSaved = wishlistItems.some(item => item.id === s.id);
+            return (
+              <motion.div
+                key={s.id}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: Math.min(i * 0.03, 0.4) }}
+                className="relative group"
+              >
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    isSaved ? removeFromWishlist(s.id) : addToWishlist({
+                      id: s.id,
+                      title: s.name,
+                      url: s.applyUrl,
+                      type: "scholarship"
+                    });
+                  }}
+                  className={cn(
+                    "absolute top-6 right-6 z-10 p-2 rounded-full transition-all",
+                    isSaved ? "bg-foreground text-background" : "bg-transparent text-muted-foreground hover:bg-secondary hover:text-foreground opacity-0 group-hover:opacity-100"
+                  )}
+                >
+                  <Bookmark className={cn("h-4 w-4", isSaved && "fill-current")} />
+                </button>
+
+                <div className="surface surface-hover p-6 h-full flex flex-col">
+                  {/* Header */}
+                  <div className="flex items-start justify-between mb-4 pr-10">
                   <div className="flex items-center gap-2">
                     <div className={cn(
                       "p-2 rounded-lg",
@@ -193,7 +216,8 @@ export default function ScholarshipsPage() {
                 </Button>
               </div>
             </motion.div>
-          ))}
+          );
+          })}
         </div>
 
         {filtered.length === 0 && (

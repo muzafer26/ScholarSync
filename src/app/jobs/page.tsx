@@ -1,126 +1,193 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Header } from "@/components/layout/header";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { useState, useEffect } from "react";
-import { Search, MapPin, Building2, ExternalLink, Briefcase, Clock, Plane } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
+import {
+  Search, ExternalLink, MapPin, Briefcase, Building2, Globe, Clock, X
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface Job {
-  id: string; title: string; company: string; logo: string | null;
-  location: string; type: string; remote: boolean; url: string;
-  posted: string; description: string;
+  slug: string;
+  company_name: string;
+  title: string;
+  description: string;
+  remote: boolean;
+  url: string;
+  tags: string[];
+  job_types: string[];
+  location: string;
+  created_at: number;
 }
 
 export default function JobsPage() {
-  const [query, setQuery] = useState("software engineer intern");
   const [jobs, setJobs] = useState<Job[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [searched, setSearched] = useState(false);
-  const [showIntro, setShowIntro] = useState(true);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [search, setSearch] = useState("");
+  const [remoteOnly, setRemoteOnly] = useState(false);
 
-  useEffect(() => { setTimeout(() => setShowIntro(false), 2500); }, []);
+  useEffect(() => {
+    async function fetchJobs() {
+      try {
+        setLoading(true);
+        const res = await fetch("https://www.arbeitnow.com/api/job-board-api");
+        if (!res.ok) throw new Error("Failed to fetch jobs");
+        const data = await res.json();
+        setJobs(data.data || []);
+      } catch (err) {
+        setError("Could not load jobs at this time. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchJobs();
+  }, []);
 
-  const searchJobs = async () => {
-    if (!query.trim()) return;
-    setLoading(true);
-    setSearched(true);
-    try {
-      const res = await fetch(`/api/jobs?q=${encodeURIComponent(query)}`);
-      const json = await res.json();
-      setJobs(json.data || []);
-    } catch { setJobs([]); }
-    setLoading(false);
-  };
+  const filteredJobs = jobs.filter((job) => {
+    const matchSearch = !search || 
+      job.title.toLowerCase().includes(search.toLowerCase()) || 
+      job.company_name.toLowerCase().includes(search.toLowerCase());
+    const matchRemote = !remoteOnly || job.remote;
+    return matchSearch && matchRemote;
+  });
 
   return (
     <>
       <Header />
+      <div className="page-container pt-12 pb-20" data-testid="jobs-page">
+        <p className="eyebrow">Job Board</p>
+        <h1 className="mt-3 font-serif text-4xl md:text-5xl tracking-tight">Tech & Remote Jobs.</h1>
+        <p className="mt-3 text-muted-foreground max-w-xl text-lg">
+          Live job listings updated daily. Powered by Arbeitnow API.
+        </p>
 
-      {/* Plane animation overlay */}
-      <AnimatePresence>
-        {showIntro && (
-          <motion.div className="fixed inset-0 z-50 bg-background flex items-center justify-center" exit={{ opacity: 0 }} transition={{ duration: 0.5 }}>
-            <motion.div initial={{ x: -200, y: 50, rotate: -10 }} animate={{ x: 300, y: -100, rotate: 5 }} transition={{ duration: 2, ease: "easeInOut" }}>
-              <Plane className="h-16 w-16 text-primary" />
-            </motion.div>
-            <motion.p className="absolute bottom-1/3 text-2xl font-bold" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}>
-              ✈️ Flying you to opportunities...
-            </motion.p>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <div className="page-container py-10">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 2.5 }}>
-          <div className="page-header">
-            <h1 className="text-3xl md:text-4xl font-bold">Jobs & Internships</h1>
-            <p className="text-muted-foreground mt-2">Live job listings powered by JSearch. Find your next opportunity.</p>
+        {/* Filters */}
+        <div className="mt-8 flex flex-col md:flex-row gap-4 mb-8">
+          <div className="relative flex-1 max-w-md surface flex items-center gap-3 px-4 py-2 rounded-2xl">
+            <Search className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+            <input
+              placeholder="Search roles or companies..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="flex-1 bg-transparent outline-none text-[15px] h-8"
+            />
+            {search && (
+              <button onClick={() => setSearch("")} className="text-muted-foreground hover:text-foreground">
+                <X className="h-4 w-4" />
+              </button>
+            )}
           </div>
-
-          {/* Search */}
-          <div className="flex gap-2 mb-8">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input placeholder="e.g. data analyst, product designer, intern..." className="pl-10 h-11" value={query} onChange={(e) => setQuery(e.target.value)} onKeyDown={(e) => e.key === "Enter" && searchJobs()} />
-            </div>
-            <Button onClick={searchJobs} className="h-11 px-6" disabled={loading}>
-              {loading ? "Searching..." : "Search Jobs"}
+          <div className="flex flex-wrap gap-2 items-center">
+            <Button
+              variant={remoteOnly ? "default" : "outline"}
+              size="sm"
+              onClick={() => setRemoteOnly(!remoteOnly)}
+              className={cn("rounded-full gap-1.5 h-12", remoteOnly ? "bg-foreground text-background" : "bg-transparent border-border text-foreground")}
+            >
+              <Globe className="h-4 w-4" /> Remote Only
             </Button>
           </div>
+        </div>
 
-          {/* Results */}
-          {loading && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="glass-card p-5 animate-pulse"><div className="h-4 bg-muted rounded w-3/4 mb-3" /><div className="h-3 bg-muted rounded w-1/2 mb-2" /><div className="h-3 bg-muted rounded w-full" /></div>
-              ))}
-            </div>
-          )}
+        {/* Loading / Error States */}
+        {loading && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {[1, 2, 3, 4].map(i => (
+              <div key={i} className="surface p-6 h-48 rounded-2xl animate-pulse flex flex-col justify-between">
+                <div className="space-y-3">
+                  <div className="h-4 w-24 bg-secondary rounded" />
+                  <div className="h-6 w-48 bg-secondary rounded" />
+                  <div className="h-4 w-32 bg-secondary rounded" />
+                </div>
+                <div className="h-10 w-full bg-secondary rounded-full mt-4" />
+              </div>
+            ))}
+          </div>
+        )}
 
-          {!loading && searched && jobs.length === 0 && (
-            <div className="text-center py-16"><Briefcase className="h-12 w-12 text-muted-foreground mx-auto mb-4" /><p className="text-muted-foreground">No jobs found. Try a different search term.</p></div>
-          )}
+        {error && (
+          <div className="text-center py-16 surface p-8 max-w-xl mx-auto rounded-2xl">
+            <p className="text-red-500">{error}</p>
+          </div>
+        )}
 
-          {!loading && jobs.length > 0 && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {jobs.map((job, i) => (
-                <motion.a key={job.id} href={job.url} target="_blank" rel="noopener noreferrer" className="glass-card p-5 card-hover block group" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08 }}>
-                  <div className="flex items-start gap-3">
-                    {job.logo ? (
-                      <img src={job.logo} alt="" className="h-10 w-10 rounded-lg object-contain bg-muted p-1" />
-                    ) : (
-                      <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center"><Building2 className="h-5 w-5 text-primary" /></div>
-                    )}
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-sm group-hover:text-primary transition-colors truncate">{job.title}</h3>
-                      <p className="text-xs text-muted-foreground mt-0.5">{job.company}</p>
+        {/* Jobs Grid */}
+        {!loading && !error && (
+          <>
+            <p className="text-sm text-muted-foreground mb-6">
+              {filteredJobs.length} live job{filteredJobs.length !== 1 ? "s" : ""} found
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pb-16">
+              {filteredJobs.map((job, i) => (
+                <motion.div
+                  key={job.slug}
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: Math.min(i * 0.03, 0.4) }}
+                >
+                  <div className="surface surface-hover p-6 h-full flex flex-col">
+                    {/* Header */}
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex items-center gap-3">
+                        <div className="h-10 w-10 rounded-xl bg-secondary flex items-center justify-center">
+                          <Building2 className="h-5 w-5 text-foreground" />
+                        </div>
+                        <div>
+                          <h3 className="font-serif text-lg leading-tight">{job.title}</h3>
+                          <p className="text-[12px] text-muted-foreground font-medium mt-0.5">{job.company_name}</p>
+                        </div>
+                      </div>
                     </div>
-                    <ExternalLink className="h-3.5 w-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0 mt-1" />
+
+                    {/* Details */}
+                    <div className="space-y-2 mb-5 mt-2">
+                      <div className="flex items-center gap-2 text-[13px]">
+                        <MapPin className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                        <span className="text-muted-foreground">{job.location}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-[13px]">
+                        <Briefcase className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                        <span className="text-muted-foreground capitalize">{job.job_types.join(", ").replace("_", " ")}</span>
+                      </div>
+                      {job.remote && (
+                        <div className="flex items-center gap-2 text-[13px]">
+                          <Globe className="h-4 w-4 text-emerald-500 flex-shrink-0" />
+                          <span className="text-emerald-500 font-medium">Remote Available</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Tags */}
+                    <div className="mb-6 flex flex-wrap gap-1.5">
+                      {job.tags.slice(0, 4).map((tag) => (
+                        <span key={tag} className="px-2 py-1 text-[10px] rounded-md bg-secondary text-foreground font-medium uppercase tracking-wider">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+
+                    {/* CTA */}
+                    <Button asChild className="w-full rounded-full mt-auto bg-foreground text-background hover:bg-foreground/90">
+                      <a href={job.url} target="_blank" rel="noopener noreferrer" className="gap-2">
+                        Apply on Arbeitnow <ExternalLink className="h-3.5 w-3.5" />
+                      </a>
+                    </Button>
                   </div>
-                  <div className="flex flex-wrap gap-2 mt-3">
-                    <span className="flex items-center gap-1 text-xs text-muted-foreground"><MapPin className="h-3 w-3" />{job.location}</span>
-                    {job.type && <span className="pill bg-muted text-muted-foreground text-[10px]">{job.type}</span>}
-                    {job.remote && <span className="pill bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400 text-[10px]">Remote</span>}
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-2 line-clamp-2">{job.description}</p>
-                </motion.a>
+                </motion.div>
               ))}
             </div>
-          )}
 
-          {!searched && !loading && (
-            <div className="text-center py-16">
-              <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 2.6 }}>
-                <Briefcase className="h-12 w-12 text-muted-foreground/40 mx-auto mb-4" />
-                <p className="text-muted-foreground mb-1 font-medium">Search for jobs & internships</p>
-                <p className="text-sm text-muted-foreground">Try &ldquo;data analyst&rdquo;, &ldquo;product designer&rdquo;, or &ldquo;marketing intern&rdquo;</p>
-              </motion.div>
-            </div>
-          )}
-        </motion.div>
+            {filteredJobs.length === 0 && (
+              <div className="text-center py-16 surface p-8 max-w-xl mx-auto rounded-2xl">
+                <p className="text-muted-foreground">No jobs found matching your filters.</p>
+              </div>
+            )}
+          </>
+        )}
       </div>
     </>
   );

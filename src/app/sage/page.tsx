@@ -24,6 +24,23 @@ const SUGGESTIONS = [
   { icon: Briefcase,     text: "How do I land my first remote internship as a fresher?" },
 ];
 
+const ruleBasedFallback = (query: string): string => {
+  const q = query.toLowerCase();
+  if (q.includes("scholarship") || q.includes("grant")) {
+    return "To find scholarships, head over to the **Scholarships** tab! I recommend searching by your region to see targeted results. You can filter by merit-based or need-based grants.";
+  }
+  if (q.includes("career") || q.includes("roadmap") || q.includes("engineer") || q.includes("designer")) {
+    return "We have visual roadmaps for modern careers in the **Explore** tab! I highly recommend checking out the AI Engineer or Cloud Engineer roadmaps to see exactly what skills you need to learn step-by-step.";
+  }
+  if (q.includes("resource") || q.includes("course") || q.includes("learn") || q.includes("study")) {
+    return "You can find completely free, high-quality courses and resources in the **Resources** tab. I suggest looking for interactive courses or video tutorials to get started quickly.";
+  }
+  if (q.includes("job") || q.includes("remote") || q.includes("internship") || q.includes("work")) {
+    return "Check out our live **Job Board**! It pulls real-time listings for tech and remote roles globally. Make sure your portfolio is ready before applying.";
+  }
+  return "I'm currently running in 'Offline Fallback Mode' so I can't generate dynamic answers right now. However, you can still explore all our Careers, Scholarships, and Resources using the navigation menu!";
+};
+
 // Simple markdown renderer (bold, headings, code, lists, line breaks)
 function renderMarkdown(s: string) {
   const escape = (x: string) =>
@@ -75,16 +92,7 @@ export default function SagePage() {
       });
 
       if (!res.ok || !res.body) {
-        let errText = "Sage couldn't respond. Please try again.";
-        try {
-          const data = await res.json();
-          if (data?.error) errText = data.error;
-        } catch {}
-        const errMsg: SageMessage = { id: crypto.randomUUID(), role: "assistant", content: errText };
-        setMessages((prev) => [...prev, errMsg]);
-        setStreaming(false);
-        setStreamingText("");
-        return;
+        throw new Error("API failed");
       }
 
       const reader = res.body.getReader();
@@ -104,14 +112,24 @@ export default function SagePage() {
         content: acc || "(Sage stayed silent. Try again?)",
       };
       setMessages((prev) => [...prev, finalMsg]);
+      setStreaming(false);
+      setStreamingText("");
     } catch (e) {
+      // Fallback mechanism
+      const fallbackText = ruleBasedFallback(content);
+      let acc = "";
+      for (let i = 0; i < fallbackText.length; i++) {
+        acc += fallbackText[i];
+        setStreamingText(acc);
+        await new Promise((r) => setTimeout(r, 20)); // Simulate streaming
+      }
+      
       const errMsg: SageMessage = {
         id: crypto.randomUUID(),
         role: "assistant",
-        content: "Sage is offline right now. Please retry in a moment.",
+        content: fallbackText,
       };
       setMessages((prev) => [...prev, errMsg]);
-    } finally {
       setStreaming(false);
       setStreamingText("");
     }
