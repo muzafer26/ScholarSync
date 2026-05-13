@@ -1,197 +1,325 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import { careers } from "@/lib/seed-careers";
-import { resources } from "@/lib/seed-resources";
-import { scholarships } from "@/lib/seed-scholarships";
-import { Header } from "@/components/layout/header";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import Link from "next/link";
+import { useMemo, useState, useEffect } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import {
-  Search, ArrowRight, BookOpen, GraduationCap, Briefcase,
-  ExternalLink, Star,
-  Code, BarChart3, Palette, TrendingUp, Heart, Scale, Wrench,
-  Landmark, Rocket, Target, Brain, Monitor, Megaphone, Atom,
+  Search as SearchIcon, ArrowRight, ExternalLink, Sparkles,
+  Briefcase, BookOpen, GraduationCap, X,
 } from "lucide-react";
+import { Header } from "@/components/layout/header";
+import { Button } from "@/components/ui/button";
+import {
+  searchAll, searchCareers, searchResources, searchScholarships,
+  TRENDING_QUERIES, getRelatedSuggestions,
+} from "@/lib/search";
 import { cn } from "@/lib/utils";
 
-const iconMap: Record<string, React.ElementType> = {
-  Code, BarChart3, Palette, TrendingUp, Brain, Heart, Landmark, Target,
-  Rocket, Scale, Monitor, BookOpen, GraduationCap, Megaphone, Atom, Wrench,
-};
+type Tab = "all" | "careers" | "resources" | "scholarships";
 
-type Tab = "careers" | "resources" | "scholarships";
+import { Suspense } from "react";
 
 export default function SearchPage() {
-  const [query, setQuery] = useState("");
-  const [tab, setTab] = useState<Tab>("careers");
+  return (
+    <Suspense fallback={
+      <div className="page-container pt-12 pb-20">
+        <div className="h-8 w-32 bg-secondary rounded-lg animate-pulse mb-3" />
+        <div className="h-12 w-64 bg-secondary rounded-lg animate-pulse" />
+      </div>
+    }>
+      <SearchPageContent />
+    </Suspense>
+  );
+}
 
-  const filteredCareers = useMemo(() => {
-    if (!query) return careers.slice(0, 6);
-    return careers.filter(
-      (c) =>
-        c.title.toLowerCase().includes(query.toLowerCase()) ||
-        c.field.toLowerCase().includes(query.toLowerCase()) ||
-        c.tags.some((t) => t.toLowerCase().includes(query.toLowerCase()))
-    );
-  }, [query]);
+function SearchPageContent() {
+  const router = useRouter();
+  const params = useSearchParams();
+  const initial = params.get("q") || "";
+  const [q, setQ] = useState(initial);
+  const [tab, setTab] = useState<Tab>("all");
 
-  const filteredResources = useMemo(() => {
-    if (!query) return resources.slice(0, 6);
-    return resources.filter(
-      (r) =>
-        r.title.toLowerCase().includes(query.toLowerCase()) ||
-        r.source.toLowerCase().includes(query.toLowerCase()) ||
-        r.topics.some((t) => t.toLowerCase().includes(query.toLowerCase()))
-    );
-  }, [query]);
+  useEffect(() => {
+    setQ(initial);
+  }, [initial]);
 
-  const filteredScholarships = useMemo(() => {
-    if (!query) return scholarships.slice(0, 6);
-    return scholarships.filter(
-      (s) =>
-        s.name.toLowerCase().includes(query.toLowerCase()) ||
-        s.provider.toLowerCase().includes(query.toLowerCase()) ||
-        s.fields.some((f) => f.toLowerCase().includes(query.toLowerCase()))
-    );
-  }, [query]);
+  const all = useMemo(() => searchAll(q, 60), [q]);
+  const careers = useMemo(() => searchCareers(q).slice(0, 30), [q]);
+  const resources = useMemo(() => searchResources(q).slice(0, 30), [q]);
+  const scholarships = useMemo(() => searchScholarships(q).slice(0, 30), [q]);
+
+  const updateUrl = (next: string) => {
+    const url = next.trim() ? `/search?q=${encodeURIComponent(next)}` : "/search";
+    router.replace(url);
+  };
+
+  const setQuery = (val: string) => {
+    setQ(val);
+    updateUrl(val);
+  };
 
   const counts = {
-    careers: filteredCareers.length,
-    resources: filteredResources.length,
-    scholarships: filteredScholarships.length,
+    all: all.length,
+    careers: careers.length,
+    resources: resources.length,
+    scholarships: scholarships.length,
   };
+
+  const showFallback = q.trim().length > 0 && all.length === 0;
+  const related = showFallback ? getRelatedSuggestions(q, 6) : [];
 
   return (
     <>
       <Header />
-      <div className="page-container pb-16">
-        <div className="page-header">
-          <h1 className="text-3xl md:text-4xl font-display font-bold">Search Everything</h1>
-          <p className="mt-2 text-muted-foreground text-lg max-w-2xl">
-            Find careers, resources, and scholarships — all in one place.
-          </p>
+      <div className="page-container pt-12 pb-20" data-testid="search-page">
+        <p className="eyebrow">Search</p>
+        <h1 className="mt-3 font-serif text-4xl md:text-5xl tracking-tight">Find your next step.</h1>
+
+        <div className="mt-8 relative max-w-2xl">
+          <div className="surface flex items-center gap-3 px-5 py-3.5">
+            <SearchIcon className="h-4 w-4 text-muted-foreground" />
+            <input
+              value={q}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search careers, resources, scholarships…"
+              autoFocus
+              data-testid="search-input"
+              className="flex-1 bg-transparent outline-none text-[15px]"
+            />
+            {q && (
+              <button
+                onClick={() => setQuery("")}
+                aria-label="Clear"
+                data-testid="search-clear"
+                className="text-muted-foreground hover:text-foreground"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
+          </div>
         </div>
 
-        {/* Search box */}
-        <div className="relative max-w-xl mb-8">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-          <Input
-            placeholder="Search careers, resources, scholarships..."
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            className="pl-12 h-14 rounded-2xl text-base"
-            autoFocus
-          />
-        </div>
+        {/* Trending */}
+        {!q.trim() && (
+          <div className="mt-6 flex flex-wrap gap-2 max-w-2xl">
+            <span className="text-[11px] uppercase tracking-widest text-muted-foreground self-center mr-1">Trending</span>
+            {TRENDING_QUERIES.map((t) => (
+              <button
+                key={t}
+                onClick={() => setQuery(t)}
+                data-testid={`search-trending-${t.toLowerCase().replace(/\s+/g, "-")}`}
+                className="text-[12px] px-3 py-1.5 rounded-full bg-secondary hover:bg-secondary/80 text-muted-foreground hover:text-foreground transition-colors"
+              >
+                {t}
+              </button>
+            ))}
+          </div>
+        )}
 
-        {/* Tab selector */}
-        <div className="flex gap-2 mb-8">
+        {/* Tabs */}
+        <div className="mt-10 flex flex-wrap gap-2" data-testid="search-tabs">
           {([
-            { key: "careers", label: "Careers", icon: Briefcase },
-            { key: "resources", label: "Resources", icon: BookOpen },
-            { key: "scholarships", label: "Scholarships", icon: GraduationCap },
+            { key: "all",          label: "All",         icon: SearchIcon,    n: counts.all },
+            { key: "careers",      label: "Careers",     icon: Briefcase,     n: counts.careers },
+            { key: "resources",    label: "Resources",   icon: BookOpen,      n: counts.resources },
+            { key: "scholarships", label: "Scholarships",icon: GraduationCap, n: counts.scholarships },
           ] as const).map((t) => (
-            <Button
+            <button
               key={t.key}
-              variant={tab === t.key ? "default" : "outline"}
-              size="sm"
+              data-testid={`search-tab-${t.key}`}
               onClick={() => setTab(t.key)}
-              className="rounded-lg gap-2"
+              className={cn(
+                "inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-[13px] border transition-colors",
+                tab === t.key
+                  ? "bg-foreground text-background border-foreground"
+                  : "border-border text-muted-foreground hover:text-foreground hover:bg-secondary/70"
+              )}
             >
-              <t.icon className="h-4 w-4" />
-              {t.label}
-              <span className="text-xs opacity-70">({counts[t.key]})</span>
-            </Button>
+              <t.icon className="h-3.5 w-3.5" /> {t.label}
+              <span className={cn("text-[10px] font-mono", tab === t.key ? "opacity-70" : "opacity-60")}>
+                {t.n}
+              </span>
+            </button>
           ))}
         </div>
 
         {/* Results */}
-        {tab === "careers" && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredCareers.map((career) => {
-              const Ic = iconMap[career.icon] || Monitor;
-              return (
-                <Link key={career.id} href={`/explore/${career.slug}`} className="group">
-                  <div className="glass-card p-5 card-hover h-full">
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className="p-2 rounded-lg bg-primary/10">
-                        <Ic className="h-4 w-4 text-primary" />
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-sm group-hover:text-primary transition-colors">
-                          {career.title}
-                        </h3>
-                        <p className="text-xs text-muted-foreground">{career.field}</p>
-                      </div>
-                      <ArrowRight className="h-4 w-4 text-muted-foreground ml-auto" />
-                    </div>
-                    <p className="text-xs text-muted-foreground line-clamp-2">{career.shortDescription}</p>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-        )}
-
-        {tab === "resources" && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredResources.map((r) => (
-              <a key={r.id} href={r.url} target="_blank" rel="noopener noreferrer" className="glass-card p-5 card-hover group block">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs text-muted-foreground">{r.source}</span>
-                  <span className={cn("quality-badge", r.qualityScore >= 90 ? "quality-high" : "quality-mid")}>
-                    <Star className="h-3 w-3" /> {r.qualityScore}
-                  </span>
-                </div>
-                <h3 className="font-semibold text-sm group-hover:text-primary transition-colors mb-1">{r.title}</h3>
-                <p className="text-xs text-muted-foreground line-clamp-2">{r.description}</p>
-                <div className="mt-2 flex items-center gap-2">
-                  <span className={cn("px-2 py-0.5 rounded-md text-[10px] font-medium",
-                    r.level === "beginner" && "level-beginner",
-                    r.level === "intermediate" && "level-intermediate",
-                    r.level === "advanced" && "level-advanced"
-                  )}>{r.level}</span>
-                  <ExternalLink className="h-3 w-3 text-muted-foreground ml-auto" />
-                </div>
-              </a>
-            ))}
-          </div>
-        )}
-
-        {tab === "scholarships" && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {filteredScholarships.map((s) => (
-              <div key={s.id} className="glass-card p-5 card-hover">
-                <div className="flex items-center justify-between mb-2">
-                  <span className={cn("px-2 py-0.5 rounded-md text-xs font-medium",
-                    s.country === "India" ? "bg-amber-500/10 text-amber-600 dark:text-amber-400" : "bg-blue-500/10 text-blue-600 dark:text-blue-400"
-                  )}>{s.country}</span>
-                  {s.isActive && <span className="text-xs text-emerald-500">Active</span>}
-                </div>
-                <h3 className="font-semibold text-sm mb-1">{s.name}</h3>
-                <p className="text-xs text-muted-foreground mb-2">{s.provider} · {s.amount}</p>
-                <p className="text-xs text-muted-foreground line-clamp-2 mb-3">{s.description}</p>
-                <Button size="sm" asChild className="w-full rounded-lg">
-                  <a href={s.applyUrl} target="_blank" rel="noopener noreferrer" className="gap-1">
-                    Apply <ExternalLink className="h-3 w-3" />
-                  </a>
-                </Button>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {((tab === "careers" && filteredCareers.length === 0) ||
-          (tab === "resources" && filteredResources.length === 0) ||
-          (tab === "scholarships" && filteredScholarships.length === 0)) && (
-          <div className="text-center py-12">
-            <p className="text-muted-foreground">No results found for &ldquo;{query}&rdquo;</p>
-          </div>
-        )}
+        <div className="mt-8" data-testid="search-results">
+          {showFallback ? (
+            <FallbackState query={q} related={related} />
+          ) : tab === "all" ? (
+            <ResultsAll results={all} />
+          ) : tab === "careers" ? (
+            <ResultsCareers careers={careers} />
+          ) : tab === "resources" ? (
+            <ResultsResources resources={resources} />
+          ) : (
+            <ResultsScholarships scholarships={scholarships} />
+          )}
+        </div>
       </div>
     </>
+  );
+}
+
+function ResultsAll({ results }: { results: ReturnType<typeof searchAll> }) {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+      {results.map((r, i) => {
+        const isExternal = r.href.startsWith("http");
+        const card = (
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: Math.min(i * 0.03, 0.4) }}
+            className="surface surface-hover p-5 h-full"
+            data-testid={`result-${r.kind}-${r.id}`}
+          >
+            <div className="flex items-center justify-between mb-3">
+              <span className={cn(
+                "pill text-[10px] uppercase tracking-widest",
+                r.kind === "career" ? "bg-secondary text-foreground" :
+                r.kind === "resource" ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400" :
+                "bg-sky-500/10 text-sky-700 dark:text-sky-400"
+              )}>{r.kind}</span>
+              {isExternal && <ExternalLink className="h-3 w-3 text-muted-foreground" />}
+            </div>
+            <h3 className="font-serif text-lg leading-tight line-clamp-2">{r.title}</h3>
+            {r.subtitle && <p className="text-[12px] text-muted-foreground mt-1">{r.subtitle}</p>}
+            {r.description && (
+              <p className="text-sm text-muted-foreground mt-2 line-clamp-2 leading-relaxed">{r.description}</p>
+            )}
+          </motion.div>
+        );
+        return isExternal ? (
+          <a key={`${r.kind}-${r.id}`} href={r.href} target="_blank" rel="noopener noreferrer">{card}</a>
+        ) : (
+          <Link key={`${r.kind}-${r.id}`} href={r.href}>{card}</Link>
+        );
+      })}
+    </div>
+  );
+}
+
+function ResultsCareers({ careers }: { careers: ReturnType<typeof searchCareers> }) {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+      {careers.map((c, i) => (
+        <Link key={c.id} href={`/explore/${c.slug}`}>
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: Math.min(i * 0.03, 0.4) }}
+            className="surface surface-hover p-5 h-full"
+          >
+            <div className="flex items-center justify-between mb-3">
+              <span className="pill bg-secondary text-foreground text-[10px] uppercase">career</span>
+              <span className={cn(
+                "pill text-[10px]",
+                c.demandTrend === "rising" ? "trend-rising" :
+                c.demandTrend === "stable" ? "trend-stable" : "trend-declining"
+              )}>{c.demandTrend}</span>
+            </div>
+            <h3 className="font-serif text-lg">{c.title}</h3>
+            <p className="text-[12px] text-muted-foreground mt-0.5">{c.field} · {c.subfield}</p>
+            <p className="text-sm text-muted-foreground mt-2 line-clamp-2">{c.shortDescription}</p>
+            <div className="mt-4 pt-4 border-t border-border flex items-center justify-between text-[12px]">
+              <span className="font-mono text-muted-foreground">{c.avgSalaryIndia}</span>
+              <ArrowRight className="h-3.5 w-3.5 text-muted-foreground" />
+            </div>
+          </motion.div>
+        </Link>
+      ))}
+    </div>
+  );
+}
+
+function ResultsResources({ resources }: { resources: ReturnType<typeof searchResources> }) {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+      {resources.map((r, i) => (
+        <a key={r.id} href={r.url} target="_blank" rel="noopener noreferrer">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: Math.min(i * 0.03, 0.4) }}
+            className="surface surface-hover p-5 h-full"
+          >
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-[11px] text-muted-foreground">{r.source}</span>
+              <span className={cn(
+                "quality-badge",
+                r.qualityScore >= 90 ? "quality-high" : r.qualityScore >= 70 ? "quality-mid" : "quality-low"
+              )}>{r.qualityScore}/100</span>
+            </div>
+            <h3 className="font-serif text-lg leading-tight line-clamp-2">{r.title}</h3>
+            <p className="text-sm text-muted-foreground mt-2 line-clamp-2">{r.description}</p>
+            <div className="mt-4 pt-4 border-t border-border flex items-center gap-2 text-[11px]">
+              <span className={cn(
+                "px-2 py-0.5 rounded-md",
+                r.level === "beginner" ? "level-beginner" :
+                r.level === "intermediate" ? "level-intermediate" : "level-advanced"
+              )}>{r.level}</span>
+              {r.duration && <span className="text-muted-foreground">· {r.duration}</span>}
+              <ExternalLink className="h-3 w-3 text-muted-foreground ml-auto" />
+            </div>
+          </motion.div>
+        </a>
+      ))}
+    </div>
+  );
+}
+
+function ResultsScholarships({ scholarships }: { scholarships: ReturnType<typeof searchScholarships> }) {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+      {scholarships.map((s, i) => (
+        <motion.div
+          key={s.id}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: Math.min(i * 0.03, 0.4) }}
+          className="surface p-5"
+        >
+          <div className="flex items-center justify-between mb-2">
+            <span className="pill bg-sky-500/10 text-sky-700 dark:text-sky-400 text-[10px]">{s.country}</span>
+            {s.isActive && <span className="text-[11px] text-emerald-600 dark:text-emerald-400">Active</span>}
+          </div>
+          <h3 className="font-serif text-lg">{s.name}</h3>
+          <p className="text-[12px] text-muted-foreground">{s.provider} · {s.amount}</p>
+          <p className="text-sm text-muted-foreground mt-2 line-clamp-2">{s.description}</p>
+          <div className="mt-4 flex items-center justify-between text-[12px]">
+            <span className="text-muted-foreground">Deadline: <span className="text-foreground">{s.deadline}</span></span>
+            <Button asChild size="sm" className="rounded-full">
+              <a href={s.applyUrl} target="_blank" rel="noopener noreferrer">Apply <ExternalLink className="h-3 w-3 ml-1" /></a>
+            </Button>
+          </div>
+        </motion.div>
+      ))}
+    </div>
+  );
+}
+
+function FallbackState({ query, related }: { query: string; related: ReturnType<typeof getRelatedSuggestions> }) {
+  return (
+    <div className="surface p-8 max-w-3xl">
+      <p className="eyebrow">Nothing exact for &ldquo;{query}&rdquo;</p>
+      <h2 className="mt-3 font-serif text-2xl md:text-3xl">But here&apos;s what might help.</h2>
+      <p className="mt-3 text-sm text-muted-foreground">
+        Try one of these related paths — or ask <Link href="/sage" className="underline">Sage AI</Link> directly.
+      </p>
+      <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-3">
+        {related.map((r) => (
+          <Link key={r.id} href={r.href} className="surface surface-hover p-4 block">
+            <p className="text-sm font-medium">{r.title}</p>
+            <p className="text-[12px] text-muted-foreground mt-0.5">{r.subtitle}</p>
+          </Link>
+        ))}
+      </div>
+      <Button asChild className="mt-6 rounded-full">
+        <Link href="/sage"><Sparkles className="h-4 w-4 mr-1.5" /> Ask Sage about &ldquo;{query}&rdquo;</Link>
+      </Button>
+    </div>
   );
 }

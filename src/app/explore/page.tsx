@@ -1,31 +1,22 @@
 "use client";
 
-import { PageIntro } from "@/components/ui/page-intro";
-
 import { useState, useMemo } from "react";
-import { careers } from "@/lib/seed-careers";
+import { allCareers } from "@/lib/search";
 import { CAREER_FIELDS } from "@/lib/constants";
 import { Header } from "@/components/layout/header";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import {
-  Search, TrendingUp, TrendingDown, Minus, ArrowRight, Filter,
+  Search, ArrowRight, X,
   Code, BarChart3, Palette, Heart, Scale, Wrench, Landmark, Rocket,
-  Target, Brain, BookOpen, GraduationCap, Megaphone, Atom, Monitor,
+  Target, Brain, BookOpen, GraduationCap, Megaphone, Atom, Monitor, Shield, Cloud
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const iconMap: Record<string, React.ElementType> = {
-  Code, BarChart3, Palette, TrendingUp, Brain, Heart, Landmark, Target,
-  Rocket, Scale, Monitor, BookOpen, GraduationCap, Megaphone, Atom, Wrench,
-};
-
-const trendIcon = {
-  rising: <TrendingUp className="h-3.5 w-3.5" />,
-  stable: <Minus className="h-3.5 w-3.5" />,
-  declining: <TrendingDown className="h-3.5 w-3.5" />,
+  Code, BarChart3, Palette, Brain, Heart, Landmark, Target,
+  Rocket, Scale, Monitor, BookOpen, GraduationCap, Megaphone, Atom, Wrench, Shield, Cloud
 };
 
 export default function ExplorePage() {
@@ -33,7 +24,7 @@ export default function ExplorePage() {
   const [selectedField, setSelectedField] = useState<string | null>(null);
 
   const filtered = useMemo(() => {
-    return careers.filter((c) => {
+    return allCareers.filter((c) => {
       const matchSearch =
         !search ||
         c.title.toLowerCase().includes(search.toLowerCase()) ||
@@ -46,34 +37,35 @@ export default function ExplorePage() {
   return (
     <>
       <Header />
-      <PageIntro emoji="🚀" text="Launching career explorer...">
-      <div className="page-container">
-        {/* Page header */}
-        <div className="page-header">
-          <h1 className="text-3xl md:text-4xl font-display font-bold">Explore Careers</h1>
-          <p className="mt-2 text-muted-foreground text-lg max-w-2xl">
-            Visual roadmaps for every career path. Pick one to see the full journey — skills,
-            resources, and milestones.
-          </p>
-        </div>
+      <div className="page-container pt-12 pb-20" data-testid="explore-page">
+        <p className="eyebrow">Explore</p>
+        <h1 className="mt-3 font-serif text-4xl md:text-5xl tracking-tight">Careers & Roadmaps.</h1>
+        <p className="mt-3 text-muted-foreground max-w-xl text-lg">
+          Visual roadmaps for modern careers. Pick a path to see the full journey — skills, resources, and milestones.
+        </p>
 
         {/* Search & Filters */}
-        <div className="flex flex-col md:flex-row gap-4 mb-8">
-          <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
+        <div className="mt-8 flex flex-col md:flex-row gap-4 mb-8">
+          <div className="relative flex-1 max-w-md surface flex items-center gap-3 px-4 py-2 rounded-2xl">
+            <Search className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+            <input
               placeholder="Search careers..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-10 h-11 rounded-xl"
+              className="flex-1 bg-transparent outline-none text-[15px] h-8"
             />
+            {search && (
+              <button onClick={() => setSearch("")} className="text-muted-foreground hover:text-foreground">
+                <X className="h-4 w-4" />
+              </button>
+            )}
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2 items-center">
             <Button
               variant={selectedField === null ? "default" : "outline"}
               size="sm"
               onClick={() => setSelectedField(null)}
-              className="rounded-lg"
+              className={cn("rounded-full", selectedField === null ? "bg-foreground text-background" : "bg-transparent border-border text-foreground")}
             >
               All
             </Button>
@@ -83,7 +75,7 @@ export default function ExplorePage() {
                 variant={selectedField === field.value ? "default" : "outline"}
                 size="sm"
                 onClick={() => setSelectedField(selectedField === field.value ? null : field.value)}
-                className="rounded-lg"
+                className={cn("rounded-full", selectedField === field.value ? "bg-foreground text-background" : "bg-transparent border-border text-foreground")}
               >
                 {field.label}
               </Button>
@@ -92,53 +84,48 @@ export default function ExplorePage() {
         </div>
 
         {/* Career Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 pb-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 pb-16">
           {filtered.map((career, i) => {
             const IconComponent = iconMap[career.icon] || Monitor;
             return (
               <motion.div
                 key={career.id}
-                initial={{ opacity: 0, y: 16 }}
+                initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.05 }}
+                transition={{ delay: Math.min(i * 0.03, 0.4) }}
               >
                 <Link href={`/explore/${career.slug}`} className="group block h-full">
-                  <div className="glass-card p-6 h-full card-hover flex flex-col">
-                    {/* Icon + Field */}
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="p-2.5 rounded-xl bg-primary/10">
-                        <IconComponent className="h-5 w-5 text-primary" />
-                      </div>
+                  <div className="surface surface-hover p-5 h-full flex flex-col">
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="h-9 w-9 rounded-lg bg-secondary flex items-center justify-center">
+                        <IconComponent className="h-4 w-4 text-foreground" />
+                      </span>
                       <span
                         className={cn(
-                          "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium",
-                          career.demandTrend === "rising" && "trend-rising",
-                          career.demandTrend === "stable" && "trend-stable",
-                          career.demandTrend === "declining" && "trend-declining"
+                          "pill text-[10px]",
+                          career.demandTrend === "rising" ? "trend-rising" :
+                          career.demandTrend === "stable" ? "trend-stable" : "trend-declining"
                         )}
                       >
-                        {trendIcon[career.demandTrend]}
                         {career.demandTrend}
                       </span>
                     </div>
 
-                    {/* Title & Description */}
-                    <h3 className="text-lg font-semibold font-sans mb-1 group-hover:text-primary transition-colors">
+                    <h3 className="font-serif text-xl group-hover:text-primary transition-colors">
                       {career.title}
                     </h3>
-                    <p className="text-xs text-muted-foreground mb-3">{career.field} · {career.subfield}</p>
-                    <p className="text-sm text-muted-foreground leading-relaxed line-clamp-2 flex-1">
+                    <p className="text-[12px] text-muted-foreground mt-1">{career.field} · {career.subfield}</p>
+                    <p className="text-sm text-muted-foreground leading-relaxed mt-3 line-clamp-2 flex-1">
                       {career.shortDescription}
                     </p>
 
-                    {/* Salary & Stages */}
                     <div className="mt-4 pt-4 border-t border-border flex items-center justify-between">
-                      <div className="text-xs text-muted-foreground">
-                        <span className="font-medium text-foreground">{career.avgSalaryIndia}</span>
-                        <span className="mx-1">·</span>
+                      <div className="text-[12px] text-muted-foreground">
+                        <span className="font-mono text-foreground">{career.avgSalaryIndia}</span>
+                        <span className="mx-2">·</span>
                         {career.stages.length} stages
                       </div>
-                      <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
+                      <ArrowRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-foreground transition-colors" />
                     </div>
                   </div>
                 </Link>
@@ -148,12 +135,14 @@ export default function ExplorePage() {
         </div>
 
         {filtered.length === 0 && (
-          <div className="text-center py-16">
+          <div className="text-center py-16 surface p-8 max-w-xl mx-auto rounded-2xl">
             <p className="text-muted-foreground">No careers found matching your search.</p>
+            <Button variant="outline" size="sm" onClick={() => setSearch("")} className="mt-4 rounded-full">
+              Clear search
+            </Button>
           </div>
         )}
       </div>
-      </PageIntro>
     </>
   );
 }

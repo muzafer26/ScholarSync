@@ -1,174 +1,195 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import { Header } from "@/components/layout/header";
-import { Button } from "@/components/ui/button";
+import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Send, Sparkles, User, RotateCcw, MessageSquare,
-  Lightbulb, GraduationCap, FileText, Compass,
+  Send, Sparkles, RotateCcw, User, Compass, GraduationCap, FileText, Lightbulb, BookOpen, Briefcase,
 } from "lucide-react";
+import { Header } from "@/components/layout/header";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import type { SageMessage } from "@/types";
 
-const suggestions = [
-  { icon: Compass, text: "I'm 22 and confused about my career path. Help me explore options." },
-  { icon: GraduationCap, text: "What scholarships am I eligible for as an engineering student in India?" },
-  { icon: Lightbulb, text: "How do I transition from software development to product management?" },
-  { icon: FileText, text: "Help me create a 6-month roadmap to become a data scientist." },
+interface SageMessage {
+  id: string;
+  role: "user" | "assistant";
+  content: string;
+}
+
+const SUGGESTIONS = [
+  { icon: Compass,       text: "I'm a CS student. Should I focus on AI or Web Dev first?" },
+  { icon: GraduationCap, text: "Which scholarships should I apply to as an Indian engineering student?" },
+  { icon: Lightbulb,     text: "Help me switch from software development to product management." },
+  { icon: FileText,      text: "Give me a 90-day roadmap to become an AI engineer." },
+  { icon: BookOpen,      text: "Best free resources to learn machine learning end-to-end?" },
+  { icon: Briefcase,     text: "How do I land my first remote internship as a fresher?" },
 ];
+
+// Simple markdown renderer (bold, headings, code, lists, line breaks)
+function renderMarkdown(s: string) {
+  const escape = (x: string) =>
+    x.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  let html = escape(s);
+  html = html.replace(/```([\s\S]*?)```/g, (_m, c) => `<pre class="mt-2 mb-2 p-3 rounded-lg bg-secondary text-xs overflow-x-auto"><code>${c}</code></pre>`);
+  html = html.replace(/`([^`]+)`/g, '<code class="px-1 py-0.5 rounded bg-secondary text-[0.85em] font-mono">$1</code>');
+  html = html.replace(/^###\s?(.*)$/gm, '<div class="mt-3 mb-1 font-medium text-foreground">$1</div>');
+  html = html.replace(/^##\s?(.*)$/gm,  '<div class="mt-3 mb-1 font-semibold text-foreground text-base">$1</div>');
+  html = html.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+  html = html.replace(/(^|\n)[-•]\s+(.*?)(?=\n|$)/g, "$1<li>$2</li>");
+  html = html.replace(/(<li>[\s\S]*?<\/li>)/g, '<ul class="list-disc pl-5 my-1.5 space-y-1">$1</ul>');
+  html = html.replace(/\n{2,}/g, "</p><p>");
+  html = `<p>${html}</p>`;
+  return html;
+}
 
 export default function SagePage() {
   const [messages, setMessages] = useState<SageMessage[]>([]);
   const [input, setInput] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLTextAreaElement>(null);
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
+  const [streaming, setStreaming] = useState(false);
+  const [streamingText, setStreamingText] = useState("");
+  const bottomRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, streamingText]);
 
   const handleSend = async (text?: string) => {
-    const messageText = text || input.trim();
-    if (!messageText || isLoading) return;
+    const content = (text ?? input).trim();
+    if (!content || streaming) return;
 
-    const userMessage: SageMessage = {
-      id: Date.now().toString(),
-      role: "user",
-      content: messageText,
-      timestamp: new Date().toISOString(),
-    };
-
-    const updatedMessages = [...messages, userMessage];
-    setMessages(updatedMessages);
+    const userMsg: SageMessage = { id: crypto.randomUUID(), role: "user", content };
+    const newHistory = [...messages, userMsg];
+    setMessages(newHistory);
     setInput("");
-    setIsLoading(true);
+    setStreaming(true);
+    setStreamingText("");
 
     try {
-      // Try real API first
       const res = await fetch("/api/sage", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          message: messageText,
-          conversationHistory: updatedMessages.map((m) => ({
-            role: m.role,
-            content: m.content,
-          })),
+          message: content,
+          conversationHistory: newHistory.map((m) => ({ role: m.role, content: m.content })),
         }),
       });
 
-      if (res.ok) {
-        const data = await res.json();
-        const aiMessage: SageMessage = {
-          id: (Date.now() + 1).toString(),
-          role: "assistant",
-          content: data.response,
-          timestamp: new Date().toISOString(),
-        };
-        setMessages((prev) => [...prev, aiMessage]);
-        setIsLoading(false);
+      if (!res.ok || !res.body) {
+        let errText = "Sage couldn't respond. Please try again.";
+        try {
+          const data = await res.json();
+          if (data?.error) errText = data.error;
+        } catch {}
+        const errMsg: SageMessage = { id: crypto.randomUUID(), role: "assistant", content: errText };
+        setMessages((prev) => [...prev, errMsg]);
+        setStreaming(false);
+        setStreamingText("");
         return;
       }
-    } catch {}
 
-    // Fallback to mock responses
-    setTimeout(() => {
-      const aiResponse = generateMockResponse(messageText);
-      const aiMessage: SageMessage = {
-        id: (Date.now() + 1).toString(),
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let acc = "";
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        const chunk = decoder.decode(value, { stream: true });
+        acc += chunk;
+        setStreamingText(acc);
+      }
+
+      const finalMsg: SageMessage = {
+        id: crypto.randomUUID(),
         role: "assistant",
-        content: aiResponse,
-        timestamp: new Date().toISOString(),
+        content: acc || "(Sage stayed silent. Try again?)",
       };
-      setMessages((prev) => [...prev, aiMessage]);
-      setIsLoading(false);
-    }, 1000);
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
+      setMessages((prev) => [...prev, finalMsg]);
+    } catch (e) {
+      const errMsg: SageMessage = {
+        id: crypto.randomUUID(),
+        role: "assistant",
+        content: "Sage is offline right now. Please retry in a moment.",
+      };
+      setMessages((prev) => [...prev, errMsg]);
+    } finally {
+      setStreaming(false);
+      setStreamingText("");
     }
   };
 
-  const resetChat = () => {
+  const reset = () => {
     setMessages([]);
+    setStreamingText("");
     setInput("");
   };
 
   return (
     <>
       <Header />
-      <div className="flex flex-col h-[calc(100dvh-4rem)]">
-        {/* Chat area */}
+      <div className="flex flex-col h-[calc(100dvh-4rem)]" data-testid="sage-page">
         <div className="flex-1 overflow-y-auto">
-          {messages.length === 0 ? (
-            /* Empty state */
-            <div className="flex flex-col items-center justify-center h-full p-4">
+          {messages.length === 0 && !streaming ? (
+            <div className="flex flex-col items-center justify-center h-full p-6">
               <div className="max-w-2xl w-full text-center">
-                <div className="inline-flex p-4 rounded-2xl bg-primary/10 mb-6">
-                  <Sparkles className="h-10 w-10 text-primary" />
+                <div className="inline-flex p-4 rounded-2xl bg-accent/10 mb-6">
+                  <Sparkles className="h-8 w-8 text-accent" />
                 </div>
-                <h1 className="text-3xl font-display font-bold mb-2">Meet Sage</h1>
-                <p className="text-muted-foreground mb-8 max-w-lg mx-auto">
-                  Your AI career counselor. Ask about career paths, scholarships, resources,
-                  skill roadmaps, or anything about your professional journey.
+                <h1 className="font-serif text-4xl md:text-5xl tracking-tight">Meet Sage.</h1>
+                <p className="mt-4 text-muted-foreground max-w-lg mx-auto">
+                  Your AI mentor for careers, scholarships, and learning paths. Free, concrete, and friendly.
                 </p>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-w-xl mx-auto">
-                  {suggestions.map((s, i) => (
+                <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-3 text-left max-w-2xl mx-auto">
+                  {SUGGESTIONS.map((s, i) => (
                     <button
                       key={i}
                       onClick={() => handleSend(s.text)}
-                      className="flex items-start gap-3 p-4 rounded-xl border border-border hover:border-primary/40 hover:bg-muted/50 text-left transition-all group"
+                      data-testid={`sage-suggestion-${i}`}
+                      className="surface surface-hover p-4 flex items-start gap-3 group text-left"
                     >
-                      <s.icon className="h-5 w-5 text-muted-foreground group-hover:text-primary flex-shrink-0 mt-0.5" />
-                      <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">
-                        {s.text}
-                      </span>
+                      <s.icon className="h-4 w-4 text-muted-foreground group-hover:text-accent mt-0.5 flex-shrink-0" />
+                      <span className="text-sm leading-relaxed">{s.text}</span>
                     </button>
                   ))}
                 </div>
               </div>
             </div>
           ) : (
-            /* Messages */
-            <div className="page-container max-w-3xl py-6 space-y-6">
-              <AnimatePresence>
+            <div className="page-container max-w-3xl py-8 space-y-6">
+              <AnimatePresence initial={false}>
                 {messages.map((msg) => (
                   <motion.div
                     key={msg.id}
                     initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className={cn(
-                      "flex gap-3",
-                      msg.role === "user" ? "justify-end" : "justify-start"
-                    )}
+                    transition={{ duration: 0.3 }}
+                    className={cn("flex gap-3", msg.role === "user" ? "justify-end" : "justify-start")}
+                    data-testid={`sage-msg-${msg.role}`}
                   >
                     {msg.role === "assistant" && (
-                      <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0 mt-1">
-                        <Sparkles className="h-4 w-4 text-primary" />
+                      <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center flex-shrink-0 mt-1">
+                        <Sparkles className="h-4 w-4 text-accent" />
                       </div>
                     )}
                     <div
                       className={cn(
-                        "max-w-[80%] rounded-2xl px-4 py-3",
+                        "max-w-[85%] rounded-2xl px-4 py-3 text-[15px] leading-relaxed",
                         msg.role === "user"
-                          ? "bg-primary text-primary-foreground rounded-br-md"
-                          : "bg-muted rounded-bl-md"
+                          ? "bg-foreground text-background rounded-br-md"
+                          : "surface rounded-bl-md"
                       )}
                     >
-                      <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
+                      {msg.role === "user" ? (
+                        <p className="whitespace-pre-wrap">{msg.content}</p>
+                      ) : (
+                        <div
+                          className="prose-sage"
+                          dangerouslySetInnerHTML={{ __html: renderMarkdown(msg.content) }}
+                        />
+                      )}
                     </div>
                     {msg.role === "user" && (
-                      <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center flex-shrink-0 mt-1">
+                      <div className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center flex-shrink-0 mt-1">
                         <User className="h-4 w-4 text-muted-foreground" />
                       </div>
                     )}
@@ -176,96 +197,93 @@ export default function SagePage() {
                 ))}
               </AnimatePresence>
 
-              {isLoading && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="flex gap-3"
-                >
-                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                    <Sparkles className="h-4 w-4 text-primary animate-pulse" />
+              {streaming && (
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center flex-shrink-0 mt-1">
+                    <Sparkles className="h-4 w-4 text-accent animate-pulse" />
                   </div>
-                  <div className="bg-muted rounded-2xl rounded-bl-md px-4 py-3">
-                    <div className="flex gap-1.5">
-                      <span className="w-2 h-2 rounded-full bg-muted-foreground/40 animate-bounce" style={{ animationDelay: "0ms" }} />
-                      <span className="w-2 h-2 rounded-full bg-muted-foreground/40 animate-bounce" style={{ animationDelay: "150ms" }} />
-                      <span className="w-2 h-2 rounded-full bg-muted-foreground/40 animate-bounce" style={{ animationDelay: "300ms" }} />
-                    </div>
+                  <div className="surface rounded-2xl rounded-bl-md px-4 py-3 max-w-[85%]">
+                    {streamingText ? (
+                      <div
+                        className="prose-sage"
+                        dangerouslySetInnerHTML={{ __html: renderMarkdown(streamingText) }}
+                      />
+                    ) : (
+                      <div className="flex gap-1.5 py-1">
+                        <span className="w-2 h-2 rounded-full bg-muted-foreground/40 animate-bounce" />
+                        <span className="w-2 h-2 rounded-full bg-muted-foreground/40 animate-bounce [animation-delay:.15s]" />
+                        <span className="w-2 h-2 rounded-full bg-muted-foreground/40 animate-bounce [animation-delay:.3s]" />
+                      </div>
+                    )}
                   </div>
                 </motion.div>
               )}
-
-              <div ref={messagesEndRef} />
+              <div ref={bottomRef} />
             </div>
           )}
         </div>
 
-        {/* Input area */}
-        <div className="border-t border-border bg-background/80 backdrop-blur-xl p-4">
-          <div className="max-w-3xl mx-auto">
+        <div className="border-t border-border glass-nav">
+          <div className="page-container max-w-3xl py-4">
             {messages.length > 0 && (
               <div className="flex justify-center mb-3">
-                <Button variant="ghost" size="sm" onClick={resetChat} className="gap-1.5 text-xs text-muted-foreground">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={reset}
+                  data-testid="sage-reset"
+                  className="gap-1.5 text-xs text-muted-foreground rounded-full"
+                >
                   <RotateCcw className="h-3 w-3" /> New conversation
                 </Button>
               </div>
             )}
             <div className="relative flex items-end gap-2">
-              <div className="flex-1 relative">
-                <textarea
-                  ref={inputRef}
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                  placeholder="Ask Sage anything about your career..."
-                  rows={1}
-                  className="w-full resize-none bg-muted rounded-xl px-4 py-3 pr-12 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 min-h-[48px] max-h-[120px]"
-                  style={{ height: "auto", overflow: "hidden" }}
-                  onInput={(e) => {
-                    const target = e.target as HTMLTextAreaElement;
-                    target.style.height = "auto";
-                    target.style.height = Math.min(target.scrollHeight, 120) + "px";
-                  }}
-                />
-              </div>
+              <textarea
+                ref={textareaRef}
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSend();
+                  }
+                }}
+                placeholder="Ask Sage about careers, scholarships, learning paths…"
+                rows={1}
+                disabled={streaming}
+                data-testid="sage-input"
+                className="flex-1 resize-none bg-secondary rounded-2xl px-4 py-3 pr-12 text-[15px] outline-none focus:ring-2 focus:ring-accent/40 disabled:opacity-50 min-h-[48px] max-h-[140px]"
+                onInput={(e) => {
+                  const el = e.currentTarget;
+                  el.style.height = "auto";
+                  el.style.height = Math.min(el.scrollHeight, 140) + "px";
+                }}
+              />
               <Button
                 onClick={() => handleSend()}
-                disabled={!input.trim() || isLoading}
+                disabled={!input.trim() || streaming}
                 size="icon"
-                className="h-12 w-12 rounded-xl flex-shrink-0"
+                data-testid="sage-send"
+                className="h-12 w-12 rounded-2xl flex-shrink-0 bg-foreground text-background hover:bg-foreground/90"
+                aria-label="Send"
               >
                 <Send className="h-4 w-4" />
               </Button>
             </div>
             <p className="text-[10px] text-muted-foreground text-center mt-2">
-              Sage is an AI assistant. Verify important information independently.
+              Sage uses Gemini 2.0. Verify important info — Sage can be confidently wrong sometimes.
             </p>
           </div>
         </div>
       </div>
+
+      <style jsx global>{`
+        .prose-sage p { margin: 0.2rem 0; }
+        .prose-sage p + p { margin-top: 0.6rem; }
+        .prose-sage strong { font-weight: 600; }
+        .prose-sage ul { padding-left: 1.25rem; }
+      `}</style>
     </>
   );
-}
-
-// Mock AI response generator
-function generateMockResponse(input: string): string {
-  const lower = input.toLowerCase();
-
-  if (lower.includes("career") && (lower.includes("confused") || lower.includes("explore"))) {
-    return `I understand the feeling of being overwhelmed by career options — it's completely normal! Let's work through this together.\n\nHere's what I'd suggest:\n\n1. **Start with self-reflection**: What activities make you lose track of time? What subjects do you naturally gravitate toward?\n\n2. **Explore broadly first**: Check out our career roadmaps at /explore — we have paths for Technology, Data Science, Finance, Design, Medicine, Law, and more.\n\n3. **Take small experiments**: Try a free introductory course in 2-3 fields that interest you. Our resource library has quality-ranked free courses from MIT, Harvard, Khan Academy, and more.\n\n4. **Consider practical factors**: Think about your timeline, financial constraints, and location. Some careers have faster entry points than others.\n\nWould you like me to suggest some career paths based on your specific interests and background? Tell me a bit more about yourself!`;
-  }
-
-  if (lower.includes("scholarship")) {
-    return `Great question about scholarships! Here are some options:\n\n🇮🇳 **For Indian Students:**\n- **INSPIRE Scholarship**: ₹80,000/year for top 1% science students\n- **NSP Post-Matric**: For SC/ST/OBC/Minority students\n- **PM Scholarship Scheme**: For wards of ex-servicemen\n- **Aditya Birla Scholarship**: ₹1.65L/year for IIT/IIM students\n\n🌍 **International:**\n- **Rhodes Scholarship**: Full funding at Oxford\n- **Chevening**: Full UK Master's funding\n- **Fulbright-Nehru**: For US studies\n- **DAAD**: For studying in Germany\n- **Erasmus Mundus**: EU-funded Master's programmes\n\nVisit our Scholarships page at /scholarships for the full list with deadlines and eligibility details.\n\nWould you like me to help you narrow down which ones you're eligible for? Tell me about your academic background and field of study!`;
-  }
-
-  if (lower.includes("transition") || lower.includes("switch")) {
-    return `Career transitions are more common than you think, and many successful professionals have made similar moves!\n\nHere's a structured approach:\n\n1. **Leverage transferable skills**: Your technical background gives you a strong foundation. Product managers who understand engineering are highly valued.\n\n2. **Build PM-specific skills** (3-4 months):\n   - Product thinking & frameworks\n   - User research methods\n   - Data analysis & SQL\n   - PRD writing & roadmapping\n\n3. **Recommended free resources**:\n   - Lenny's Newsletter (product strategy)\n   - Reforge essays (growth frameworks)\n   - Google PM course on Coursera (audit for free)\n\n4. **Build proof of work**:\n   - Write 3 product teardowns\n   - Create a case study solving a real product problem\n   - Ship a side project end-to-end\n\n5. **Network & prepare** (2 months):\n   - Join product communities\n   - Practice PM interview cases\n   - Do informational interviews\n\nCheck out our Product Manager roadmap at /explore/product-manager for the full journey. Shall I dive deeper into any of these steps?`;
-  }
-
-  if (lower.includes("roadmap") || lower.includes("data scien")) {
-    return `Here's a focused 6-month roadmap to become a data scientist:\n\n**Month 1-2: Foundations**\n📊 Statistics & Probability (Khan Academy — free)\n🐍 Python for Data Science (Kaggle Learn — free)\n📈 SQL fundamentals (Mode Analytics tutorial — free)\n\n**Month 3: Data Wrangling**\n🔧 Pandas & NumPy (freeCodeCamp tutorial)\n📉 Data visualization with Matplotlib/Seaborn\n💡 Work through 2 Kaggle datasets end-to-end\n\n**Month 4-5: Machine Learning**\n🤖 Google ML Crash Course (free)\n🧠 fast.ai Practical Deep Learning (free, excellent)\n🏆 Enter 1-2 Kaggle competitions\n\n**Month 6: Portfolio & Job Prep**\n📁 Build 3 portfolio projects on GitHub\n📝 Write about your projects (blog/LinkedIn)\n🎯 Practice interview questions\n\nAll resources above are free! Check our Resource Library at /resources for quality-ranked materials.\n\nWant me to adjust this based on your current skill level or available time per week?`;
-  }
-
-  return `That's a great question! Let me help you think through this.\n\nBased on what you've shared, here are my thoughts:\n\n1. **Start with exploration**: Browse our career roadmaps at /explore to see structured paths across different fields.\n\n2. **Use free resources**: Everything we recommend is free — from MIT OpenCourseWare to freeCodeCamp to Khan Academy.\n\n3. **Set small goals**: Rather than planning years ahead, focus on your next 90 days. What one skill could you start building this week?\n\n4. **Check for scholarships**: If funding is a concern, visit /scholarships — we track 50+ active scholarships.\n\nWould you like me to dig deeper into any specific area? I can help with:\n- Career path exploration\n- Resource recommendations\n- Scholarship eligibility\n- Skill roadmaps\n- Interview preparation\n\nJust tell me more about your situation!`;
 }
