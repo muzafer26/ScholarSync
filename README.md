@@ -2,6 +2,10 @@
 
 ScholarSync is a high-performance, industry-focused educational discovery platform designed to help students and professionals in India discover modern career paths, curated learning resources, and job opportunities.
 
+## 🌐 Live Demo
+
+Check out the live application: [https://scholar-sync-puce.vercel.app/](https://scholar-sync-puce.vercel.app/)
+
 ## 🚀 Features
 
 - **Career Discovery Hub**: Explore 50+ modern industry roles with detailed insights into skills, salary, and growth.
@@ -56,6 +60,3 @@ ScholarSync is a high-performance, industry-focused educational discovery platfo
 
 5. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-## 📄 License
-
-This project is licensed under the MIT License.
