@@ -10,9 +10,9 @@ import { TRENDING_QUERIES, searchAll, type UnifiedResult } from "@/lib/search";
 const ROTATE = [
   "Find AI Engineer roadmaps",
   "Search free Python courses",
-  "Discover Rhodes scholarships",
   "Plan a Cybersecurity career",
-  "Latest Tech News & Updates",
+  "Product Design roadmaps",
+  "DevOps learning paths",
 ];
 
 export function HeroSearch() {
@@ -137,8 +137,7 @@ export function HeroSearch() {
           ) : (
             <div className="px-4 py-5">
               <p className="text-sm text-muted-foreground">
-                No exact matches. Try one of the trending searches below — or{" "}
-                <Link href="/news" className="underline">check latest News</Link>.
+                No exact matches. Try one of the trending searches below.
               </p>
             </div>
           )}
@@ -160,13 +159,6 @@ export function HeroSearch() {
             {t}
           </button>
         ))}
-        <Link
-          href="/news"
-          data-testid="news-hub-pill"
-          className="text-[12px] px-3 py-1.5 rounded-full bg-foreground text-background hover:bg-foreground/90 inline-flex items-center gap-1.5"
-        >
-          <Sparkles className="h-3 w-3" /> News Hub
-        </Link>
       </div>
     </div>
   );

@@ -11,12 +11,12 @@ import {
 import { Header } from "@/components/layout/header";
 import { Button } from "@/components/ui/button";
 import {
-  searchAll, searchCareers, searchResources, searchScholarships,
+  searchAll, searchCareers, searchResources,
   TRENDING_QUERIES, getRelatedSuggestions,
 } from "@/lib/search";
 import { cn } from "@/lib/utils";
 
-type Tab = "all" | "careers" | "resources" | "scholarships";
+type Tab = "all" | "careers" | "resources";
 
 import { Suspense } from "react";
 
@@ -47,7 +47,6 @@ function SearchPageContent() {
   const all = useMemo(() => searchAll(q, 60), [q]);
   const careers = useMemo(() => searchCareers(q).slice(0, 30), [q]);
   const resources = useMemo(() => searchResources(q).slice(0, 30), [q]);
-  const scholarships = useMemo(() => searchScholarships(q).slice(0, 30), [q]);
 
   const updateUrl = (next: string) => {
     const url = next.trim() ? `/search?q=${encodeURIComponent(next)}` : "/search";
@@ -63,7 +62,6 @@ function SearchPageContent() {
     all: all.length,
     careers: careers.length,
     resources: resources.length,
-    scholarships: scholarships.length,
   };
 
   const showFallback = q.trim().length > 0 && all.length === 0;
@@ -123,7 +121,6 @@ function SearchPageContent() {
             { key: "all",          label: "All",         icon: SearchIcon,    n: counts.all },
             { key: "careers",      label: "Careers",     icon: Briefcase,     n: counts.careers },
             { key: "resources",    label: "Resources",   icon: BookOpen,      n: counts.resources },
-            { key: "scholarships", label: "Scholarships",icon: GraduationCap, n: counts.scholarships },
           ] as const).map((t) => (
             <button
               key={t.key}
@@ -152,10 +149,8 @@ function SearchPageContent() {
             <ResultsAll results={all} />
           ) : tab === "careers" ? (
             <ResultsCareers careers={careers} />
-          ) : tab === "resources" ? (
-            <ResultsResources resources={resources} />
           ) : (
-            <ResultsScholarships scholarships={scholarships} />
+            <ResultsResources resources={resources} />
           )}
         </div>
       </div>
@@ -271,35 +266,6 @@ function ResultsResources({ resources }: { resources: ReturnType<typeof searchRe
   );
 }
 
-function ResultsScholarships({ scholarships }: { scholarships: ReturnType<typeof searchScholarships> }) {
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-      {scholarships.map((s, i) => (
-        <motion.div
-          key={s.id}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: Math.min(i * 0.03, 0.4) }}
-          className="surface p-5"
-        >
-          <div className="flex items-center justify-between mb-2">
-            <span className="pill bg-sky-500/10 text-sky-700 dark:text-sky-400 text-[10px]">{s.country}</span>
-            {s.isActive && <span className="text-[11px] text-emerald-600 dark:text-emerald-400">Active</span>}
-          </div>
-          <h3 className="font-serif text-lg">{s.name}</h3>
-          <p className="text-[12px] text-muted-foreground">{s.provider} · {s.amount}</p>
-          <p className="text-sm text-muted-foreground mt-2 line-clamp-2">{s.description}</p>
-          <div className="mt-4 flex items-center justify-between text-[12px]">
-            <span className="text-muted-foreground">Deadline: <span className="text-foreground">{s.deadline}</span></span>
-            <Button asChild size="sm" className="rounded-full">
-              <a href={s.applyUrl} target="_blank" rel="noopener noreferrer">Apply <ExternalLink className="h-3 w-3 ml-1" /></a>
-            </Button>
-          </div>
-        </motion.div>
-      ))}
-    </div>
-  );
-}
 
 function GlobalResults({ query }: { query: string }) {
   const [results, setResults] = useState<any[]>([]);

@@ -3,10 +3,11 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Menu, X, Bookmark } from "lucide-react";
+import { Menu, X, Bookmark, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useWishlist } from "@/context/wishlist-context";
+import { useRouter } from "next/navigation";
 
 const NAV = [
   { href: "/explore", label: "Careers" },
@@ -16,9 +17,20 @@ const NAV = [
 
 export function Header() {
   const pathname = usePathname();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
   const { items } = useWishlist();
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchValue.trim()) {
+      router.push(`/search?q=${encodeURIComponent(searchValue.trim())}`);
+      setSearchValue("");
+      setOpen(false);
+    }
+  };
 
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 8);
@@ -85,14 +97,19 @@ export function Header() {
             )}
           </Link>
 
-          <Button
-            asChild
-            data-testid="cta-search"
-            size="sm"
-            className="hidden md:inline-flex h-9 px-4 rounded-full bg-foreground text-background hover:bg-foreground/90 text-[13px] font-medium"
+          <form 
+            onSubmit={handleSearch}
+            className="hidden md:flex items-center relative"
           >
-            <Link href="/search">Search</Link>
-          </Button>
+            <Search className="absolute left-3 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
+            <input
+              type="text"
+              placeholder="Search..."
+              value={searchValue}
+              onChange={(e) => setSearchValue(e.target.value)}
+              className="h-9 w-40 lg:w-64 pl-9 pr-4 rounded-full bg-secondary/50 border-none text-[13px] focus:ring-1 focus:ring-foreground/10 outline-none transition-all focus:w-48 lg:focus:w-80"
+            />
+          </form>
 
           <button
             onClick={() => setOpen((v) => !v)}
@@ -125,13 +142,18 @@ export function Header() {
             >
               Wishlist {items.length > 0 && `(${items.length})`}
             </Link>
-            <Link
-              href="/search"
-              onClick={() => setOpen(false)}
-              className="block py-2.5 px-3 rounded-lg text-sm hover:bg-secondary transition-colors font-medium"
-            >
-              Search →
-            </Link>
+            <form onSubmit={handleSearch} className="px-3 py-2">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <input
+                  type="text"
+                  placeholder="Search careers, resources..."
+                  value={searchValue}
+                  onChange={(e) => setSearchValue(e.target.value)}
+                  className="w-full h-11 pl-10 pr-4 rounded-xl bg-secondary border-none text-sm outline-none"
+                />
+              </div>
+            </form>
           </div>
         </div>
       )}
