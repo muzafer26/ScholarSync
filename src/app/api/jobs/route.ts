@@ -8,8 +8,8 @@ export async function GET(req: NextRequest) {
   const page = searchParams.get("page") || "1";
 
   try {
-    const appId = "8e98b54e";
-    const appKey = "6fc41e054aab821648a8a374750688e1";
+    const appId = process.env.ADZUNA_APP_ID || "8e98b54e";
+    const appKey = process.env.ADZUNA_APP_KEY || "6fc41e054aab821648a8a374750688e1";
     
     // Adzuna API URL for India (in)
     const url = new URL(`https://api.adzuna.com/v1/api/jobs/in/search/${page}`);

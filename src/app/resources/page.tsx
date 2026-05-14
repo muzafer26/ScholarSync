@@ -40,6 +40,12 @@ export default function ResourcesPage() {
   // Global Search State (Open Library API)
   const [globalBooks, setGlobalBooks] = useState<GlobalBook[]>([]);
   const [loadingGlobal, setLoadingGlobal] = useState(false);
+  const [globalError, setGlobalError] = useState<string | null>(null);
+
+  // Video Search State (YouTube API)
+  const [videos, setVideos] = useState<any[]>([]);
+  const [loadingVideos, setLoadingVideos] = useState(false);
+  const [videoError, setVideoError] = useState<string | null>(null);
 
   const { items: wishlistItems, add: addToWishlist, remove: removeFromWishlist } = useWishlist();
 
@@ -61,10 +67,12 @@ export default function ResourcesPage() {
   const hasFilters = selectedField || selectedLevel || selectedFormat;
 
   const searchGlobal = async (query: string) => {
-    if (!query) return;
     setLoadingGlobal(true);
+    setGlobalError(null);
     try {
-      const res = await fetch(`https://openlibrary.org/search.json?q=${encodeURIComponent(query)}&limit=12`);
+      const q = query || "educational books";
+      const res = await fetch(`https://openlibrary.org/search.json?q=${encodeURIComponent(q)}&limit=12`);
+      if (!res.ok) throw new Error("Failed to fetch books from Open Library");
       const data = await res.json();
       setGlobalBooks(data.docs.map((doc: any) => ({
         id: doc.key,
@@ -73,26 +81,44 @@ export default function ResourcesPage() {
         year: doc.first_publish_year,
         url: `https://openlibrary.org${doc.key}`
       })));
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
+      setGlobalError(e.message || "Something went wrong fetching books.");
     } finally {
       setLoadingGlobal(false);
     }
   };
 
   const searchVideos = async (query: string) => {
-    if (!query) return;
     setLoadingVideos(true);
+    setVideoError(null);
     try {
-      const res = await fetch(`/api/resources/youtube?q=${encodeURIComponent(query)}`);
+      const q = query || "educational tutorials";
+      const res = await fetch(`/api/resources/youtube?q=${encodeURIComponent(q)}`);
       const data = await res.json();
+      
+      if (!res.ok || data.error) {
+        throw new Error(data.error || "Failed to fetch videos from YouTube");
+      }
+      
       setVideos(data.data || []);
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
+      setVideoError(e.message || "Something went wrong fetching videos.");
     } finally {
       setLoadingVideos(false);
     }
   };
+
+  // Initial load for Global and Videos if tab is switched
+  useEffect(() => {
+    if (tab === "global" && globalBooks.length === 0 && !loadingGlobal) {
+      searchGlobal(search);
+    }
+    if (tab === "videos" && videos.length === 0 && !loadingVideos) {
+      searchVideos(search);
+    }
+  }, [tab]);
 
   const handleSearch = (query: string) => {
     if (tab === "global") searchGlobal(query);
@@ -346,6 +372,15 @@ export default function ResourcesPage() {
                    </div>
                  ))}
                </div>
+            ) : globalError ? (
+              <div className="text-center py-16 surface p-8 max-w-xl mx-auto rounded-2xl border-destructive/20 border">
+                <X className="h-8 w-8 text-destructive mx-auto mb-4 opacity-50" />
+                <p className="text-foreground font-medium">Unable to load books</p>
+                <p className="text-sm text-muted-foreground mt-2">{globalError}</p>
+                <Button variant="outline" size="sm" onClick={() => searchGlobal(search)} className="mt-4">
+                  Try Again
+                </Button>
+              </div>
             ) : globalBooks.length > 0 ? (
               <>
                 <p className="text-sm text-muted-foreground mb-6">
@@ -430,6 +465,16 @@ export default function ResourcesPage() {
                    </div>
                  ))}
                </div>
+            ) : videoError ? (
+              <div className="text-center py-16 surface p-8 max-w-xl mx-auto rounded-2xl border-destructive/20 border">
+                <X className="h-8 w-8 text-destructive mx-auto mb-4 opacity-50" />
+                <p className="text-foreground font-medium">Unable to load videos</p>
+                <p className="text-sm text-muted-foreground mt-2">{videoError}</p>
+                <p className="text-xs text-muted-foreground mt-4">Tip: Ensure your YOUTUBE_API_KEY is correctly set in the environment.</p>
+                <Button variant="outline" size="sm" onClick={() => searchVideos(search)} className="mt-4">
+                  Try Again
+                </Button>
+              </div>
             ) : videos.length > 0 ? (
               <>
                 <p className="text-sm text-muted-foreground mb-6">
