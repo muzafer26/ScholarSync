@@ -39,6 +39,7 @@ export interface Career {
   relatedCareers: string[];
   tags: string[];
   icon: string; // Lucide icon name
+  roadmapShUrl?: string; // Link to roadmap.sh
 }
 
 export interface RoadmapStage {

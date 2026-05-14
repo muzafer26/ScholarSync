@@ -11,7 +11,8 @@ import {
   ArrowLeft, Clock, TrendingUp, TrendingDown, Minus, MapPin,
   ExternalLink, BookOpen, CheckCircle2, ChevronRight,
   Code, BarChart3, Palette, Heart, Scale, Wrench, Landmark, Rocket,
-  Target, Brain, Monitor, GraduationCap, Megaphone, Atom,
+  Target, Brain, Monitor, GraduationCap, Megaphone, Atom, Sparkles,
+  Shield, Cloud, Star
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { notFound } from "next/navigation";
@@ -19,6 +20,7 @@ import { notFound } from "next/navigation";
 const iconMap: Record<string, React.ElementType> = {
   Code, BarChart3, Palette, TrendingUp, Brain, Heart, Landmark, Target,
   Rocket, Scale, Monitor, BookOpen, GraduationCap, Megaphone, Atom, Wrench,
+  Shield, Cloud, Star
 };
 
 export default function CareerRoadmapPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -69,6 +71,18 @@ export default function CareerRoadmapPage({ params }: { params: Promise<{ slug: 
           <p className="text-muted-foreground leading-relaxed max-w-3xl mb-6">
             {career.description}
           </p>
+
+          {career.roadmapShUrl && (
+            <div className="mb-8">
+              <Button asChild variant="outline" className="rounded-full gap-2 border-primary/50 text-primary hover:bg-primary/5">
+                <a href={career.roadmapShUrl} target="_blank" rel="noopener noreferrer">
+                  <Sparkles className="h-4 w-4" />
+                  View Authentic Roadmap on roadmap.sh
+                  <ExternalLink className="h-3.5 w-3.5" />
+                </a>
+              </Button>
+            </div>
+          )}
 
           {/* Meta cards */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">

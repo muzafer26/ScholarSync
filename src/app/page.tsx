@@ -4,7 +4,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import {
   ArrowRight, Sparkles, Compass, BookOpen, GraduationCap, Briefcase,
-  Search, Quote, Check, ChevronRight, Brain, Code, Cloud, Shield, Rocket, Star,
+  Search, Quote, Check, ChevronRight, Brain, Code, Cloud, Shield, Rocket, Star, Target,
 } from "lucide-react";
 import { Header } from "@/components/layout/header";
 import { Button } from "@/components/ui/button";
@@ -19,26 +19,25 @@ const fadeUp = {
 };
 
 const PILLARS = [
-  { icon: Compass,       title: "Career discovery",   desc: "Modern roadmaps for 25+ careers — from AI Engineer to Founder.",     href: "/explore",      kbd: "01" },
+  { icon: Compass,       title: "Career discovery",   desc: "Modern roadmaps for 50+ careers — from AI Engineer to Founder.",     href: "/explore",      kbd: "01" },
   { icon: BookOpen,      title: "Free resources",     desc: "MIT OCW, CS50, fast.ai, freeCodeCamp — quality-ranked.",              href: "/resources",    kbd: "02" },
-  { icon: GraduationCap, title: "Scholarships",       desc: "INSPIRE, Rhodes, Fulbright, NSP, DAAD — filter by eligibility.",     href: "/scholarships", kbd: "03" },
-  { icon: Briefcase,     title: "Jobs & internships", desc: "Curated live listings across remote and global roles.",               href: "/jobs",         kbd: "04" },
+  { icon: Briefcase,     title: "Jobs & internships", desc: "Curated live listings across remote and global roles.",               href: "/jobs",         kbd: "03" },
 ];
 
 const MODERN_CAREERS = [
-  { name: "AI Engineer",            icon: Brain,  slug: "ai-engineer",          salary: "₹15–60 LPA",     trend: "Rising" },
+  { name: "AI Engineer",            icon: Brain,  slug: "ai-ml-engineer",       salary: "₹15–60 LPA",     trend: "Rising" },
   { name: "Cybersecurity Analyst",  icon: Shield, slug: "cybersecurity-analyst",salary: "₹6–25 LPA",      trend: "Rising" },
   { name: "DevOps Engineer",        icon: Code,   slug: "devops-engineer",      salary: "₹8–30 LPA",      trend: "Rising" },
-  { name: "Cloud Engineer",         icon: Cloud,  slug: "cloud-engineer",       salary: "₹10–35 LPA",     trend: "Rising" },
+  { name: "Cloud Architect",         icon: Cloud,  slug: "cloud-architect",       salary: "₹10–35 LPA",     trend: "Rising" },
   { name: "Blockchain Developer",   icon: Code,   slug: "blockchain-developer", salary: "₹10–40 LPA",     trend: "Rising" },
-  { name: "Game Developer",         icon: Rocket, slug: "game-developer",       salary: "₹5–22 LPA",      trend: "Rising" },
+  { name: "Game Developer",         icon: Rocket, slug: "game-developer-unity", salary: "₹5–22 LPA",      trend: "Rising" },
 ];
 
-const SCHOLARSHIPS = [
-  { name: "INSPIRE Scholarship", who: "Top 1% Science students · India", amt: "₹80,000/yr" },
-  { name: "Rhodes Scholarship",  who: "Postgraduate · Oxford",            amt: "Fully Funded" },
-  { name: "Fulbright-Nehru",     who: "Indian → USA · Postgrad",          amt: "Full Funding" },
-  { name: "Chevening",           who: "Global → UK Master's",              amt: "£18K+ funding" },
+const TRENDING_SKILLS = [
+  { name: "Generative AI", level: "Intermediate", icon: Brain },
+  { name: "System Design", level: "Advanced",     icon: Code },
+  { name: "Data Structures", level: "Beginner",     icon: Target },
+  { name: "UI/UX Motion", level: "Intermediate", icon: Star },
 ];
 
 const RESOURCE_FEATURES = [
@@ -51,7 +50,7 @@ const RESOURCE_FEATURES = [
 ];
 
 const TESTIMONIALS = [
-  { quote: "Sage helped me realize I'd been ignoring my obvious next step. Two weeks later I had a fast.ai plan and a portfolio outline.", name: "Arjun K.", role: "Engineering student · Nagpur" },
+  { quote: "ScholarSync helped me realize I'd been ignoring my obvious next step. Two weeks later I had a fast.ai plan and a portfolio outline.", name: "Arjun K.", role: "Engineering student · Nagpur" },
   { quote: "Finally a place that treats students like adults. The roadmaps are honest, the resources are real, and it's all free.",       name: "Meera S.",  role: "BSc Stats · Chennai" },
   { quote: "I switched from dev to PM using the roadmap and free Coursera audits. Better than the paid course I bought before.",          name: "Priya R.",  role: "PM at a SaaS startup" },
 ];
@@ -64,10 +63,10 @@ const PHILOSOPHY = [
 ];
 
 const STATS = [
-  { v: "25+",  k: "Career Roadmaps" },
-  { v: "55+",  k: "Quality Resources" },
-  { v: "30+",  k: "Live Scholarships" },
-  { v: "24/7", k: "AI Mentor" },
+  { v: "50+",  k: "Career Roadmaps" },
+  { v: "100+", k: "Curated Resources" },
+  { v: "Live", k: "Indian Job Board" },
+  { v: "Free", k: "Learning Hub" },
 ];
 
 export default function Home() {
@@ -103,9 +102,9 @@ export default function Home() {
                 data-testid="hero-subtitle"
                 className="mt-6 text-base md:text-lg text-muted-foreground max-w-xl leading-relaxed"
               >
-                ScholarSync helps you explore careers, find scholarships, land
-                internships, and learn from the world&apos;s best free courses —
-                guided by Sage, your AI mentor.
+                ScholarSync helps you explore 50+ modern careers, find curated 
+                resources from world-class universities, and land your next 
+                role in the Indian tech ecosystem.
               </p>
 
               <div className="mt-10">
@@ -163,7 +162,7 @@ export default function Home() {
               Explore all <ArrowRight className="h-3.5 w-3.5" />
             </Link>
           </motion.div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {PILLARS.map((p, i) => (
               <motion.div
                 key={p.title}
@@ -193,63 +192,47 @@ export default function Home() {
         </div>
       </section>
 
-      {/* SAGE AI SHOWCASE */}
-      <section className="section bg-foreground text-background relative overflow-hidden" data-testid="sage-section">
+      {/* SKILLS SHOWCASE */}
+      <section className="section bg-foreground text-background relative overflow-hidden" data-testid="skills-section">
         <div className="absolute inset-0 bg-grid opacity-[0.04]" />
         <div className="page-container relative">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 items-center">
             <motion.div {...fadeUp}>
-              <p className="eyebrow !text-background/60">Meet Sage</p>
+              <p className="eyebrow !text-background/60">Skills Lab</p>
               <h2 className="mt-3 text-3xl md:text-5xl font-serif leading-[1.05]">
-                A mentor that actually <span className="italic">listens</span>.
+                Master the <span className="italic">atomic</span> units of a career.
               </h2>
               <p className="mt-6 text-background/70 text-base md:text-lg max-w-md leading-relaxed">
-                Sage is the AI mentor we wish we&apos;d had — friendly, fast, never
-                preachy. Ask anything: career switches, learning plans, scholarship
-                fits. Sage replies with concrete next steps, free resources, and real talk.
+                Careers are built on specific skills. We&apos;ve curated the best deep-dives 
+                for high-demand technical and creative abilities. From Prompt Engineering 
+                to System Design — all free.
               </p>
               <div className="mt-8">
                 <Button
                   asChild
-                  data-testid="cta-sage"
                   className="rounded-full bg-background text-foreground hover:bg-background/90 h-11 px-6"
                 >
-                  <Link href="/sage">
-                    <Sparkles className="h-4 w-4 mr-1.5" /> Chat with Sage
+                  <Link href="/resources">
+                    <Rocket className="h-4 w-4 mr-1.5" /> Browse Skills Lab
                   </Link>
                 </Button>
               </div>
             </motion.div>
 
-            <motion.div {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.15 }}>
-              <div className="surface !bg-background/5 !border-background/15 p-6 rounded-2xl backdrop-blur">
-                <div className="flex items-center gap-2 mb-5">
-                  <span className="h-2 w-2 rounded-full bg-accent animate-pulse" />
-                  <span className="text-[11px] tracking-widest uppercase text-background/60">Sage · live</span>
-                </div>
-                <div className="space-y-3 text-sm">
-                  <div className="flex justify-end">
-                    <div className="bg-background/10 px-3 py-2 rounded-2xl rounded-br-md max-w-xs">
-                      I&apos;m a 2nd-year CS student. Should I focus on AI or Web Dev?
-                    </div>
-                  </div>
-                  <div className="flex">
-                    <div className="bg-accent/15 text-background px-3 py-2 rounded-2xl rounded-bl-md max-w-md">
-                      <div className="mb-1.5 font-medium">Short answer: build the AI track on top of Web Dev fundamentals.</div>
-                      Spend 60 days on <span className="font-mono text-accent">CS50x → freeCodeCamp</span>. Then move to
-                      <span className="font-mono text-accent"> fast.ai</span> and ship a small RAG app. That makes you hireable for both.
-                    </div>
-                  </div>
-                  <div className="flex">
-                    <div className="px-3 py-2 rounded-2xl rounded-bl-md text-background/60 flex gap-1.5 items-center">
-                      <span className="h-1.5 w-1.5 rounded-full bg-background/60 animate-bounce" />
-                      <span className="h-1.5 w-1.5 rounded-full bg-background/60 animate-bounce [animation-delay:.15s]" />
-                      <span className="h-1.5 w-1.5 rounded-full bg-background/60 animate-bounce [animation-delay:.3s]" />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
+            <div className="grid grid-cols-2 gap-3">
+              {TRENDING_SKILLS.map((s, i) => (
+                <motion.div
+                  key={s.name}
+                  {...fadeUp}
+                  transition={{ ...fadeUp.transition, delay: 0.1 + i * 0.05 }}
+                  className="surface !bg-background/5 !border-background/15 p-5 rounded-2xl"
+                >
+                  <s.icon className="h-5 w-5 mb-4 text-accent" />
+                  <p className="text-sm font-medium">{s.name}</p>
+                  <p className="text-[11px] text-background/40 mt-1 uppercase tracking-wider">{s.level}</p>
+                </motion.div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -299,48 +282,21 @@ export default function Home() {
         </div>
       </section>
 
-      {/* SCHOLARSHIPS + RESOURCES SPLIT */}
-      <section className="section bg-secondary/40 border-y border-border" data-testid="scholarships-resources-section">
-        <div className="page-container grid grid-cols-1 lg:grid-cols-2 gap-12">
-          <motion.div {...fadeUp}>
-            <p className="eyebrow">Scholarships</p>
-            <h2 className="mt-3 text-3xl md:text-4xl font-serif">Money isn&apos;t the limit.</h2>
-            <p className="mt-3 text-muted-foreground max-w-md">
-              Government schemes, prestigious global awards, and field-specific funding — discoverable in seconds.
-            </p>
-            <ul className="mt-6 space-y-2.5">
-              {SCHOLARSHIPS.map((s) => (
-                <li key={s.name} className="surface px-4 py-3 flex items-center justify-between gap-4">
-                  <div className="min-w-0">
-                    <p className="text-sm font-medium truncate">{s.name}</p>
-                    <p className="text-[12px] text-muted-foreground truncate">{s.who}</p>
-                  </div>
-                  <span className="text-[12px] font-mono text-muted-foreground shrink-0">{s.amt}</span>
-                </li>
-              ))}
-            </ul>
-            <Link
-              href="/scholarships"
-              data-testid="all-scholarships-link"
-              className="mt-6 inline-flex items-center gap-1 text-sm link-underline"
-            >
-              Find your scholarship <ArrowRight className="h-3.5 w-3.5" />
-            </Link>
-          </motion.div>
-
-          <motion.div {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.1 }}>
+      <section className="section bg-secondary/40 border-y border-border" data-testid="resources-section">
+        <div className="page-container flex flex-col items-center text-center">
+          <motion.div {...fadeUp} className="max-w-3xl">
             <p className="eyebrow">Free resources</p>
-            <h2 className="mt-3 text-3xl md:text-4xl font-serif">Learn from the best, free.</h2>
-            <p className="mt-3 text-muted-foreground max-w-md">
-              MIT, Harvard, Stanford, Google — curated and quality-ranked. No watered-down content.
+            <h2 className="mt-3 text-3xl md:text-5xl font-serif leading-[1.1]">Learn from the world&apos;s <span className="italic">best</span>, for free.</h2>
+            <p className="mt-6 text-muted-foreground text-lg leading-relaxed">
+              MIT, Harvard, Stanford, Google — we&apos;ve curated 100+ quality-ranked courses 
+              and resources. No watered-down content. No paywalls.
             </p>
-            <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 text-left">
               {RESOURCE_FEATURES.map((r) => (
-                <div key={r.name} className="surface px-4 py-3">
+                <div key={r.name} className="surface px-5 py-4">
                   <p className="text-sm font-medium truncate">{r.name}</p>
                   <div className="mt-1 flex items-center gap-2 text-[11px] text-muted-foreground">
                     <span>{r.src}</span><span>·</span>
-                    <span>{r.hours}</span><span>·</span>
                     <span>{r.level}</span>
                   </div>
                 </div>
@@ -348,10 +304,9 @@ export default function Home() {
             </div>
             <Link
               href="/resources"
-              data-testid="all-resources-link"
-              className="mt-6 inline-flex items-center gap-1 text-sm link-underline"
+              className="mt-10 inline-flex items-center gap-2 text-sm font-medium link-underline"
             >
-              Browse the library <ArrowRight className="h-3.5 w-3.5" />
+              Browse the complete library <ArrowRight className="h-4 w-4" />
             </Link>
           </motion.div>
         </div>
@@ -394,7 +349,7 @@ export default function Home() {
             </h2>
             <p className="mt-6 text-muted-foreground leading-relaxed">
               The internet has all the answers a student needs — just scattered, paywalled, and overwhelming.
-              ScholarSync brings the signal forward, makes it searchable, and pairs it with an AI mentor.
+              ScholarSync brings the signal forward, makes it searchable, and pairs it with industry roadmaps.
               Free, always.
             </p>
             <ul className="mt-8 flex flex-wrap justify-center gap-x-6 gap-y-3 text-sm">
@@ -420,15 +375,12 @@ export default function Home() {
                   Your next step is <span className="italic">free</span> and one search away.
                 </h2>
                 <p className="mt-3 text-muted-foreground max-w-md text-sm">
-                  No accounts. No fluff. Just real opportunities and a mentor that talks like a friend.
+                  No accounts. No fluff. Just real opportunities and a platform that helps you grow.
                 </p>
               </div>
               <div className="flex flex-wrap gap-3">
-                <Button asChild data-testid="cta-search-final" size="lg" className="rounded-full h-12 px-6 bg-foreground text-background hover:bg-foreground/90">
-                  <Link href="/search"><Search className="h-4 w-4 mr-1.5" /> Search ScholarSync</Link>
-                </Button>
-                <Button asChild data-testid="cta-sage-final" size="lg" variant="outline" className="rounded-full h-12 px-6">
-                  <Link href="/sage"><Sparkles className="h-4 w-4 mr-1.5" /> Ask Sage</Link>
+                <Button asChild size="lg" className="rounded-full h-12 px-8 bg-foreground text-background hover:bg-foreground/90">
+                  <Link href="/explore">Discover Careers <ArrowRight className="h-4 w-4 ml-2" /></Link>
                 </Button>
               </div>
             </div>
@@ -447,12 +399,12 @@ export default function Home() {
               <span className="font-serif text-xl">ScholarSync</span>
             </div>
             <p className="mt-3 text-sm text-muted-foreground max-w-sm leading-relaxed">
-              An AI-powered educational discovery platform. Free for every learner, forever.
+              A real-time educational discovery platform. Free for every learner, forever.
             </p>
           </div>
           {[
-            { t: "Explore", l: [["Careers", "/explore"], ["Resources", "/resources"], ["Scholarships", "/scholarships"], ["Jobs", "/jobs"]] },
-            { t: "Tools",   l: [["Search", "/search"], ["Sage AI", "/sage"], ["Wishlist", "/wishlist"]] },
+            { t: "Explore", l: [["Careers", "/explore"], ["Resources", "/resources"], ["Jobs", "/jobs"]] },
+            { t: "Tools",   l: [["Search", "/search"], ["Wishlist", "/wishlist"]] },
           ].map((col) => (
             <div key={col.t}>
               <p className="text-[11px] uppercase tracking-widest text-muted-foreground">{col.t}</p>

@@ -11,9 +11,7 @@ import { useWishlist } from "@/context/wishlist-context";
 const NAV = [
   { href: "/explore", label: "Careers" },
   { href: "/resources", label: "Resources" },
-  { href: "/scholarships", label: "Scholarships" },
   { href: "/jobs", label: "Jobs" },
-  { href: "/sage", label: "Sage AI" },
 ];
 
 export function Header() {

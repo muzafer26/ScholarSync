@@ -147,7 +147,7 @@ function SearchPageContent() {
         {/* Results */}
         <div className="mt-8" data-testid="search-results">
           {showFallback ? (
-            <FallbackState query={q} related={related} />
+            <GlobalResults query={q} />
           ) : tab === "all" ? (
             <ResultsAll results={all} />
           ) : tab === "careers" ? (
@@ -301,25 +301,69 @@ function ResultsScholarships({ scholarships }: { scholarships: ReturnType<typeof
   );
 }
 
-function FallbackState({ query, related }: { query: string; related: ReturnType<typeof getRelatedSuggestions> }) {
+function GlobalResults({ query }: { query: string }) {
+  const [results, setResults] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchGlobal = async () => {
+      setLoading(true);
+      try {
+        const res = await fetch(`/api/search/global?q=${encodeURIComponent(query)}`);
+        const data = await res.json();
+        setResults(data.data || []);
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (query) fetchGlobal();
+  }, [query]);
+
   return (
-    <div className="surface p-8 max-w-3xl">
-      <p className="eyebrow">Nothing exact for &ldquo;{query}&rdquo;</p>
-      <h2 className="mt-3 font-serif text-2xl md:text-3xl">But here&apos;s what might help.</h2>
-      <p className="mt-3 text-sm text-muted-foreground">
-        Try one of these related paths — or ask <Link href="/sage" className="underline">Sage AI</Link> directly.
-      </p>
-      <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-3">
-        {related.map((r) => (
-          <Link key={r.id} href={r.href} className="surface surface-hover p-4 block">
-            <p className="text-sm font-medium">{r.title}</p>
-            <p className="text-[12px] text-muted-foreground mt-0.5">{r.subtitle}</p>
-          </Link>
-        ))}
+    <div className="space-y-6">
+      <div className="max-w-2xl">
+        <p className="eyebrow">Global Education Search</p>
+        <h2 className="mt-3 font-serif text-2xl md:text-3xl">Results for &ldquo;{query}&rdquo;</h2>
+        <p className="mt-2 text-sm text-muted-foreground">
+          No local results found. Showing relevant educational resources from across the web.
+        </p>
       </div>
-      <Button asChild className="mt-6 rounded-full">
-        <Link href="/sage"><Sparkles className="h-4 w-4 mr-1.5" /> Ask Sage about &ldquo;{query}&rdquo;</Link>
-      </Button>
+
+      {loading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {[1, 2, 3, 4].map(i => (
+            <div key={i} className="surface h-32 rounded-2xl animate-pulse" />
+          ))}
+        </div>
+      ) : results.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {results.map((r, i) => (
+            <motion.a
+              key={i}
+              href={r.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.05 }}
+              className="surface surface-hover p-5 block h-full flex flex-col"
+            >
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-[11px] font-mono uppercase tracking-widest text-muted-foreground">{r.source}</span>
+                <ExternalLink className="h-3.5 w-3.5 text-muted-foreground" />
+              </div>
+              <h3 className="font-serif text-lg leading-tight mb-2 group-hover:text-primary transition-colors line-clamp-2">{r.title}</h3>
+              <p className="text-sm text-muted-foreground line-clamp-2 flex-1">{r.snippet}</p>
+            </motion.a>
+          ))}
+        </div>
+      ) : (
+        <div className="surface p-10 text-center rounded-2xl border-dashed">
+          <p className="text-muted-foreground">No global results found for this topic. Try a broader search term.</p>
+        </div>
+      )}
     </div>
   );
 }

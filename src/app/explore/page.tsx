@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { allCareers } from "@/lib/search";
+import { allCareers, searchCareers } from "@/lib/search";
 import { CAREER_FIELDS } from "@/lib/constants";
 import { Header } from "@/components/layout/header";
 import { Button } from "@/components/ui/button";
@@ -10,7 +10,7 @@ import { motion } from "framer-motion";
 import {
   Search, ArrowRight, X, Bookmark,
   Code, BarChart3, Palette, Heart, Scale, Wrench, Landmark, Rocket,
-  Target, Brain, BookOpen, GraduationCap, Megaphone, Atom, Monitor, Shield, Cloud
+  Target, Brain, BookOpen, GraduationCap, Megaphone, Atom, Monitor, Shield, Cloud, Sparkles
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useWishlist } from "@/context/wishlist-context";
@@ -26,14 +26,9 @@ export default function ExplorePage() {
   const { items: wishlistItems, add: addToWishlist, remove: removeFromWishlist } = useWishlist();
 
   const filtered = useMemo(() => {
-    return allCareers.filter((c) => {
-      const matchSearch =
-        !search ||
-        c.title.toLowerCase().includes(search.toLowerCase()) ||
-        c.tags.some((t) => t.toLowerCase().includes(search.toLowerCase()));
-      const matchField = !selectedField || c.field === selectedField;
-      return matchSearch && matchField;
-    });
+    const results = searchCareers(search);
+    if (!selectedField) return results;
+    return results.filter((c) => c.field === selectedField);
   }, [search, selectedField]);
 
   return (
@@ -122,6 +117,12 @@ export default function ExplorePage() {
                       <span className="h-9 w-9 rounded-lg bg-secondary flex items-center justify-center">
                         <IconComponent className="h-4 w-4 text-foreground" />
                       </span>
+                    <div className="flex items-center gap-2">
+                      {career.roadmapShUrl && (
+                        <span className="pill bg-primary/10 text-primary text-[10px] flex items-center gap-1">
+                          <Sparkles className="h-2.5 w-2.5" /> roadmap.sh
+                        </span>
+                      )}
                       <span
                         className={cn(
                           "pill text-[10px]",
@@ -132,6 +133,7 @@ export default function ExplorePage() {
                         {career.demandTrend}
                       </span>
                     </div>
+                  </div>
 
                     <h3 className="font-serif text-xl group-hover:text-primary transition-colors">
                       {career.title}

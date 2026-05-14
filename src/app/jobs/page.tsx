@@ -10,16 +10,15 @@ import {
 import { cn } from "@/lib/utils";
 
 interface Job {
-  slug: string;
-  company_name: string;
+  id: string;
+  company: string;
   title: string;
   description: string;
   remote: boolean;
   url: string;
-  tags: string[];
-  job_types: string[];
   location: string;
-  created_at: number;
+  type: string;
+  logo?: string;
 }
 
 export default function JobsPage() {
@@ -27,13 +26,14 @@ export default function JobsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
+  const [location, setLocation] = useState("India");
   const [remoteOnly, setRemoteOnly] = useState(false);
 
   useEffect(() => {
     async function fetchJobs() {
       try {
         setLoading(true);
-        const res = await fetch("https://www.arbeitnow.com/api/job-board-api");
+        const res = await fetch(`/api/jobs?q=${encodeURIComponent(search)}&location=${encodeURIComponent(location)}&remote=${remoteOnly}`);
         if (!res.ok) throw new Error("Failed to fetch jobs");
         const data = await res.json();
         setJobs(data.data || []);
@@ -44,24 +44,18 @@ export default function JobsPage() {
       }
     }
     fetchJobs();
-  }, []);
+  }, [remoteOnly, search, location]);
 
-  const filteredJobs = jobs.filter((job) => {
-    const matchSearch = !search || 
-      job.title.toLowerCase().includes(search.toLowerCase()) || 
-      job.company_name.toLowerCase().includes(search.toLowerCase());
-    const matchRemote = !remoteOnly || job.remote;
-    return matchSearch && matchRemote;
-  });
+  const filteredJobs = jobs; // Filtering is handled by the API now
 
   return (
     <>
       <Header />
       <div className="page-container pt-12 pb-20" data-testid="jobs-page">
         <p className="eyebrow">Job Board</p>
-        <h1 className="mt-3 font-serif text-4xl md:text-5xl tracking-tight">Tech & Remote Jobs.</h1>
+        <h1 className="mt-3 font-serif text-4xl md:text-5xl tracking-tight">Jobs in {location}.</h1>
         <p className="mt-3 text-muted-foreground max-w-xl text-lg">
-          Live job listings updated daily. Powered by Arbeitnow API.
+          Live listings from LinkedIn, Indeed, and more. Focused on India and Remote roles.
         </p>
 
         {/* Filters */}
@@ -69,7 +63,7 @@ export default function JobsPage() {
           <div className="relative flex-1 max-w-md surface flex items-center gap-3 px-4 py-2 rounded-2xl">
             <Search className="h-4 w-4 text-muted-foreground flex-shrink-0" />
             <input
-              placeholder="Search roles or companies..."
+              placeholder="Search roles (e.g. React Developer)..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="flex-1 bg-transparent outline-none text-[15px] h-8"
@@ -81,13 +75,24 @@ export default function JobsPage() {
             )}
           </div>
           <div className="flex flex-wrap gap-2 items-center">
+            {["India", "Mumbai", "Pune", "Bangalore"].map((loc) => (
+              <Button
+                key={loc}
+                variant={location === loc ? "default" : "outline"}
+                size="sm"
+                onClick={() => setLocation(loc)}
+                className={cn("rounded-full h-12 px-4", location === loc ? "bg-foreground text-background" : "bg-transparent border-border text-foreground")}
+              >
+                {loc}
+              </Button>
+            ))}
             <Button
               variant={remoteOnly ? "default" : "outline"}
               size="sm"
               onClick={() => setRemoteOnly(!remoteOnly)}
-              className={cn("rounded-full gap-1.5 h-12", remoteOnly ? "bg-foreground text-background" : "bg-transparent border-border text-foreground")}
+              className={cn("rounded-full gap-1.5 h-12 px-4 ml-2", remoteOnly ? "bg-emerald-500 text-white" : "bg-transparent border-border text-foreground")}
             >
-              <Globe className="h-4 w-4" /> Remote Only
+              <Globe className="h-4 w-4" /> Remote
             </Button>
           </div>
         </div>
@@ -124,7 +129,7 @@ export default function JobsPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pb-16">
               {filteredJobs.map((job, i) => (
                 <motion.div
-                  key={job.slug}
+                  key={job.id}
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: Math.min(i * 0.03, 0.4) }}
@@ -133,12 +138,16 @@ export default function JobsPage() {
                     {/* Header */}
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-xl bg-secondary flex items-center justify-center">
-                          <Building2 className="h-5 w-5 text-foreground" />
+                        <div className="h-10 w-10 rounded-xl bg-secondary flex items-center justify-center overflow-hidden">
+                          {job.logo ? (
+                            <img src={job.logo} alt={job.company} className="h-full w-full object-contain" />
+                          ) : (
+                            <Building2 className="h-5 w-5 text-foreground" />
+                          )}
                         </div>
                         <div>
                           <h3 className="font-serif text-lg leading-tight">{job.title}</h3>
-                          <p className="text-[12px] text-muted-foreground font-medium mt-0.5">{job.company_name}</p>
+                          <p className="text-[12px] text-muted-foreground font-medium mt-0.5">{job.company}</p>
                         </div>
                       </div>
                     </div>
@@ -151,7 +160,7 @@ export default function JobsPage() {
                       </div>
                       <div className="flex items-center gap-2 text-[13px]">
                         <Briefcase className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-                        <span className="text-muted-foreground capitalize">{job.job_types.join(", ").replace("_", " ")}</span>
+                        <span className="text-muted-foreground capitalize">{job.type}</span>
                       </div>
                       {job.remote && (
                         <div className="flex items-center gap-2 text-[13px]">
@@ -161,19 +170,15 @@ export default function JobsPage() {
                       )}
                     </div>
 
-                    {/* Tags */}
-                    <div className="mb-6 flex flex-wrap gap-1.5">
-                      {job.tags.slice(0, 4).map((tag) => (
-                        <span key={tag} className="px-2 py-1 text-[10px] rounded-md bg-secondary text-foreground font-medium uppercase tracking-wider">
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
+                    {/* Description Snippet */}
+                    <p className="text-sm text-muted-foreground line-clamp-2 mb-6 flex-1">
+                      {job.description}
+                    </p>
 
                     {/* CTA */}
                     <Button asChild className="w-full rounded-full mt-auto bg-foreground text-background hover:bg-foreground/90">
                       <a href={job.url} target="_blank" rel="noopener noreferrer" className="gap-2">
-                        Apply on Arbeitnow <ExternalLink className="h-3.5 w-3.5" />
+                        View & Apply <ExternalLink className="h-3.5 w-3.5" />
                       </a>
                     </Button>
                   </div>

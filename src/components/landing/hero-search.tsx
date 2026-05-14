@@ -12,7 +12,7 @@ const ROTATE = [
   "Search free Python courses",
   "Discover Rhodes scholarships",
   "Plan a Cybersecurity career",
-  "Ask Sage about Data Science",
+  "Latest Tech News & Updates",
 ];
 
 export function HeroSearch() {
@@ -138,7 +138,7 @@ export function HeroSearch() {
             <div className="px-4 py-5">
               <p className="text-sm text-muted-foreground">
                 No exact matches. Try one of the trending searches below — or{" "}
-                <Link href="/sage" className="underline">ask Sage AI</Link>.
+                <Link href="/news" className="underline">check latest News</Link>.
               </p>
             </div>
           )}
@@ -161,11 +161,11 @@ export function HeroSearch() {
           </button>
         ))}
         <Link
-          href="/sage"
-          data-testid="ask-sage-pill"
+          href="/news"
+          data-testid="news-hub-pill"
           className="text-[12px] px-3 py-1.5 rounded-full bg-foreground text-background hover:bg-foreground/90 inline-flex items-center gap-1.5"
         >
-          <Sparkles className="h-3 w-3" /> Ask Sage
+          <Sparkles className="h-3 w-3" /> News Hub
         </Link>
       </div>
     </div>

@@ -1,14 +1,11 @@
 import Fuse from "fuse.js";
 import { careers } from "@/lib/seed-careers";
-import { modernCareers } from "@/lib/seed-careers-extra";
 import { resources } from "@/lib/seed-resources";
-import { scholarships } from "@/lib/seed-scholarships";
-import type { Career, Resource, Scholarship } from "@/types";
+import type { Career, Resource } from "@/types";
 
 // Unified search dataset
-export const allCareers: Career[] = [...careers, ...modernCareers];
+export const allCareers: Career[] = careers;
 export const allResources: Resource[] = resources;
-export const allScholarships: Scholarship[] = scholarships;
 
 // Fuse.js instances for fuzzy search
 export const careerFuse = new Fuse(allCareers, {
@@ -38,21 +35,8 @@ export const resourceFuse = new Fuse(allResources, {
   includeScore: true,
 });
 
-export const scholarshipFuse = new Fuse(allScholarships, {
-  keys: [
-    { name: "name", weight: 0.4 },
-    { name: "description", weight: 0.15 },
-    { name: "provider", weight: 0.15 },
-    { name: "fields", weight: 0.2 },
-    { name: "country", weight: 0.1 },
-  ],
-  threshold: 0.4,
-  ignoreLocation: true,
-  includeScore: true,
-});
-
 export interface UnifiedResult {
-  kind: "career" | "resource" | "scholarship";
+  kind: "career" | "resource";
   id: string;
   title: string;
   subtitle?: string;
@@ -86,32 +70,17 @@ function resourceToResult(r: Resource, score?: number): UnifiedResult {
     score,
   };
 }
-function scholarshipToResult(s: Scholarship, score?: number): UnifiedResult {
-  return {
-    kind: "scholarship",
-    id: s.id,
-    title: s.name,
-    subtitle: `${s.provider} · ${s.country}`,
-    description: s.description,
-    href: s.applyUrl,
-    tags: s.fields,
-    score,
-  };
-}
 
 export function searchAll(query: string, limit = 18): UnifiedResult[] {
   if (!query.trim()) {
-    // Show curated mix when no query
     return [
-      ...allCareers.slice(0, 6).map((c) => careerToResult(c)),
-      ...allResources.slice(0, 6).map((r) => resourceToResult(r)),
-      ...allScholarships.slice(0, 6).map((s) => scholarshipToResult(s)),
+      ...allCareers.slice(0, 9).map((c) => careerToResult(c)),
+      ...allResources.slice(0, 9).map((r) => resourceToResult(r)),
     ];
   }
   const c = careerFuse.search(query).map((r) => careerToResult(r.item, r.score));
   const r = resourceFuse.search(query).map((x) => resourceToResult(x.item, x.score));
-  const s = scholarshipFuse.search(query).map((x) => scholarshipToResult(x.item, x.score));
-  const merged = [...c, ...r, ...s].sort((a, b) => (a.score ?? 1) - (b.score ?? 1));
+  const merged = [...c, ...r].sort((a, b) => (a.score ?? 1) - (b.score ?? 1));
   return merged.slice(0, limit);
 }
 
@@ -122,10 +91,6 @@ export function searchCareers(query: string): Career[] {
 export function searchResources(query: string): Resource[] {
   if (!query.trim()) return allResources;
   return resourceFuse.search(query).map((r) => r.item);
-}
-export function searchScholarships(query: string): Scholarship[] {
-  if (!query.trim()) return allScholarships;
-  return scholarshipFuse.search(query).map((r) => r.item);
 }
 
 export const TRENDING_QUERIES = [
@@ -139,14 +104,12 @@ export const TRENDING_QUERIES = [
   "Product Design",
   "Blockchain",
   "Game Development",
-  "Scholarships India",
   "Free Courses",
+  "MIT OCW",
 ];
 
-// Suggest fallback content when nothing matches well.
 export function getRelatedSuggestions(query: string, max = 6): UnifiedResult[] {
   const tokens = query.toLowerCase().split(/\s+/).filter(Boolean);
-  // Pick careers with overlapping tags
   const careerHits = allCareers
     .map((c) => ({
       career: c,
@@ -157,6 +120,5 @@ export function getRelatedSuggestions(query: string, max = 6): UnifiedResult[] {
     .map((x) => careerToResult(x.career));
   if (careerHits.length) return careerHits;
 
-  // Otherwise — return trending careers
   return allCareers.slice(0, max).map((c) => careerToResult(c));
 }

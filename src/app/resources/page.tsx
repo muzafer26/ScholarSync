@@ -80,30 +80,55 @@ export default function ResourcesPage() {
     }
   };
 
+  const searchVideos = async (query: string) => {
+    if (!query) return;
+    setLoadingVideos(true);
+    try {
+      const res = await fetch(`/api/resources/youtube?q=${encodeURIComponent(query)}`);
+      const data = await res.json();
+      setVideos(data.data || []);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoadingVideos(false);
+    }
+  };
+
+  const handleSearch = (query: string) => {
+    if (tab === "global") searchGlobal(query);
+    if (tab === "videos") searchVideos(query);
+  };
+
   return (
     <>
       <Header />
       <div className="page-container pt-12 pb-20" data-testid="resources-page">
         <p className="eyebrow">Resources</p>
-        <h1 className="mt-3 font-serif text-4xl md:text-5xl tracking-tight">Free Library.</h1>
+        <h1 className="mt-3 font-serif text-4xl md:text-5xl tracking-tight">Learning Hub.</h1>
         <p className="mt-3 text-muted-foreground max-w-xl text-lg">
-          Explore our highly curated courses or search the entire Open Library global database for free educational books.
+          Curated courses, global library books, and educational video tutorials — all in one place.
         </p>
 
         {/* Search & Tabs */}
         <div className="mt-8 flex flex-col gap-4 mb-8">
-          <div className="flex bg-secondary p-1 rounded-2xl w-fit">
+          <div className="flex flex-wrap bg-secondary p-1 rounded-2xl w-fit">
             <button
               onClick={() => setTab("curated")}
               className={cn("px-4 py-2 rounded-xl text-sm font-medium transition-all gap-2 flex items-center", tab === "curated" ? "bg-background shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground")}
             >
-              <Star className="h-4 w-4" /> Curated Courses
+              <Star className="h-4 w-4" /> Curated
             </button>
             <button
               onClick={() => { setTab("global"); if (search) searchGlobal(search); }}
               className={cn("px-4 py-2 rounded-xl text-sm font-medium transition-all gap-2 flex items-center", tab === "global" ? "bg-background shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground")}
             >
-              <Globe className="h-4 w-4" /> Global Open Library
+              <Library className="h-4 w-4" /> Books
+            </button>
+            <button
+              onClick={() => { setTab("videos"); if (search) searchVideos(search); }}
+              className={cn("px-4 py-2 rounded-xl text-sm font-medium transition-all gap-2 flex items-center", tab === "videos" ? "bg-background shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground")}
+            >
+              <Play className="h-4 w-4" /> Videos
             </button>
           </div>
 
@@ -111,12 +136,12 @@ export default function ResourcesPage() {
             <div className="relative flex-1 max-w-md surface flex items-center gap-3 px-4 py-2 rounded-2xl">
               <Search className="h-4 w-4 text-muted-foreground flex-shrink-0" />
               <input
-                placeholder={tab === "curated" ? "Search courses, topics..." : "Search millions of free books globally..."}
+                placeholder={tab === "curated" ? "Search courses, topics..." : tab === "global" ? "Search free books..." : "Search educational videos..."}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 onKeyDown={(e) => {
-                  if (e.key === "Enter" && tab === "global") {
-                    searchGlobal(search);
+                  if (e.key === "Enter") {
+                    handleSearch(search);
                   }
                 }}
                 className="flex-1 bg-transparent outline-none text-[15px] h-8"
@@ -144,20 +169,10 @@ export default function ResourcesPage() {
                     </span>
                   )}
                 </Button>
-                {hasFilters && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => { setSelectedField(null); setSelectedLevel(null); setSelectedFormat(null); }}
-                    className="gap-1 text-muted-foreground h-12 rounded-full"
-                  >
-                    <X className="h-4 w-4" /> Clear
-                  </Button>
-                )}
               </>
             ) : (
-              <Button onClick={() => searchGlobal(search)} className="h-12 rounded-2xl bg-foreground text-background hover:bg-foreground/90">
-                Search Global Database
+              <Button onClick={() => handleSearch(search)} className="h-12 rounded-2xl bg-foreground text-background hover:bg-foreground/90">
+                Search Database
               </Button>
             )}
           </div>
@@ -395,6 +410,86 @@ export default function ResourcesPage() {
                 <Book className="h-8 w-8 text-muted-foreground mx-auto mb-4 opacity-50" />
                 <p className="text-muted-foreground">Search millions of free educational books, textbooks, and publications.</p>
                 <p className="text-xs text-muted-foreground mt-2">Powered by the global Open Library API.</p>
+              </div>
+            )}
+          </>
+        )}
+
+        {/* Video Resource Grid */}
+        {tab === "videos" && (
+          <>
+            {loadingVideos ? (
+               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                 {[1, 2, 3, 4, 5, 6].map(i => (
+                   <div key={i} className="surface p-0 h-64 rounded-2xl animate-pulse flex flex-col">
+                     <div className="h-36 w-full bg-secondary rounded-t-2xl" />
+                     <div className="p-4 space-y-2">
+                        <div className="h-4 w-3/4 bg-secondary rounded" />
+                        <div className="h-3 w-1/2 bg-secondary rounded" />
+                     </div>
+                   </div>
+                 ))}
+               </div>
+            ) : videos.length > 0 ? (
+              <>
+                <p className="text-sm text-muted-foreground mb-6">
+                  {videos.length} educational videos found via YouTube API
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 pb-16">
+                  {videos.map((video, i) => {
+                    const isSaved = wishlistItems.some(item => item.id === video.id);
+                    return (
+                      <motion.div
+                        key={video.id}
+                        initial={{ opacity: 0, y: 12 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: Math.min(i * 0.03, 0.4) }}
+                        className="relative group"
+                      >
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            isSaved ? removeFromWishlist(video.id) : addToWishlist({
+                              id: video.id,
+                              title: video.title,
+                              url: video.url,
+                              type: "resource"
+                            });
+                          }}
+                          className={cn(
+                            "absolute top-3 right-3 z-10 p-2 rounded-full transition-all",
+                            isSaved ? "bg-foreground text-background" : "bg-black/50 text-white hover:bg-black/70 opacity-0 group-hover:opacity-100"
+                          )}
+                        >
+                          <Bookmark className={cn("h-4 w-4", isSaved && "fill-current")} />
+                        </button>
+                        
+                        <a href={video.url} target="_blank" rel="noopener noreferrer" className="surface surface-hover p-0 h-full flex flex-col block overflow-hidden">
+                          <div className="relative h-40 w-full overflow-hidden">
+                            <img src={video.thumbnail} alt={video.title} className="w-full h-full object-cover transition-transform group-hover:scale-105" />
+                            <div className="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors" />
+                            <div className="absolute bottom-2 right-2 bg-black/80 text-white text-[10px] px-1.5 py-0.5 rounded font-mono">
+                              YouTube
+                            </div>
+                          </div>
+
+                          <div className="p-4 flex flex-col flex-1">
+                            <h3 className="font-serif text-base group-hover:text-primary transition-colors leading-tight mb-2 line-clamp-2" dangerouslySetInnerHTML={{ __html: video.title }} />
+                            <p className="text-[12px] text-muted-foreground mt-auto">
+                              {video.channel}
+                            </p>
+                          </div>
+                        </a>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              </>
+            ) : (
+              <div className="text-center py-16 surface p-8 max-w-xl mx-auto rounded-2xl">
+                <Play className="h-8 w-8 text-muted-foreground mx-auto mb-4 opacity-50" />
+                <p className="text-muted-foreground">Search thousands of high-quality educational videos and tutorials.</p>
+                <p className="text-xs text-muted-foreground mt-2">Powered by the YouTube Search API.</p>
               </div>
             )}
           </>

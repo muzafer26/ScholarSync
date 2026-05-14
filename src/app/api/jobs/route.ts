@@ -1,59 +1,53 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-// Cache jobs for 1 hour to stay within RapidAPI free tier limits
-const cache = new Map<string, { data: unknown; timestamp: number }>();
-const CACHE_TTL = 60 * 60 * 1000; // 1 hour
-
 export async function GET(req: NextRequest) {
-  const q = req.nextUrl.searchParams.get('q') || 'software engineer intern';
-  const page = req.nextUrl.searchParams.get('page') || '1';
-  const remote = req.nextUrl.searchParams.get('remote') || 'false';
-
-  const cacheKey = `${q}-${page}-${remote}`;
-  const cached = cache.get(cacheKey);
-  if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
-    return NextResponse.json(cached.data);
-  }
+  const { searchParams } = new URL(req.url);
+  const q = searchParams.get("q") || "software engineer";
+  const location = searchParams.get("location") || "India";
+  const remote = searchParams.get("remote") === "true";
+  const page = searchParams.get("page") || "1";
 
   try {
-    const url = new URL('https://jsearch.p.rapidapi.com/search');
-    url.searchParams.set('query', q);
-    url.searchParams.set('page', page);
-    url.searchParams.set('num_pages', '1');
-    if (remote === 'true') url.searchParams.set('remote_jobs_only', 'true');
+    const appId = "8e98b54e";
+    const appKey = "6fc41e054aab821648a8a374750688e1";
+    
+    // Adzuna API URL for India (in)
+    const url = new URL(`https://api.adzuna.com/v1/api/jobs/in/search/${page}`);
+    url.searchParams.set("app_id", appId);
+    url.searchParams.set("app_key", appKey);
+    url.searchParams.set("what", q);
+    url.searchParams.set("where", location === "India" ? "" : location);
+    url.searchParams.set("results_per_page", "20");
+    if (remote) {
+      url.searchParams.set("what", `${q} remote`);
+    }
 
-    const res = await fetch(url.toString(), {
-      headers: {
-        'X-RapidAPI-Key': process.env.RAPIDAPI_KEY || '',
-        'X-RapidAPI-Host': 'jsearch.p.rapidapi.com',
-      },
-    });
+    const res = await fetch(url.toString());
 
     if (!res.ok) {
-      console.error('JSearch API error:', res.status);
-      return NextResponse.json({ data: [], error: 'API limit reached' }, { status: 429 });
+      const errorText = await res.text();
+      console.error(`Adzuna API Error (${res.status}):`, errorText);
+      return NextResponse.json({ data: [], error: `API Error: ${res.status}` }, { status: res.status });
     }
 
     const json = await res.json();
-    const result = {
-      data: (json.data || []).slice(0, 10).map((job: any) => ({
-        id: job.job_id,
-        title: job.job_title,
-        company: job.employer_name,
-        logo: job.employer_logo,
-        location: job.job_city ? `${job.job_city}, ${job.job_country}` : job.job_country || 'Remote',
-        type: job.job_employment_type,
-        remote: job.job_is_remote,
-        url: job.job_apply_link,
-        posted: job.job_posted_at_datetime_utc,
-        description: job.job_description?.slice(0, 200) + '...',
-      })),
-    };
+    
+    // Map Adzuna results to our standard format
+    const jobs = (json.results || []).map((job: any) => ({
+      id: job.id,
+      title: job.title.replace(/<\/?[^>]+(>|$)/g, ""), // Clean HTML tags
+      company: job.company?.display_name || "Unknown Company",
+      location: job.location?.display_name || "India",
+      url: job.redirect_url,
+      description: job.description.replace(/<\/?[^>]+(>|$)/g, ""),
+      salary: job.salary_min ? `₹${(job.salary_min/100000).toFixed(1)}L - ₹${(job.salary_max/100000).toFixed(1)}L` : "Salary Undisclosed",
+      posted_at: job.created,
+      type: job.contract_type === "permanent" ? "Full-time" : "Contract",
+    }));
 
-    cache.set(cacheKey, { data: result, timestamp: Date.now() });
-    return NextResponse.json(result);
-  } catch (err) {
-    console.error('Jobs API error:', err);
-    return NextResponse.json({ data: [], error: 'Failed to fetch jobs' }, { status: 500 });
+    return NextResponse.json({ data: jobs });
+  } catch (error: any) {
+    console.error("Jobs API Error:", error);
+    return NextResponse.json({ data: [], error: error.message }, { status: 500 });
   }
 }

@@ -36,11 +36,10 @@ export default function WishlistPage() {
             </div>
             <h2 className="font-serif text-2xl">Nothing saved yet.</h2>
             <p className="mt-2 text-sm text-muted-foreground">
-              Tap the bookmark icon on careers, scholarships, or resources to save them here. Stored locally — never sent to a server.
+              Tap the bookmark icon on careers or resources to save them here. Stored locally — never sent to a server.
             </p>
-            <div className="mt-6 flex flex-wrap justify-center gap-2">
-              <Button asChild size="sm" className="rounded-full"><Link href="/explore">Explore careers <ArrowRight className="h-3 w-3 ml-1" /></Link></Button>
-              <Button asChild size="sm" variant="outline" className="rounded-full"><Link href="/sage"><Sparkles className="h-3 w-3 mr-1" /> Ask Sage</Link></Button>
+            <div className="mt-6">
+              <Button asChild className="rounded-full h-11 px-8"><Link href="/explore">Explore careers <ArrowRight className="h-4 w-4 ml-2" /></Link></Button>
             </div>
           </div>
         ) : (
