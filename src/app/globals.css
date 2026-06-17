@@ -1,0 +1,272 @@
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================
+   ScholarSync V2 — Educational Design System
+   Inspired by Notion, Coursera, GitHub Docs
+   ============================================ */
+
+@layer base {
+  :root {
+    /* Archival Canvas Background (Tertiary #F2EFE9) */
+    --background: 40 27% 93%;
+    --foreground: 0 0% 10%; /* #1A1A1A */
+
+    /* Neutral Card/Surface Background (#EDEAE4) */
+    --card: 40 21% 91%; 
+    --card-foreground: 0 0% 10%;
+
+    /* Pure White Surface (#FFFFFF) */
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 10%;
+
+    /* Primary Accent - Electric Blue (#1768DA) */
+    --primary: 215 82% 47%; 
+    --primary-foreground: 0 0% 100%;
+
+    /* Technical Secondary - Button styles (Tertiary BG, Blue Text) */
+    --secondary: 40 27% 93%; /* #F2EFE9 */
+    --secondary-foreground: 215 82% 47%; /* #1768DA */
+
+    /* Muted states - Pale blue wash (#DCE7F7) */
+    --muted: 216 58% 92%;
+    --muted-foreground: 0 0% 35%;
+
+    /* Warm Accent (#F7A21B) */
+    --accent: 37 93% 54%;
+    --accent-foreground: 0 0% 10%;
+
+    --destructive: 6 67% 54%; /* #D94A3A */
+    --destructive-foreground: 0 0% 100%;
+
+    /* Border - Pale blue-gray (#E1E8F3) */
+    --border: 217 40% 92%;
+    --input: 0 0% 100%;
+    --ring: 215 82% 47%;
+
+    /* Small, mechanical radii */
+    --radius: 0.25rem; 
+  }
+
+  /* PodCube Control Surface Utilities */
+  .inset-panel {
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.03), inset 0 1px 2px rgba(0,0,0,0.02);
+  }
+  .bevel-card {
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  }
+
+  /* Creative Notion Dot Grid Background Utility */
+  .bg-dot-pattern {
+    background-image: radial-gradient(hsl(var(--foreground)/0.1) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+
+  .dark {
+    /* Dark theme - solid charcoal, no glows */
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    --card: 220 10% 8%; 
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+
+    --secondary: 220 10% 8%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 220 10% 8%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 91.2% 59.8%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 220 10% 15%;
+    --input: 220 10% 15%;
+    --ring: 224.3 76.3% 48%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 1.8;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    line-height: 1.1;
+    color: hsl(var(--foreground));
+  }
+  ::selection {
+    background: hsl(var(--primary) / 0.2);
+    color: hsl(var(--foreground));
+  }
+
+  .font-serif {
+    font-family: 'Instrument Serif', ui-serif, Georgia, serif;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+  }
+
+  .font-mono {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    line-height: 1.2;
+    font-weight: 700;
+  }
+}
+
+@layer components {
+  /* Container - Enforce whitespace and readability widths */
+  .page-container { @apply container max-w-[1200px] mx-auto px-6 sm:px-8; }
+  .content-reading { @apply max-w-[850px] mx-auto; }
+  .section { @apply py-16 md:py-24; }
+
+  /* Cards - Structural documents, no glass or heavy shadows */
+  .surface {
+    @apply bg-card rounded-md border border-border transition-transform duration-200;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+  }
+
+  .surface-hover {
+    transition: transform 0.2s ease, border-color 0.2s ease;
+  }
+  .surface-hover:hover {
+    @apply border-muted-foreground/30;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+  }
+
+  /* Solid Nav */
+  .glass-nav {
+    background: hsl(var(--background));
+    border-bottom: 1px solid hsl(var(--border));
+  }
+
+  /* Buttons */
+  .btn-magnetic {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-md font-medium text-sm border shadow-sm;
+    transition: transform 0.2s ease;
+  }
+  .btn-magnetic:hover { transform: translateY(-1px); }
+  .btn-magnetic:active { transform: translateY(0); }
+
+  /* Eyebrows */
+  .eyebrow {
+    @apply inline-flex items-center gap-2 text-[12px] font-bold tracking-widest uppercase text-muted-foreground;
+  }
+
+  /* Pills */
+  .pill {
+    @apply inline-flex items-center gap-1 px-2.5 py-1 rounded-sm text-[11px] font-bold uppercase tracking-widest border border-border;
+  }
+
+  /* Educational Badges */
+  .quality-badge { @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-sm text-xs font-bold uppercase; }
+  .quality-high { @apply bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20; }
+  .quality-mid  { @apply bg-amber-500/10  text-amber-700  dark:text-amber-400 border border-amber-500/20; }
+  .quality-low  { @apply bg-rose-500/10   text-rose-700   dark:text-rose-400 border border-rose-500/20; }
+
+  /* Levels */
+  .level-beginner     { @apply bg-secondary text-foreground; }
+  .level-intermediate { @apply bg-secondary text-foreground; }
+  .level-advanced     { @apply bg-secondary text-foreground; }
+
+  /* Trend */
+  .trend-rising    { @apply text-emerald-600 dark:text-emerald-400 font-medium; }
+  .trend-stable    { @apply text-muted-foreground font-medium; }
+  .trend-declining { @apply text-rose-600 dark:text-rose-400 font-medium; }
+
+  /* Removed Gradient texts */
+  .text-ink-gradient {
+    color: hsl(var(--foreground));
+    font-weight: 700;
+  }
+
+  /* Removed Grid/Noise backgrounds */
+  .bg-grid { background-color: transparent; background-image: none; display: none; }
+  .bg-noise { background-color: transparent; background-image: none; }
+
+  /* Eradicate heavy animations */
+  .float-slow { transform: none; animation: none; }
+
+  /* Underline reveal */
+  .link-underline {
+    position: relative;
+    font-weight: 500;
+  }
+  .link-underline::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 0; bottom: -2px;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.2s ease;
+  }
+  .link-underline:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+
+  /* Line clamps */
+  .line-clamp-2 { overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+  .line-clamp-3 { overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; }
+}
+
+@layer utilities {
+  .mask-fade-bottom {
+    mask-image: none;
+    -webkit-mask-image: none;
+  }
+  .mask-fade-top {
+    mask-image: none;
+    -webkit-mask-image: none;
+  }
+
+  /* Subtle floating removed */
+  .animate-float-y {
+    animation: none;
+  }
+}
+
+/* Minimal Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--border));
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground));
+}

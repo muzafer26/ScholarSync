@@ -1,0 +1,1118 @@
+[
+  {
+    "id": "r-1",
+    "title": "CS50: Introduction to Computer Science",
+    "url": "https://cs50.harvard.edu/x/",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": true,
+    "qualityScore": 80
+  },
+  {
+    "id": "r-2",
+    "title": "freeCodeCamp Full Curriculum",
+    "url": "https://www.freecodecamp.org/",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": false,
+    "qualityScore": 20
+  },
+  {
+    "id": "r-3",
+    "title": "OSSU Computer Science Curriculum",
+    "url": "https://github.com/ossu/computer-science",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": true,
+    "qualityScore": 95
+  },
+  {
+    "id": "r-4",
+    "title": "The Odin Project",
+    "url": "https://www.theodinproject.com/",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": false,
+    "qualityScore": 20
+  },
+  {
+    "id": "r-5",
+    "title": "MIT 6.006 Introduction to Algorithms",
+    "url": "https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-spring-2020/",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": true,
+    "qualityScore": 100
+  },
+  {
+    "id": "r-6",
+    "title": "fast.ai Practical Deep Learning",
+    "url": "https://course.fast.ai/",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": false,
+    "qualityScore": 20
+  },
+  {
+    "id": "r-7",
+    "title": "Kaggle Learn",
+    "url": "https://www.kaggle.com/learn",
+    "isValid": false,
+    "statusCode": 404,
+    "isDirect": true,
+    "qualityScore": 100
+  },
+  {
+    "id": "r-8",
+    "title": "Google ML Crash Course",
+    "url": "https://developers.google.com/machine-learning/crash-course",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": true,
+    "qualityScore": 80
+  },
+  {
+    "id": "r-9",
+    "title": "Khan Academy Statistics & Probability",
+    "url": "https://www.khanacademy.org/math/statistics-probability",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": true,
+    "qualityScore": 80
+  },
+  {
+    "id": "r-10",
+    "title": "Khan Academy Finance & Capital Markets",
+    "url": "https://www.khanacademy.org/economics-finance-domain",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": true,
+    "qualityScore": 80
+  },
+  {
+    "id": "r-11",
+    "title": "Yale Financial Markets (Coursera Audit)",
+    "url": "https://www.coursera.org/learn/financial-markets-global",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": true,
+    "qualityScore": 100
+  },
+  {
+    "id": "r-12",
+    "title": "Zerodha Varsity",
+    "url": "https://zerodha.com/varsity/",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": true,
+    "qualityScore": 80
+  },
+  {
+    "id": "r-13",
+    "title": "Google UX Design Certificate (Audit)",
+    "url": "https://www.coursera.org/professional-certificates/google-ux-design",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": true,
+    "qualityScore": 80
+  },
+  {
+    "id": "r-14",
+    "title": "Figma YouTube Tutorials",
+    "url": "https://www.youtube.com/c/Figmadesign",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": true,
+    "qualityScore": 80
+  },
+  {
+    "id": "r-15",
+    "title": "Khan Academy Health & Medicine",
+    "url": "https://www.khanacademy.org/science/health-and-medicine",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": true,
+    "qualityScore": 80
+  },
+  {
+    "id": "r-17",
+    "title": "MIT OpenCourseWare Engineering",
+    "url": "https://ocw.mit.edu/search/?t=Engineering",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": true,
+    "qualityScore": 80
+  },
+  {
+    "id": "r-20",
+    "title": "YC Startup School",
+    "url": "https://www.startupschool.org/",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": false,
+    "qualityScore": 20
+  },
+  {
+    "id": "r-21",
+    "title": "Paul Graham Essays",
+    "url": "http://www.paulgraham.com/articles.html",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": true,
+    "qualityScore": 80
+  },
+  {
+    "id": "r-22",
+    "title": "MIT OCW Literature Courses",
+    "url": "https://ocw.mit.edu/search/?t=Literature",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": true,
+    "qualityScore": 80
+  },
+  {
+    "id": "r-23",
+    "title": "Project Gutenberg",
+    "url": "https://www.gutenberg.org/",
+    "isValid": "CHECK_MANUALLY",
+    "statusCode": "Timeout",
+    "isDirect": false,
+    "qualityScore": 20
+  },
+  {
+    "id": "r-24",
+    "title": "NALSAR Open Courseware",
+    "url": "https://www.nalsar.ac.in/",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": false,
+    "qualityScore": 20
+  },
+  {
+    "id": "r-201",
+    "title": "Build Your Own X",
+    "url": "https://github.com/codecrafters-io/build-your-own-x",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": true,
+    "qualityScore": 95
+  },
+  {
+    "id": "r-202",
+    "title": "Free Programming Books",
+    "url": "https://github.com/EbookFoundation/free-programming-books",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": true,
+    "qualityScore": 95
+  },
+  {
+    "id": "r-203",
+    "title": "AI Engineering From Scratch",
+    "url": "https://github.com/rohitg00/ai-engineering-from-scratch",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": true,
+    "qualityScore": 95
+  },
+  {
+    "id": "r-204",
+    "title": "Project Ideas and Resources",
+    "url": "https://github.com/The-Cool-Coders/Project-Ideas-And-Resources",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": true,
+    "qualityScore": 95
+  },
+  {
+    "id": "r-205",
+    "title": "Java Programming (MOOC.fi)",
+    "url": "https://java-programming.mooc.fi/",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": false,
+    "qualityScore": 20
+  },
+  {
+    "id": "r-25",
+    "title": "Python for Everybody (Dr. Chuck)",
+    "url": "https://www.py4e.com/",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": false,
+    "qualityScore": 20
+  },
+  {
+    "id": "r-26",
+    "title": "Web Development Bootcamp (Angela Yu)",
+    "url": "https://www.appbrewery.co/p/web-development-course-resources",
+    "isValid": false,
+    "statusCode": "Network Error",
+    "isDirect": true,
+    "qualityScore": 80
+  },
+  {
+    "id": "r-27",
+    "title": "MIT 6.0001 Intro to CS with Python",
+    "url": "https://ocw.mit.edu/courses/6-0001-introduction-to-computer-science-and-programming-in-python-fall-2016/",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": true,
+    "qualityScore": 100
+  },
+  {
+    "id": "r-28",
+    "title": "Full Stack Open (Helsinki)",
+    "url": "https://fullstackopen.com/en/",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": true,
+    "qualityScore": 80
+  },
+  {
+    "id": "r-29",
+    "title": "Nand2Tetris (Build a Computer)",
+    "url": "https://www.nand2tetris.org/",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": false,
+    "qualityScore": 20
+  },
+  {
+    "id": "r-30",
+    "title": "Eloquent JavaScript (Free Book)",
+    "url": "https://eloquentjavascript.net/",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": false,
+    "qualityScore": 20
+  },
+  {
+    "id": "r-31",
+    "title": "Git & GitHub Crash Course",
+    "url": "https://www.youtube.com/watch?v=RGOj5yH7evk",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": true,
+    "qualityScore": 80
+  },
+  {
+    "id": "r-32",
+    "title": "Stanford CS229 Machine Learning",
+    "url": "https://cs229.stanford.edu/",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": false,
+    "qualityScore": 20
+  },
+  {
+    "id": "r-33",
+    "title": "Deep Learning Specialization (Audit)",
+    "url": "https://www.coursera.org/specializations/deep-learning",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": true,
+    "qualityScore": 80
+  },
+  {
+    "id": "r-34",
+    "title": "StatQuest YouTube Channel",
+    "url": "https://www.youtube.com/c/joshstarmer",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": true,
+    "qualityScore": 80
+  },
+  {
+    "id": "r-35",
+    "title": "3Blue1Brown Linear Algebra",
+    "url": "https://www.youtube.com/playlist?list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": true,
+    "qualityScore": 80
+  },
+  {
+    "id": "r-36",
+    "title": "MIT 15.401 Finance Theory",
+    "url": "https://ocw.mit.edu/courses/15-401-finance-theory-i-fall-2008/",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": true,
+    "qualityScore": 100
+  },
+  {
+    "id": "r-37",
+    "title": "Investopedia Academy (Free Articles)",
+    "url": "https://www.investopedia.com/",
+    "isValid": "CHECK_MANUALLY",
+    "statusCode": 402,
+    "isDirect": false,
+    "qualityScore": 20
+  },
+  {
+    "id": "r-38",
+    "title": "Laws of UX",
+    "url": "https://lawsofux.com/",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": false,
+    "qualityScore": 20
+  },
+  {
+    "id": "r-39",
+    "title": "Refactoring UI (Free Chapter)",
+    "url": "https://www.refactoringui.com/",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": false,
+    "qualityScore": 20
+  },
+  {
+    "id": "r-40",
+    "title": "MIT 8.01 Classical Mechanics",
+    "url": "https://ocw.mit.edu/courses/8-01sc-classical-mechanics-fall-2016/",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": true,
+    "qualityScore": 100
+  },
+  {
+    "id": "r-41",
+    "title": "Khan Academy Biology",
+    "url": "https://www.khanacademy.org/science/biology",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": true,
+    "qualityScore": 80
+  },
+  {
+    "id": "r-42",
+    "title": "Organic Chemistry Tutor (YouTube)",
+    "url": "https://www.youtube.com/c/TheOrganicChemistryTutor",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": true,
+    "qualityScore": 80
+  },
+  {
+    "id": "r-43",
+    "title": "Google Digital Marketing Certificate",
+    "url": "https://learndigital.withgoogle.com/digitalgarage",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": true,
+    "qualityScore": 100
+  },
+  {
+    "id": "r-44",
+    "title": "HubSpot Academy",
+    "url": "https://academy.hubspot.com/",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": false,
+    "qualityScore": 20
+  },
+  {
+    "id": "r-45",
+    "title": "NPTEL Online Courses",
+    "url": "https://nptel.ac.in/",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": false,
+    "qualityScore": 20
+  },
+  {
+    "id": "r-46",
+    "title": "SWAYAM Portal",
+    "url": "https://swayam.gov.in/",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": false,
+    "qualityScore": 20
+  },
+  {
+    "id": "r-47",
+    "title": "TryHackMe (Free Rooms)",
+    "url": "https://tryhackme.com/",
+    "isValid": "CHECK_MANUALLY",
+    "statusCode": 429,
+    "isDirect": false,
+    "qualityScore": 20
+  },
+  {
+    "id": "r-48",
+    "title": "Cisco Networking Academy",
+    "url": "https://www.netacad.com/",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": false,
+    "qualityScore": 20
+  },
+  {
+    "id": "r-49",
+    "title": "AWS Cloud Practitioner Essentials",
+    "url": "https://explore.skillbuilder.aws/learn/course/134/aws-cloud-practitioner-essentials",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": true,
+    "qualityScore": 100
+  },
+  {
+    "id": "r-50",
+    "title": "Docker for Beginners",
+    "url": "https://docker-curriculum.com/",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": false,
+    "qualityScore": 20
+  },
+  {
+    "id": "r-51",
+    "title": "Yale Science of Well-Being",
+    "url": "https://www.coursera.org/learn/the-science-of-well-being",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": true,
+    "qualityScore": 100
+  },
+  {
+    "id": "r-52",
+    "title": "Constitution of India (Bare Act)",
+    "url": "https://legislative.gov.in/constitution-of-india/",
+    "isValid": "CHECK_MANUALLY",
+    "statusCode": 403,
+    "isDirect": true,
+    "qualityScore": 80
+  },
+  {
+    "id": "r-53",
+    "title": "MIT 18.06 Linear Algebra (Strang)",
+    "url": "https://ocw.mit.edu/courses/18-06sc-linear-algebra-fall-2011/",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": true,
+    "qualityScore": 100
+  },
+  {
+    "id": "r-54",
+    "title": "Harvard CS50 Web Programming",
+    "url": "https://cs50.harvard.edu/web/",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": true,
+    "qualityScore": 80
+  },
+  {
+    "id": "r-55",
+    "title": "Harvard CS50 AI",
+    "url": "https://cs50.harvard.edu/ai/",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": true,
+    "qualityScore": 80
+  },
+  {
+    "id": "r-101",
+    "title": "The Missing Semester of CS",
+    "url": "https://missing.csail.mit.edu",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": false,
+    "qualityScore": 20
+  },
+  {
+    "id": "r-102",
+    "title": "roadmap.sh",
+    "url": "https://roadmap.sh",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": false,
+    "qualityScore": 20
+  },
+  {
+    "id": "r-103",
+    "title": "Exercism",
+    "url": "https://exercism.org",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": false,
+    "qualityScore": 20
+  },
+  {
+    "id": "r-104",
+    "title": "LeetCode (Free)",
+    "url": "https://leetcode.com",
+    "isValid": "CHECK_MANUALLY",
+    "statusCode": 403,
+    "isDirect": false,
+    "qualityScore": 20
+  },
+  {
+    "id": "r-105",
+    "title": "HackerRank",
+    "url": "https://hackerrank.com",
+    "isValid": "CHECK_MANUALLY",
+    "statusCode": 500,
+    "isDirect": false,
+    "qualityScore": 20
+  },
+  {
+    "id": "r-106",
+    "title": "MIT 6.824 Distributed Systems",
+    "url": "https://pdos.csail.mit.edu/6.824",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": true,
+    "qualityScore": 80
+  },
+  {
+    "id": "r-107",
+    "title": "SICP (Book)",
+    "url": "https://mitpress.mit.edu/sicp",
+    "isValid": "CHECK_MANUALLY",
+    "statusCode": 403,
+    "isDirect": true,
+    "qualityScore": 80
+  },
+  {
+    "id": "r-108",
+    "title": "You Don\\",
+    "url": "https://github.com/getify/You-Dont-Know-JS",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": true,
+    "qualityScore": 95
+  },
+  {
+    "id": "r-109",
+    "title": "Andrej Karpathy Neural Networks Zero to Hero",
+    "url": "https://karpathy.ai/zero-to-hero.html",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": true,
+    "qualityScore": 80
+  },
+  {
+    "id": "r-110",
+    "title": "Hugging Face NLP Course",
+    "url": "https://huggingface.co/learn/nlp-course",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": true,
+    "qualityScore": 100
+  },
+  {
+    "id": "r-111",
+    "title": "MLU-Explain",
+    "url": "https://mlu-explain.github.io",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": false,
+    "qualityScore": 20
+  },
+  {
+    "id": "r-112",
+    "title": "Papers With Code",
+    "url": "https://paperswithcode.com",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": false,
+    "qualityScore": 20
+  },
+  {
+    "id": "r-113",
+    "title": "Python for Data Analysis",
+    "url": "https://wesmckinney.com/book",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": true,
+    "qualityScore": 80
+  },
+  {
+    "id": "r-114",
+    "title": "Data Science Handbook",
+    "url": "https://jakevdp.github.io/PythonDataScienceHandbook",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": true,
+    "qualityScore": 80
+  },
+  {
+    "id": "r-115",
+    "title": "SQL for Data Science",
+    "url": "https://mode.com/sql-tutorial",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": true,
+    "qualityScore": 80
+  },
+  {
+    "id": "r-116",
+    "title": "Seeing Theory",
+    "url": "https://seeing-theory.brown.edu",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": false,
+    "qualityScore": 20
+  },
+  {
+    "id": "r-117",
+    "title": "MDN Web Docs",
+    "url": "https://developer.mozilla.org",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": false,
+    "qualityScore": 20
+  },
+  {
+    "id": "r-118",
+    "title": "web.dev by Google",
+    "url": "https://web.dev/learn",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": true,
+    "qualityScore": 100
+  },
+  {
+    "id": "r-119",
+    "title": "JavaScript.info",
+    "url": "https://javascript.info",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": false,
+    "qualityScore": 20
+  },
+  {
+    "id": "r-120",
+    "title": "React Docs",
+    "url": "https://react.dev",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": false,
+    "qualityScore": 20
+  },
+  {
+    "id": "r-121",
+    "title": "Next.js Learn",
+    "url": "https://nextjs.org/learn",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": true,
+    "qualityScore": 100
+  },
+  {
+    "id": "r-122",
+    "title": "CSS Tricks",
+    "url": "https://css-tricks.com",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": false,
+    "qualityScore": 20
+  },
+  {
+    "id": "r-123",
+    "title": "Frontend Masters (Free)",
+    "url": "https://frontendmasters.com/bootcamp",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": true,
+    "qualityScore": 80
+  },
+  {
+    "id": "r-124",
+    "title": "HackTheBox (Free)",
+    "url": "https://hackthebox.com",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": false,
+    "qualityScore": 20
+  },
+  {
+    "id": "r-125",
+    "title": "PortSwigger Web Security Academy",
+    "url": "https://portswigger.net/web-security",
+    "isValid": false,
+    "statusCode": 404,
+    "isDirect": true,
+    "qualityScore": 80
+  },
+  {
+    "id": "r-126",
+    "title": "OWASP Foundation",
+    "url": "https://owasp.org",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": false,
+    "qualityScore": 20
+  },
+  {
+    "id": "r-127",
+    "title": "Cybrary (Free)",
+    "url": "https://cybrary.it",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": false,
+    "qualityScore": 20
+  },
+  {
+    "id": "r-128",
+    "title": "CTF101",
+    "url": "https://ctf101.org",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": false,
+    "qualityScore": 20
+  },
+  {
+    "id": "r-129",
+    "title": "Figma Official Learn",
+    "url": "https://help.figma.com/hc/en-us/categories/360002051613",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": true,
+    "qualityScore": 80
+  },
+  {
+    "id": "r-130",
+    "title": "Shift Nudge (Free resources)",
+    "url": "https://shiftnudge.com",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": false,
+    "qualityScore": 20
+  },
+  {
+    "id": "r-131",
+    "title": "Awwwards",
+    "url": "https://awwwards.com",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": false,
+    "qualityScore": 20
+  },
+  {
+    "id": "r-132",
+    "title": "Nielsen Norman Group",
+    "url": "https://nngroup.com/articles",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": true,
+    "qualityScore": 80
+  },
+  {
+    "id": "r-133",
+    "title": "CFA Institute Free Resources",
+    "url": "https://cfainstitute.org/en/membership/professional-development/refresher-readings",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": true,
+    "qualityScore": 80
+  },
+  {
+    "id": "r-134",
+    "title": "Corporate Finance Institute (Free)",
+    "url": "https://corporatefinanceinstitute.com/resources/free",
+    "isValid": false,
+    "statusCode": 404,
+    "isDirect": true,
+    "qualityScore": 80
+  },
+  {
+    "id": "r-135",
+    "title": "getAbstract (Free Tier)",
+    "url": "https://getabstract.com",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": false,
+    "qualityScore": 20
+  },
+  {
+    "id": "r-136",
+    "title": "MIT Sloan Management Review",
+    "url": "https://sloanreview.mit.edu",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": false,
+    "qualityScore": 20
+  },
+  {
+    "id": "r-137",
+    "title": "Stanford Social Innovation Review",
+    "url": "https://ssir.org",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": false,
+    "qualityScore": 20
+  },
+  {
+    "id": "r-138",
+    "title": "No CS Degree",
+    "url": "https://www.nocsdegree.com",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": false,
+    "qualityScore": 20
+  },
+  {
+    "id": "r-139",
+    "title": "MIT 18.01 Single Variable Calculus",
+    "url": "https://ocw.mit.edu/courses/18-01sc-single-variable-calculus-fall-2010",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": true,
+    "qualityScore": 100
+  },
+  {
+    "id": "r-140",
+    "title": "Paul\\",
+    "url": "https://tutorial.math.lamar.edu",
+    "isValid": false,
+    "statusCode": "Network Error",
+    "isDirect": false,
+    "qualityScore": 20
+  },
+  {
+    "id": "r-141",
+    "title": "Art of Problem Solving",
+    "url": "https://artofproblemsolving.com/alcumus",
+    "isValid": "CHECK_MANUALLY",
+    "statusCode": 403,
+    "isDirect": true,
+    "qualityScore": 80
+  },
+  {
+    "id": "r-142",
+    "title": "Brilliant.org (Free)",
+    "url": "https://brilliant.org",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": false,
+    "qualityScore": 20
+  },
+  {
+    "id": "r-143",
+    "title": "Paul Graham\\",
+    "url": "https://paulgraham.com/writing44.html",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": true,
+    "qualityScore": 80
+  },
+  {
+    "id": "r-144",
+    "title": "Shape Up by Basecamp",
+    "url": "https://basecamp.com/shapeup",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": true,
+    "qualityScore": 80
+  },
+  {
+    "id": "r-145",
+    "title": "Notion Templates",
+    "url": "https://notion.so/templates",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": true,
+    "qualityScore": 80
+  },
+  {
+    "id": "r-146",
+    "title": "SQLBolt",
+    "url": "https://sqlbolt.com/",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": false,
+    "qualityScore": 20
+  },
+  {
+    "id": "r-147",
+    "title": "Pro Git Book",
+    "url": "https://git-scm.com/book/en/v2",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": true,
+    "qualityScore": 80
+  },
+  {
+    "id": "r-148",
+    "title": "Linux Journey",
+    "url": "https://linuxjourney.com/",
+    "isValid": "CHECK_MANUALLY",
+    "statusCode": 403,
+    "isDirect": false,
+    "qualityScore": 20
+  },
+  {
+    "id": "r-149",
+    "title": "Node.js Official Documentation",
+    "url": "https://nodejs.org/en/docs/",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": true,
+    "qualityScore": 95
+  },
+  {
+    "id": "r-150",
+    "title": "Flutter Official Documentation",
+    "url": "https://docs.flutter.dev/",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": false,
+    "qualityScore": 20
+  },
+  {
+    "id": "r-151",
+    "title": "Android Basics in Kotlin",
+    "url": "https://developer.android.com/courses/android-basics-kotlin/course",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": true,
+    "qualityScore": 100
+  },
+  {
+    "id": "r-152",
+    "title": "Google Data Analytics Certificate (Audit)",
+    "url": "https://www.coursera.org/professional-certificates/google-data-analytics",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": true,
+    "qualityScore": 80
+  },
+  {
+    "id": "r-153",
+    "title": "Product School Free Resources",
+    "url": "https://productschool.com/free-resources",
+    "isValid": false,
+    "statusCode": 404,
+    "isDirect": true,
+    "qualityScore": 80
+  },
+  {
+    "id": "r-154",
+    "title": "Learn Git Branching",
+    "url": "https://learngitbranching.js.org/",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": false,
+    "qualityScore": 20
+  },
+  {
+    "id": "r-155",
+    "title": "CodingBat Java Practice",
+    "url": "https://codingbat.com/java",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": true,
+    "qualityScore": 80
+  },
+  {
+    "id": "r-156",
+    "title": "8 Week SQL Challenge",
+    "url": "https://8weeksqlchallenge.com/",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": false,
+    "qualityScore": 20
+  },
+  {
+    "id": "r-157",
+    "title": "Exercism Python Track",
+    "url": "https://exercism.org/tracks/python",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": true,
+    "qualityScore": 100
+  },
+  {
+    "id": "r-158",
+    "title": "Build Your Own Botnet/Database/OS (Python)",
+    "url": "https://github.com/codecrafters-io/build-your-own-x#build-your-own-bot",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": true,
+    "qualityScore": 95
+  },
+  {
+    "id": "r-159",
+    "title": "Official Java Documentation",
+    "url": "https://docs.oracle.com/en/java/",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": true,
+    "qualityScore": 95
+  },
+  {
+    "id": "r-160",
+    "title": "Java Project Ideas Collection",
+    "url": "https://github.com/karan/Projects",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": true,
+    "qualityScore": 95
+  },
+  {
+    "id": "r-161",
+    "title": "PostgreSQL Official Documentation",
+    "url": "https://www.postgresql.org/docs/",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": true,
+    "qualityScore": 95
+  },
+  {
+    "id": "r-162",
+    "title": "Docker Official Documentation",
+    "url": "https://docs.docker.com/",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": false,
+    "qualityScore": 20
+  },
+  {
+    "id": "r-163",
+    "title": "Kubernetes Basics Interactive Tutorial",
+    "url": "https://kubernetes.io/docs/tutorials/kubernetes-basics/",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": true,
+    "qualityScore": 100
+  },
+  {
+    "id": "r-164",
+    "title": "AWS Hands-on Labs",
+    "url": "https://aws.amazon.com/training/hands-on/",
+    "isValid": false,
+    "statusCode": 404,
+    "isDirect": true,
+    "qualityScore": 80
+  },
+  {
+    "id": "r-165",
+    "title": "DevOps Exercises & Interview Questions",
+    "url": "https://github.com/bregman-arie/devops-exercises",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": true,
+    "qualityScore": 95
+  },
+  {
+    "id": "r-166",
+    "title": "Flutter Cookbook (Practice & Patterns)",
+    "url": "https://docs.flutter.dev/cookbook",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": true,
+    "qualityScore": 95
+  },
+  {
+    "id": "r-167",
+    "title": "Android Codelabs (Practice)",
+    "url": "https://developer.android.com/courses/android-basics-compose/course",
+    "isValid": true,
+    "statusCode": 200,
+    "isDirect": true,
+    "qualityScore": 100
+  }
+]

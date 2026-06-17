@@ -1,0 +1,431 @@
+{
+  "traces": {
+    "react": [
+      "--- Diagnostic Start for query: \"react\" ---",
+      "Raw input after preprocessing (normalizeQuery): \"react\"",
+      "Intent detected: \"General\" (via detectIntent)",
+      "Expanded query (expandQuery): \"'react\"",
+      "Active aliases: []",
+      "--- Evaluating Career Candidates ---",
+      "Career Candidate: \"Frontend Developer\" | Raw Score: 4.51405738555484e-8 | MatchType: exact | Boost: -1000 | AdjustedScore: -1000.1999999548594 ",
+      "Career Candidate: \"Mobile Developer\" | Raw Score: 0.0000042203673195650625 | MatchType: fuzzy | Boost: 0 | AdjustedScore: -0.19999577963268045 ",
+      "Career Candidate: \"Full Stack Developer\" | Raw Score: 0.000740095979741405 | MatchType: exact | Boost: -1000 | AdjustedScore: -1000.1992599040202 ",
+      "--- Checking Tech Map Inject ---",
+      "Injected Tech Map: \"Frontend Developer\" with adjustedScore: -2000",
+      "--- Checking Career Evolution Registry Inject ---",
+      "--- Evaluating Resource Candidates ---",
+      "Resource Candidate: \"React.dev Official Docs\" | Raw Score: 1.9941208634633207e-9 | MatchType: exact | Composite: 0.9584999990029396 | Boost: -1000 | AdjustedScore: -1000.9584999990029 ",
+      "Resource Candidate: \"React Tutorial: Tic-Tac-Toe\" | Raw Score: 3.279220363360461e-9 | MatchType: exact | Composite: 0.9434999983603899 | Boost: -1000 | AdjustedScore: -1000.9434999983604 ",
+      "Resource Candidate: \"The Beginner's Guide to React\" | Raw Score: 2.8612087509498516e-8 | MatchType: exact | Composite: 0.9449999856939563 | Boost: -1000 | AdjustedScore: -1000.9449999856939 ",
+      "Resource Candidate: \"Build and Deploy a React App\" | Raw Score: 4.4095295969284045e-8 | MatchType: exact | Composite: 0.941999977952352 | Boost: -1000 | AdjustedScore: -1000.9419999779524 ",
+      "--- Evaluating Job Candidates ---",
+      "Job Candidate: \"Frontend Developer\" | Raw Score: 1.4901161193847656e-8 | MatchType: exact | Boost: -1000 | AdjustedScore: -999.9999999850988",
+      "--- Applying Intent Bias ---",
+      "Pre-bias Scores - Careers count: 3, Resources count: 4, Jobs count: 1",
+      "--- Filtering Candidates ---",
+      "Candidates remaining after filter: 8 of 8",
+      "--- Sorting Results (Descending order by rank / Ascending score) ---",
+      "Sorted Rank 1: [career] \"Frontend Developer\" | Score: -2000.0000 | MatchType: exact",
+      "Sorted Rank 2: [resource] \"React.dev Official Docs\" | Score: -1000.9585 | MatchType: exact",
+      "Sorted Rank 3: [resource] \"The Beginner's Guide to React\" | Score: -1000.9450 | MatchType: exact",
+      "Sorted Rank 4: [resource] \"React Tutorial: Tic-Tac-Toe\" | Score: -1000.9435 | MatchType: exact",
+      "Sorted Rank 5: [resource] \"Build and Deploy a React App\" | Score: -1000.9420 | MatchType: exact",
+      "Sorted Rank 6: [career] \"Full Stack Developer\" | Score: -1000.1993 | MatchType: exact",
+      "Sorted Rank 7: [job] \"Frontend Developer\" | Score: -1000.0000 | MatchType: exact",
+      "Sorted Rank 8: [career] \"Mobile Developer\" | Score: -0.2000 | MatchType: fuzzy",
+      "Added to Recommended (Diversity): [career] \"Frontend Developer\"",
+      "Added to Recommended (Diversity): [resource] \"React.dev Official Docs\"",
+      "Added to Recommended (Diversity): [job] \"Frontend Developer\"",
+      "Recommended List length: 3",
+      "Results List length: 5",
+      "--- Diagnostic End for query: \"react\" ---"
+    ],
+    "cloud developer": [
+      "--- Diagnostic Start for query: \"cloud developer\" ---",
+      "Raw input after preprocessing (normalizeQuery): \"cloud developer\"",
+      "Intent detected: \"Career\" (via detectIntent)",
+      "Expanded query (expandQuery): \"'cloud developer\"",
+      "Active aliases: [\"devops\",\"cloud\"]",
+      "--- Evaluating Career Candidates ---",
+      "--- Checking Tech Map Inject ---",
+      "--- Checking Career Evolution Registry Inject ---",
+      "--- Evaluating Resource Candidates ---",
+      "--- Evaluating Job Candidates ---",
+      "--- Applying Intent Bias ---",
+      "Pre-bias Scores - Careers count: 0, Resources count: 0, Jobs count: 0",
+      "Applying bias: Career (+0.5 boost to careers, i.e., subtracting 0.5 from score)",
+      "--- Filtering Candidates ---",
+      "Candidates remaining after filter: 0 of 0",
+      "--- Sorting Results (Descending order by rank / Ascending score) ---",
+      "Recommended List length: 0",
+      "Results List length: 0",
+      "--- Diagnostic End for query: \"cloud developer\" ---"
+    ],
+    "ai engineer": [
+      "--- Diagnostic Start for query: \"ai engineer\" ---",
+      "Raw input after preprocessing (normalizeQuery): \"ai engineer\"",
+      "Intent detected: \"Career\" (via detectIntent)",
+      "Expanded query (expandQuery): \"'ai engineer | 'artificial intelligence | 'machine learning\"",
+      "Active aliases: []",
+      "--- Evaluating Career Candidates ---",
+      "Career Candidate: \"AI Engineer\" | Raw Score: 0.004800143400635406 | MatchType: exact | Boost: -1000 | AdjustedScore: -1000.1951998565994 ",
+      "Career Candidate: \"Data Scientist\" | Raw Score: 0.06274799078231572 | MatchType: fuzzy | Boost: 0 | AdjustedScore: -0.1372520092176843 ",
+      "Career Candidate: \"Cybersecurity Analyst\" | Raw Score: 0.1524614786874874 | MatchType: fuzzy | Boost: 0 | AdjustedScore: -0.0475385213125126 ",
+      "--- Checking Tech Map Inject ---",
+      "--- Checking Career Evolution Registry Inject ---",
+      "--- Evaluating Resource Candidates ---",
+      "Resource Candidate: \"AI Engineering From Scratch\" | Raw Score: 0.05706068081912077 | MatchType: prefix | Composite: 0.9209696595904396 | Boost: -500 | AdjustedScore: -500.9209696595904 ",
+      "Resource Candidate: \"Build a Machine Learning API\" | Raw Score: 0.06703765051161803 | MatchType: fuzzy | Composite: 0.912981174744191 | Boost: 0 | AdjustedScore: -0.912981174744191 ",
+      "Resource Candidate: \"fast.ai Practical Deep Learning\" | Raw Score: 0.2609413760499662 | MatchType: fuzzy | Composite: 0.8205293119750169 | Boost: 0 | AdjustedScore: -0.8205293119750169 ",
+      "Resource Candidate: \"PyTorch Official Docs\" | Raw Score: 0.2609413760499662 | MatchType: fuzzy | Composite: 0.8220293119750169 | Boost: 0 | AdjustedScore: -0.8220293119750169 ",
+      "Resource Candidate: \"Kaggle Learn\" | Raw Score: 0.2609413760499662 | MatchType: fuzzy | Composite: 0.817529311975017 | Boost: 0 | AdjustedScore: -0.817529311975017 ",
+      "--- Evaluating Job Candidates ---",
+      "Job Candidate: \"Data Scientist\" | Raw Score: 0.06809040173484988 | MatchType: fuzzy | Boost: 0 | AdjustedScore: 0.06809040173484988",
+      "--- Applying Intent Bias ---",
+      "Pre-bias Scores - Careers count: 3, Resources count: 5, Jobs count: 1",
+      "Applying bias: Career (+0.5 boost to careers, i.e., subtracting 0.5 from score)",
+      "--- Filtering Candidates ---",
+      "Candidates remaining after filter: 9 of 9",
+      "--- Sorting Results (Descending order by rank / Ascending score) ---",
+      "Sorted Rank 1: [career] \"AI Engineer\" | Score: -1000.6952 | MatchType: exact",
+      "Sorted Rank 2: [resource] \"AI Engineering From Scratch\" | Score: -500.9210 | MatchType: prefix",
+      "Sorted Rank 3: [resource] \"Build a Machine Learning API\" | Score: -0.9130 | MatchType: fuzzy",
+      "Sorted Rank 4: [resource] \"PyTorch Official Docs\" | Score: -0.8220 | MatchType: fuzzy",
+      "Sorted Rank 5: [resource] \"fast.ai Practical Deep Learning\" | Score: -0.8205 | MatchType: fuzzy",
+      "Sorted Rank 6: [resource] \"Kaggle Learn\" | Score: -0.8175 | MatchType: fuzzy",
+      "Sorted Rank 7: [career] \"Data Scientist\" | Score: -0.6373 | MatchType: fuzzy",
+      "Sorted Rank 8: [career] \"Cybersecurity Analyst\" | Score: -0.5475 | MatchType: fuzzy",
+      "Sorted Rank 9: [job] \"Data Scientist\" | Score: 0.0681 | MatchType: fuzzy",
+      "Added to Recommended (Diversity): [career] \"AI Engineer\"",
+      "Added to Recommended (Diversity): [resource] \"AI Engineering From Scratch\"",
+      "Added to Recommended (Diversity): [job] \"Data Scientist\"",
+      "Recommended List length: 3",
+      "Results List length: 6",
+      "--- Diagnostic End for query: \"ai engineer\" ---"
+    ],
+    "i dont know what to do": [
+      "--- Diagnostic Start for query: \"i dont know what to do\" ---",
+      "Raw input after preprocessing (normalizeQuery): \"i dont know what to do\"",
+      "Intent detected: \"General\" (via detectIntent)",
+      "Expanded query (expandQuery): \"'i dont know what to do\"",
+      "Active aliases: []",
+      "--- Evaluating Career Candidates ---",
+      "--- Checking Tech Map Inject ---",
+      "--- Checking Career Evolution Registry Inject ---",
+      "--- Evaluating Resource Candidates ---",
+      "--- Evaluating Job Candidates ---",
+      "--- Applying Intent Bias ---",
+      "Pre-bias Scores - Careers count: 0, Resources count: 0, Jobs count: 0",
+      "--- Filtering Candidates ---",
+      "Candidates remaining after filter: 0 of 0",
+      "--- Sorting Results (Descending order by rank / Ascending score) ---",
+      "Recommended List length: 0",
+      "Results List length: 0",
+      "--- Diagnostic End for query: \"i dont know what to do\" ---"
+    ],
+    "docker": [
+      "--- Diagnostic Start for query: \"docker\" ---",
+      "Raw input after preprocessing (normalizeQuery): \"docker\"",
+      "Intent detected: \"General\" (via detectIntent)",
+      "Expanded query (expandQuery): \"'docker\"",
+      "Active aliases: []",
+      "--- Evaluating Career Candidates ---",
+      "Career Candidate: \"DevOps Engineer\" | Raw Score: 0.000740095979741405 | MatchType: exact | Boost: -1000 | AdjustedScore: -1000.1992599040202 ",
+      "--- Checking Tech Map Inject ---",
+      "Injected Tech Map: \"DevOps Engineer\" with adjustedScore: -2000",
+      "--- Checking Career Evolution Registry Inject ---",
+      "--- Evaluating Resource Candidates ---",
+      "Resource Candidate: \"Docker Official Docs\" | Raw Score: 1.3150820861783244e-9 | MatchType: exact | Composite: 0.952499999342459 | Boost: -1000 | AdjustedScore: -1000.9524999993424 ",
+      "Resource Candidate: \"Play with Docker\" | Raw Score: 3.279220363360461e-9 | MatchType: exact | Composite: 0.9479999983603898 | Boost: -1000 | AdjustedScore: -1000.9479999983604 ",
+      "Resource Candidate: \"Docker Tutorial for Beginners\" | Raw Score: 6.05175194409665e-9 | MatchType: exact | Composite: 0.946499996974124 | Boost: -1000 | AdjustedScore: -1000.9464999969741 ",
+      "Resource Candidate: \"Build Your Own X\" | Raw Score: 0.00003025640278901074 | MatchType: exact | Composite: 0.9524848717986055 | Boost: -1000 | AdjustedScore: -1000.9524848717986 ",
+      "Resource Candidate: \"Deploy to AWS Project\" | Raw Score: 0.0001220703125 | MatchType: exact | Composite: 0.94343896484375 | Boost: -1000 | AdjustedScore: -1000.9434389648437 ",
+      "--- Evaluating Job Candidates ---",
+      "--- Applying Intent Bias ---",
+      "Pre-bias Scores - Careers count: 1, Resources count: 5, Jobs count: 0",
+      "--- Filtering Candidates ---",
+      "Candidates remaining after filter: 6 of 6",
+      "--- Sorting Results (Descending order by rank / Ascending score) ---",
+      "Sorted Rank 1: [career] \"DevOps Engineer\" | Score: -2000.0000 | MatchType: exact",
+      "Sorted Rank 2: [resource] \"Docker Official Docs\" | Score: -1000.9525 | MatchType: exact",
+      "Sorted Rank 3: [resource] \"Build Your Own X\" | Score: -1000.9525 | MatchType: exact",
+      "Sorted Rank 4: [resource] \"Play with Docker\" | Score: -1000.9480 | MatchType: exact",
+      "Sorted Rank 5: [resource] \"Docker Tutorial for Beginners\" | Score: -1000.9465 | MatchType: exact",
+      "Sorted Rank 6: [resource] \"Deploy to AWS Project\" | Score: -1000.9434 | MatchType: exact",
+      "Added to Recommended (Diversity): [career] \"DevOps Engineer\"",
+      "Added to Recommended (Diversity): [resource] \"Docker Official Docs\"",
+      "Recommended List length: 2",
+      "Results List length: 4",
+      "--- Diagnostic End for query: \"docker\" ---"
+    ]
+  },
+  "recommendedTraces": {
+    "ai-engineer": [
+      {
+        "id": "gh_ai_scratch",
+        "title": "AI Engineering From Scratch",
+        "score": 180,
+        "details": {
+          "matchingSkills": [
+            "python"
+          ],
+          "matchingTags": [
+            "ai",
+            "machine learning",
+            "python"
+          ],
+          "matchingTitleWords": [
+            "engineer"
+          ],
+          "isGenericTopic": true,
+          "careerIsPythonRelated": true,
+          "careerIsGitRelated": false
+        }
+      },
+      {
+        "id": "p3",
+        "title": "Exercism Python Track",
+        "score": 80,
+        "details": {
+          "matchingSkills": [
+            "python"
+          ],
+          "matchingTags": [
+            "python"
+          ],
+          "matchingTitleWords": [],
+          "isGenericTopic": true,
+          "careerIsPythonRelated": true,
+          "careerIsGitRelated": false
+        }
+      },
+      {
+        "id": "p1",
+        "title": "Python for Everybody",
+        "score": 80,
+        "details": {
+          "matchingSkills": [
+            "python"
+          ],
+          "matchingTags": [
+            "python"
+          ],
+          "matchingTitleWords": [],
+          "isGenericTopic": true,
+          "careerIsPythonRelated": true,
+          "careerIsGitRelated": false
+        }
+      },
+      {
+        "id": "gh_project_ideas",
+        "title": "Project Ideas & Resources",
+        "score": 80,
+        "details": {
+          "matchingSkills": [
+            "python"
+          ],
+          "matchingTags": [
+            "python"
+          ],
+          "matchingTitleWords": [],
+          "isGenericTopic": true,
+          "careerIsPythonRelated": true,
+          "careerIsGitRelated": false
+        }
+      },
+      {
+        "id": "p2",
+        "title": "Python Official Documentation",
+        "score": 80,
+        "details": {
+          "matchingSkills": [
+            "python"
+          ],
+          "matchingTags": [
+            "python"
+          ],
+          "matchingTitleWords": [],
+          "isGenericTopic": true,
+          "careerIsPythonRelated": true,
+          "careerIsGitRelated": false
+        }
+      }
+    ],
+    "ux-designer": [
+      {
+        "id": "js2",
+        "title": "MDN Web Docs - JavaScript",
+        "score": 0,
+        "details": {
+          "matchingSkills": [],
+          "matchingTags": [],
+          "matchingTitleWords": [],
+          "isGenericTopic": false,
+          "careerIsPythonRelated": false,
+          "careerIsGitRelated": false
+        }
+      },
+      {
+        "id": "js1",
+        "title": "freeCodeCamp JavaScript Certification",
+        "score": 0,
+        "details": {
+          "matchingSkills": [],
+          "matchingTags": [],
+          "matchingTitleWords": [],
+          "isGenericTopic": false,
+          "careerIsPythonRelated": false,
+          "careerIsGitRelated": false
+        }
+      },
+      {
+        "id": "r2",
+        "title": "React.dev Official Docs",
+        "score": 0,
+        "details": {
+          "matchingSkills": [],
+          "matchingTags": [],
+          "matchingTitleWords": [],
+          "isGenericTopic": false,
+          "careerIsPythonRelated": false,
+          "careerIsGitRelated": false
+        }
+      },
+      {
+        "id": "s3",
+        "title": "SQLBolt",
+        "score": 0,
+        "details": {
+          "matchingSkills": [],
+          "matchingTags": [],
+          "matchingTitleWords": [],
+          "isGenericTopic": false,
+          "careerIsPythonRelated": false,
+          "careerIsGitRelated": false
+        }
+      },
+      {
+        "id": "ai1",
+        "title": "fast.ai Practical Deep Learning",
+        "score": 0,
+        "details": {
+          "matchingSkills": [],
+          "matchingTags": [],
+          "matchingTitleWords": [],
+          "isGenericTopic": false,
+          "careerIsPythonRelated": false,
+          "careerIsGitRelated": false
+        }
+      }
+    ],
+    "devops-engineer": [
+      {
+        "id": "dk1",
+        "title": "Docker Tutorial for Beginners",
+        "score": 300,
+        "details": {
+          "matchingSkills": [
+            "docker",
+            "kubernetes",
+            "aws"
+          ],
+          "matchingTags": [
+            "docker",
+            "devops",
+            "kubernetes",
+            "cloud",
+            "aws"
+          ],
+          "matchingTitleWords": [],
+          "isGenericTopic": false,
+          "careerIsPythonRelated": false,
+          "careerIsGitRelated": false
+        }
+      },
+      {
+        "id": "dk3",
+        "title": "Play with Docker",
+        "score": 270,
+        "details": {
+          "matchingSkills": [
+            "docker",
+            "kubernetes",
+            "aws"
+          ],
+          "matchingTags": [
+            "docker",
+            "kubernetes",
+            "cloud",
+            "aws"
+          ],
+          "matchingTitleWords": [],
+          "isGenericTopic": false,
+          "careerIsPythonRelated": false,
+          "careerIsGitRelated": false
+        }
+      },
+      {
+        "id": "dk2",
+        "title": "Docker Official Docs",
+        "score": 270,
+        "details": {
+          "matchingSkills": [
+            "docker",
+            "kubernetes",
+            "aws"
+          ],
+          "matchingTags": [
+            "docker",
+            "kubernetes",
+            "cloud",
+            "aws"
+          ],
+          "matchingTitleWords": [],
+          "isGenericTopic": false,
+          "careerIsPythonRelated": false,
+          "careerIsGitRelated": false
+        }
+      },
+      {
+        "id": "dk4",
+        "title": "Deploy to AWS Project",
+        "score": 270,
+        "details": {
+          "matchingSkills": [
+            "aws",
+            "docker",
+            "kubernetes"
+          ],
+          "matchingTags": [
+            "aws",
+            "docker",
+            "kubernetes",
+            "cloud"
+          ],
+          "matchingTitleWords": [],
+          "isGenericTopic": false,
+          "careerIsPythonRelated": false,
+          "careerIsGitRelated": false
+        }
+      },
+      {
+        "id": "l1",
+        "title": "Introduction to Linux",
+        "score": 110,
+        "details": {
+          "matchingSkills": [
+            "linux"
+          ],
+          "matchingTags": [
+            "linux",
+            "devops"
+          ],
+          "matchingTitleWords": [],
+          "isGenericTopic": false,
+          "careerIsPythonRelated": false,
+          "careerIsGitRelated": false
+        }
+      }
+    ]
+  }
+}

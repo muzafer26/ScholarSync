@@ -1,0 +1,998 @@
+[
+  {
+    "query": "I want to learn coding",
+    "timestamp": "2026-06-17T10:55:05.836Z",
+    "resultsCount": 0,
+    "clickedResult": null
+  },
+  {
+    "query": "I want to learn coding",
+    "timestamp": "2026-06-17T10:55:05.854Z",
+    "resultsCount": 0,
+    "clickedResult": null
+  },
+  {
+    "query": "D",
+    "timestamp": "2026-06-17T10:55:37.367Z",
+    "resultsCount": 33,
+    "clickedResult": null
+  },
+  {
+    "query": "D",
+    "timestamp": "2026-06-17T10:55:37.376Z",
+    "resultsCount": 33,
+    "clickedResult": null
+  },
+  {
+    "query": "De",
+    "timestamp": "2026-06-17T10:55:37.561Z",
+    "resultsCount": 33,
+    "clickedResult": null
+  },
+  {
+    "query": "De",
+    "timestamp": "2026-06-17T10:55:37.569Z",
+    "resultsCount": 33,
+    "clickedResult": null
+  },
+  {
+    "query": "Dev",
+    "timestamp": "2026-06-17T10:55:37.637Z",
+    "resultsCount": 14,
+    "clickedResult": null
+  },
+  {
+    "query": "Dev",
+    "timestamp": "2026-06-17T10:55:37.634Z",
+    "resultsCount": 14,
+    "clickedResult": null
+  },
+  {
+    "query": "DevO",
+    "timestamp": "2026-06-17T10:55:37.704Z",
+    "resultsCount": 3,
+    "clickedResult": null
+  },
+  {
+    "query": "DevO",
+    "timestamp": "2026-06-17T10:55:37.717Z",
+    "resultsCount": 3,
+    "clickedResult": null
+  },
+  {
+    "query": "DevOp",
+    "timestamp": "2026-06-17T10:55:37.772Z",
+    "resultsCount": 3,
+    "clickedResult": null
+  },
+  {
+    "query": "DevOp",
+    "timestamp": "2026-06-17T10:55:37.779Z",
+    "resultsCount": 3,
+    "clickedResult": null
+  },
+  {
+    "query": "DevOps",
+    "timestamp": "2026-06-17T10:55:37.866Z",
+    "resultsCount": 7,
+    "clickedResult": null
+  },
+  {
+    "query": "DevOps",
+    "timestamp": "2026-06-17T10:55:37.875Z",
+    "resultsCount": 7,
+    "clickedResult": null
+  },
+  {
+    "query": "DevOps ",
+    "timestamp": "2026-06-17T10:55:37.975Z",
+    "resultsCount": 7,
+    "clickedResult": null
+  },
+  {
+    "query": "DevOps ",
+    "timestamp": "2026-06-17T10:55:37.981Z",
+    "resultsCount": 7,
+    "clickedResult": null
+  },
+  {
+    "query": "DevOps E",
+    "timestamp": "2026-06-17T10:55:38.040Z",
+    "resultsCount": 7,
+    "clickedResult": null
+  },
+  {
+    "query": "DevOps E",
+    "timestamp": "2026-06-17T10:55:38.045Z",
+    "resultsCount": 7,
+    "clickedResult": null
+  },
+  {
+    "query": "DevOps En",
+    "timestamp": "2026-06-17T10:55:38.131Z",
+    "resultsCount": 6,
+    "clickedResult": null
+  },
+  {
+    "query": "DevOps En",
+    "timestamp": "2026-06-17T10:55:38.142Z",
+    "resultsCount": 6,
+    "clickedResult": null
+  },
+  {
+    "query": "DevOps Eng",
+    "timestamp": "2026-06-17T10:55:38.231Z",
+    "resultsCount": 6,
+    "clickedResult": null
+  },
+  {
+    "query": "DevOps Eng",
+    "timestamp": "2026-06-17T10:55:38.238Z",
+    "resultsCount": 6,
+    "clickedResult": null
+  },
+  {
+    "query": "DevOps Engi",
+    "timestamp": "2026-06-17T10:55:38.326Z",
+    "resultsCount": 6,
+    "clickedResult": null
+  },
+  {
+    "query": "DevOps Engi",
+    "timestamp": "2026-06-17T10:55:38.331Z",
+    "resultsCount": 6,
+    "clickedResult": null
+  },
+  {
+    "query": "DevOps Engin",
+    "timestamp": "2026-06-17T10:55:38.390Z",
+    "resultsCount": 6,
+    "clickedResult": null
+  },
+  {
+    "query": "DevOps Engin",
+    "timestamp": "2026-06-17T10:55:38.398Z",
+    "resultsCount": 6,
+    "clickedResult": null
+  },
+  {
+    "query": "DevOps Engine",
+    "timestamp": "2026-06-17T10:55:38.486Z",
+    "resultsCount": 6,
+    "clickedResult": null
+  },
+  {
+    "query": "DevOps Engine",
+    "timestamp": "2026-06-17T10:55:38.492Z",
+    "resultsCount": 6,
+    "clickedResult": null
+  },
+  {
+    "query": "DevOps Enginee",
+    "timestamp": "2026-06-17T10:55:38.584Z",
+    "resultsCount": 6,
+    "clickedResult": null
+  },
+  {
+    "query": "DevOps Enginee",
+    "timestamp": "2026-06-17T10:55:38.595Z",
+    "resultsCount": 6,
+    "clickedResult": null
+  },
+  {
+    "query": "DevOps Engineer",
+    "timestamp": "2026-06-17T10:55:38.772Z",
+    "resultsCount": 6,
+    "clickedResult": null
+  },
+  {
+    "query": "DevOps Engineer",
+    "timestamp": "2026-06-17T10:55:38.777Z",
+    "resultsCount": 6,
+    "clickedResult": null
+  },
+  {
+    "query": "i am good at math",
+    "timestamp": "2026-06-17T11:11:22.083Z",
+    "resultsCount": 0,
+    "clickedResult": null
+  },
+  {
+    "query": "i am good at mat",
+    "timestamp": "2026-06-17T11:11:22.251Z",
+    "resultsCount": 0,
+    "clickedResult": null
+  },
+  {
+    "query": "i am good at mat",
+    "timestamp": "2026-06-17T11:11:22.252Z",
+    "resultsCount": 0,
+    "clickedResult": null
+  },
+  {
+    "query": "i am good at math",
+    "timestamp": "2026-06-17T11:11:22.082Z",
+    "resultsCount": 0,
+    "clickedResult": null
+  },
+  {
+    "query": "i am good at ma",
+    "timestamp": "2026-06-17T11:11:22.612Z",
+    "resultsCount": 0,
+    "clickedResult": null
+  },
+  {
+    "query": "i am good at ma",
+    "timestamp": "2026-06-17T11:11:22.613Z",
+    "resultsCount": 0,
+    "clickedResult": null
+  },
+  {
+    "query": "i am good at m",
+    "timestamp": "2026-06-17T11:11:24.739Z",
+    "resultsCount": 0,
+    "clickedResult": null
+  },
+  {
+    "query": "i am good at m",
+    "timestamp": "2026-06-17T11:11:24.740Z",
+    "resultsCount": 0,
+    "clickedResult": null
+  },
+  {
+    "query": "i am good at ",
+    "timestamp": "2026-06-17T11:11:24.944Z",
+    "resultsCount": 0,
+    "clickedResult": null
+  },
+  {
+    "query": "i am good at ",
+    "timestamp": "2026-06-17T11:11:24.944Z",
+    "resultsCount": 0,
+    "clickedResult": null
+  },
+  {
+    "query": "i am good at",
+    "timestamp": "2026-06-17T11:11:25.281Z",
+    "resultsCount": 0,
+    "clickedResult": null
+  },
+  {
+    "query": "i am good at",
+    "timestamp": "2026-06-17T11:11:25.282Z",
+    "resultsCount": 0,
+    "clickedResult": null
+  },
+  {
+    "query": "i am good a",
+    "timestamp": "2026-06-17T11:11:25.799Z",
+    "resultsCount": 0,
+    "clickedResult": null
+  },
+  {
+    "query": "i am good a",
+    "timestamp": "2026-06-17T11:11:25.801Z",
+    "resultsCount": 0,
+    "clickedResult": null
+  },
+  {
+    "query": "i am good ",
+    "timestamp": "2026-06-17T11:11:25.832Z",
+    "resultsCount": 0,
+    "clickedResult": null
+  },
+  {
+    "query": "i am good ",
+    "timestamp": "2026-06-17T11:11:25.833Z",
+    "resultsCount": 0,
+    "clickedResult": null
+  },
+  {
+    "query": "i am good",
+    "timestamp": "2026-06-17T11:11:25.867Z",
+    "resultsCount": 0,
+    "clickedResult": null
+  },
+  {
+    "query": "i am good",
+    "timestamp": "2026-06-17T11:11:25.867Z",
+    "resultsCount": 0,
+    "clickedResult": null
+  },
+  {
+    "query": "i am goo",
+    "timestamp": "2026-06-17T11:11:26.337Z",
+    "resultsCount": 0,
+    "clickedResult": null
+  },
+  {
+    "query": "i am goo",
+    "timestamp": "2026-06-17T11:11:26.338Z",
+    "resultsCount": 0,
+    "clickedResult": null
+  },
+  {
+    "query": "i am go",
+    "timestamp": "2026-06-17T11:11:26.493Z",
+    "resultsCount": 0,
+    "clickedResult": null
+  },
+  {
+    "query": "i am go",
+    "timestamp": "2026-06-17T11:11:26.494Z",
+    "resultsCount": 0,
+    "clickedResult": null
+  },
+  {
+    "query": "i am g",
+    "timestamp": "2026-06-17T11:11:26.666Z",
+    "resultsCount": 9,
+    "clickedResult": null
+  },
+  {
+    "query": "i am g",
+    "timestamp": "2026-06-17T11:11:26.667Z",
+    "resultsCount": 9,
+    "clickedResult": null
+  },
+  {
+    "query": "i am ",
+    "timestamp": "2026-06-17T11:11:26.884Z",
+    "resultsCount": 10,
+    "clickedResult": null
+  },
+  {
+    "query": "i am ",
+    "timestamp": "2026-06-17T11:11:26.885Z",
+    "resultsCount": 10,
+    "clickedResult": null
+  },
+  {
+    "query": "i am",
+    "timestamp": "2026-06-17T11:11:28.338Z",
+    "resultsCount": 10,
+    "clickedResult": null
+  },
+  {
+    "query": "i am",
+    "timestamp": "2026-06-17T11:11:28.339Z",
+    "resultsCount": 10,
+    "clickedResult": null
+  },
+  {
+    "query": "i a",
+    "timestamp": "2026-06-17T11:11:28.665Z",
+    "resultsCount": 33,
+    "clickedResult": null
+  },
+  {
+    "query": "i a",
+    "timestamp": "2026-06-17T11:11:28.667Z",
+    "resultsCount": 33,
+    "clickedResult": null
+  },
+  {
+    "query": "i ",
+    "timestamp": "2026-06-17T11:11:29.119Z",
+    "resultsCount": 33,
+    "clickedResult": null
+  },
+  {
+    "query": "i ",
+    "timestamp": "2026-06-17T11:11:29.120Z",
+    "resultsCount": 33,
+    "clickedResult": null
+  },
+  {
+    "query": "i h",
+    "timestamp": "2026-06-17T11:11:29.902Z",
+    "resultsCount": 33,
+    "clickedResult": null
+  },
+  {
+    "query": "i h",
+    "timestamp": "2026-06-17T11:11:29.904Z",
+    "resultsCount": 33,
+    "clickedResult": null
+  },
+  {
+    "query": "i ha",
+    "timestamp": "2026-06-17T11:11:30.025Z",
+    "resultsCount": 7,
+    "clickedResult": null
+  },
+  {
+    "query": "i ha",
+    "timestamp": "2026-06-17T11:11:30.026Z",
+    "resultsCount": 7,
+    "clickedResult": null
+  },
+  {
+    "query": "i hat",
+    "timestamp": "2026-06-17T11:11:30.227Z",
+    "resultsCount": 3,
+    "clickedResult": null
+  },
+  {
+    "query": "i hat",
+    "timestamp": "2026-06-17T11:11:30.228Z",
+    "resultsCount": 3,
+    "clickedResult": null
+  },
+  {
+    "query": "i hate",
+    "timestamp": "2026-06-17T11:11:30.380Z",
+    "resultsCount": 13,
+    "clickedResult": null
+  },
+  {
+    "query": "i hate",
+    "timestamp": "2026-06-17T11:11:30.381Z",
+    "resultsCount": 13,
+    "clickedResult": null
+  },
+  {
+    "query": "i hate ",
+    "timestamp": "2026-06-17T11:11:30.607Z",
+    "resultsCount": 13,
+    "clickedResult": null
+  },
+  {
+    "query": "i hate ",
+    "timestamp": "2026-06-17T11:11:30.608Z",
+    "resultsCount": 13,
+    "clickedResult": null
+  },
+  {
+    "query": "i hate m",
+    "timestamp": "2026-06-17T11:11:30.962Z",
+    "resultsCount": 9,
+    "clickedResult": null
+  },
+  {
+    "query": "i hate m",
+    "timestamp": "2026-06-17T11:11:30.963Z",
+    "resultsCount": 9,
+    "clickedResult": null
+  },
+  {
+    "query": "i hate ma",
+    "timestamp": "2026-06-17T11:11:31.114Z",
+    "resultsCount": 5,
+    "clickedResult": null
+  },
+  {
+    "query": "i hate ma",
+    "timestamp": "2026-06-17T11:11:31.116Z",
+    "resultsCount": 5,
+    "clickedResult": null
+  },
+  {
+    "query": "i hate mat",
+    "timestamp": "2026-06-17T11:11:31.371Z",
+    "resultsCount": 3,
+    "clickedResult": null
+  },
+  {
+    "query": "i hate mat",
+    "timestamp": "2026-06-17T11:11:31.372Z",
+    "resultsCount": 3,
+    "clickedResult": null
+  },
+  {
+    "query": "i hate math",
+    "timestamp": "2026-06-17T11:11:31.635Z",
+    "resultsCount": 3,
+    "clickedResult": null
+  },
+  {
+    "query": "i hate math",
+    "timestamp": "2026-06-17T11:11:31.636Z",
+    "resultsCount": 3,
+    "clickedResult": null
+  },
+  {
+    "query": "i hate math",
+    "timestamp": "2026-06-17T11:12:23.611Z",
+    "resultsCount": 3,
+    "clickedResult": null
+  },
+  {
+    "query": "i hate math",
+    "timestamp": "2026-06-17T11:12:23.614Z",
+    "resultsCount": 3,
+    "clickedResult": null
+  },
+  {
+    "query": "i hate math",
+    "timestamp": "2026-06-17T11:21:46.061Z",
+    "resultsCount": 3,
+    "clickedResult": null
+  },
+  {
+    "query": "i hate math",
+    "timestamp": "2026-06-17T11:21:46.058Z",
+    "resultsCount": 3,
+    "clickedResult": null
+  },
+  {
+    "query": "i hate math",
+    "timestamp": "2026-06-17T11:22:00.327Z",
+    "resultsCount": 3,
+    "clickedResult": null
+  },
+  {
+    "query": "i hate math",
+    "timestamp": "2026-06-17T11:22:00.334Z",
+    "resultsCount": 3,
+    "clickedResult": null
+  },
+  {
+    "query": "i hate math",
+    "timestamp": "2026-06-17T11:22:49.109Z",
+    "resultsCount": 3,
+    "clickedResult": null
+  },
+  {
+    "query": "i hate math",
+    "timestamp": "2026-06-17T11:22:49.107Z",
+    "resultsCount": 3,
+    "clickedResult": null
+  },
+  {
+    "query": "i hate math",
+    "timestamp": "2026-06-17T11:22:59.935Z",
+    "resultsCount": 3,
+    "clickedResult": null
+  },
+  {
+    "query": "i hate math",
+    "timestamp": "2026-06-17T11:22:59.932Z",
+    "resultsCount": 3,
+    "clickedResult": null
+  },
+  {
+    "query": "i hate math",
+    "timestamp": "2026-06-17T11:23:08.394Z",
+    "resultsCount": 3,
+    "clickedResult": null
+  },
+  {
+    "query": "i hate math",
+    "timestamp": "2026-06-17T11:23:08.391Z",
+    "resultsCount": 3,
+    "clickedResult": null
+  },
+  {
+    "query": "i hate math",
+    "timestamp": "2026-06-17T11:28:18.241Z",
+    "resultsCount": 3,
+    "clickedResult": null
+  },
+  {
+    "query": "solidity",
+    "timestamp": "2026-06-17T11:28:18.267Z",
+    "resultsCount": 1,
+    "clickedResult": null
+  },
+  {
+    "query": "solidity",
+    "timestamp": "2026-06-17T11:28:18.271Z",
+    "resultsCount": 1,
+    "clickedResult": null
+  },
+  {
+    "query": "i hate math",
+    "timestamp": "2026-06-17T11:28:18.236Z",
+    "resultsCount": 3,
+    "clickedResult": null
+  },
+  {
+    "query": "docker",
+    "timestamp": "2026-06-17T11:28:51.044Z",
+    "resultsCount": 6,
+    "clickedResult": null
+  },
+  {
+    "query": "docker",
+    "timestamp": "2026-06-17T11:28:51.049Z",
+    "resultsCount": 6,
+    "clickedResult": null
+  },
+  {
+    "query": "figma",
+    "timestamp": "2026-06-17T11:29:27.513Z",
+    "resultsCount": 1,
+    "clickedResult": null
+  },
+  {
+    "query": "figma",
+    "timestamp": "2026-06-17T11:29:27.469Z",
+    "resultsCount": 1,
+    "clickedResult": null
+  },
+  {
+    "query": "i hate math",
+    "timestamp": "2026-06-17T11:29:28.610Z",
+    "resultsCount": 3,
+    "clickedResult": null
+  },
+  {
+    "query": "i hate math",
+    "timestamp": "2026-06-17T11:29:28.619Z",
+    "resultsCount": 3,
+    "clickedResult": null
+  },
+  {
+    "query": "solidity",
+    "timestamp": "2026-06-17T11:29:42.718Z",
+    "resultsCount": 1,
+    "clickedResult": null
+  },
+  {
+    "query": "solidity",
+    "timestamp": "2026-06-17T11:29:42.721Z",
+    "resultsCount": 1,
+    "clickedResult": null
+  },
+  {
+    "query": "Python",
+    "timestamp": "2026-06-17T14:21:44.210Z",
+    "resultsCount": 19,
+    "clickedResult": null
+  },
+  {
+    "query": "Python",
+    "timestamp": "2026-06-17T14:21:44.203Z",
+    "resultsCount": 19,
+    "clickedResult": null
+  },
+  {
+    "query": "never coded before",
+    "timestamp": "2026-06-17T14:22:13.272Z",
+    "resultsCount": 32,
+    "clickedResult": null
+  },
+  {
+    "query": "never coded before",
+    "timestamp": "2026-06-17T14:22:13.278Z",
+    "resultsCount": 32,
+    "clickedResult": null
+  },
+  {
+    "query": "commerce to tech",
+    "timestamp": "2026-06-17T14:22:21.293Z",
+    "resultsCount": 3,
+    "clickedResult": null
+  },
+  {
+    "query": "commerce to tech",
+    "timestamp": "2026-06-17T14:22:21.294Z",
+    "resultsCount": 3,
+    "clickedResult": null
+  },
+  {
+    "query": "i",
+    "timestamp": "2026-06-17T14:22:40.175Z",
+    "resultsCount": 33,
+    "clickedResult": null
+  },
+  {
+    "query": "i",
+    "timestamp": "2026-06-17T14:22:40.177Z",
+    "resultsCount": 33,
+    "clickedResult": null
+  },
+  {
+    "query": "i ",
+    "timestamp": "2026-06-17T14:22:40.502Z",
+    "resultsCount": 33,
+    "clickedResult": null
+  },
+  {
+    "query": "i ",
+    "timestamp": "2026-06-17T14:22:40.505Z",
+    "resultsCount": 33,
+    "clickedResult": null
+  },
+  {
+    "query": "i l",
+    "timestamp": "2026-06-17T14:22:40.741Z",
+    "resultsCount": 33,
+    "clickedResult": null
+  },
+  {
+    "query": "i l",
+    "timestamp": "2026-06-17T14:22:40.742Z",
+    "resultsCount": 33,
+    "clickedResult": null
+  },
+  {
+    "query": "i lo",
+    "timestamp": "2026-06-17T14:22:40.964Z",
+    "resultsCount": 14,
+    "clickedResult": null
+  },
+  {
+    "query": "i lo",
+    "timestamp": "2026-06-17T14:22:40.966Z",
+    "resultsCount": 14,
+    "clickedResult": null
+  },
+  {
+    "query": "i lov",
+    "timestamp": "2026-06-17T14:22:41.342Z",
+    "resultsCount": 1,
+    "clickedResult": null
+  },
+  {
+    "query": "i lov",
+    "timestamp": "2026-06-17T14:22:41.343Z",
+    "resultsCount": 1,
+    "clickedResult": null
+  },
+  {
+    "query": "i love",
+    "timestamp": "2026-06-17T14:22:41.554Z",
+    "resultsCount": 12,
+    "clickedResult": null
+  },
+  {
+    "query": "i love",
+    "timestamp": "2026-06-17T14:22:41.556Z",
+    "resultsCount": 12,
+    "clickedResult": null
+  },
+  {
+    "query": "i love ",
+    "timestamp": "2026-06-17T14:22:41.657Z",
+    "resultsCount": 12,
+    "clickedResult": null
+  },
+  {
+    "query": "i love ",
+    "timestamp": "2026-06-17T14:22:41.659Z",
+    "resultsCount": 12,
+    "clickedResult": null
+  },
+  {
+    "query": "i love l",
+    "timestamp": "2026-06-17T14:22:42.673Z",
+    "resultsCount": 11,
+    "clickedResult": null
+  },
+  {
+    "query": "i love l",
+    "timestamp": "2026-06-17T14:22:42.675Z",
+    "resultsCount": 11,
+    "clickedResult": null
+  },
+  {
+    "query": "i love lo",
+    "timestamp": "2026-06-17T14:22:42.992Z",
+    "resultsCount": 10,
+    "clickedResult": null
+  },
+  {
+    "query": "i love lo",
+    "timestamp": "2026-06-17T14:22:42.995Z",
+    "resultsCount": 10,
+    "clickedResult": null
+  },
+  {
+    "query": "i love log",
+    "timestamp": "2026-06-17T14:22:43.280Z",
+    "resultsCount": 1,
+    "clickedResult": null
+  },
+  {
+    "query": "i love log",
+    "timestamp": "2026-06-17T14:22:43.281Z",
+    "resultsCount": 1,
+    "clickedResult": null
+  },
+  {
+    "query": "i love logi",
+    "timestamp": "2026-06-17T14:22:43.533Z",
+    "resultsCount": 1,
+    "clickedResult": null
+  },
+  {
+    "query": "i love logi",
+    "timestamp": "2026-06-17T14:22:43.534Z",
+    "resultsCount": 1,
+    "clickedResult": null
+  },
+  {
+    "query": "i love logic",
+    "timestamp": "2026-06-17T14:22:44.206Z",
+    "resultsCount": 1,
+    "clickedResult": null
+  },
+  {
+    "query": "i love logic",
+    "timestamp": "2026-06-17T14:22:44.208Z",
+    "resultsCount": 1,
+    "clickedResult": null
+  },
+  {
+    "query": "m",
+    "timestamp": "2026-06-17T14:23:05.456Z",
+    "resultsCount": 33,
+    "clickedResult": null
+  },
+  {
+    "query": "m",
+    "timestamp": "2026-06-17T14:23:05.458Z",
+    "resultsCount": 33,
+    "clickedResult": null
+  },
+  {
+    "query": "c",
+    "timestamp": "2026-06-17T14:23:07.466Z",
+    "resultsCount": 33,
+    "clickedResult": null
+  },
+  {
+    "query": "c",
+    "timestamp": "2026-06-17T14:23:07.468Z",
+    "resultsCount": 33,
+    "clickedResult": null
+  },
+  {
+    "query": "cu",
+    "timestamp": "2026-06-17T14:23:07.735Z",
+    "resultsCount": 22,
+    "clickedResult": null
+  },
+  {
+    "query": "cu",
+    "timestamp": "2026-06-17T14:23:07.736Z",
+    "resultsCount": 22,
+    "clickedResult": null
+  },
+  {
+    "query": "cur",
+    "timestamp": "2026-06-17T14:23:07.999Z",
+    "resultsCount": 10,
+    "clickedResult": null
+  },
+  {
+    "query": "cur",
+    "timestamp": "2026-06-17T14:23:08.000Z",
+    "resultsCount": 10,
+    "clickedResult": null
+  },
+  {
+    "query": "curi",
+    "timestamp": "2026-06-17T14:23:08.252Z",
+    "resultsCount": 7,
+    "clickedResult": null
+  },
+  {
+    "query": "curi",
+    "timestamp": "2026-06-17T14:23:08.254Z",
+    "resultsCount": 7,
+    "clickedResult": null
+  },
+  {
+    "query": "curio",
+    "timestamp": "2026-06-17T14:23:08.428Z",
+    "resultsCount": 0,
+    "clickedResult": null
+  },
+  {
+    "query": "curio",
+    "timestamp": "2026-06-17T14:23:08.429Z",
+    "resultsCount": 0,
+    "clickedResult": null
+  },
+  {
+    "query": "curiou",
+    "timestamp": "2026-06-17T14:23:08.622Z",
+    "resultsCount": 0,
+    "clickedResult": null
+  },
+  {
+    "query": "curiou",
+    "timestamp": "2026-06-17T14:23:08.623Z",
+    "resultsCount": 0,
+    "clickedResult": null
+  },
+  {
+    "query": "curious",
+    "timestamp": "2026-06-17T14:23:08.767Z",
+    "resultsCount": 0,
+    "clickedResult": null
+  },
+  {
+    "query": "curious",
+    "timestamp": "2026-06-17T14:23:08.768Z",
+    "resultsCount": 0,
+    "clickedResult": null
+  },
+  {
+    "query": "curious ",
+    "timestamp": "2026-06-17T14:23:09.028Z",
+    "resultsCount": 0,
+    "clickedResult": null
+  },
+  {
+    "query": "curious ",
+    "timestamp": "2026-06-17T14:23:09.030Z",
+    "resultsCount": 0,
+    "clickedResult": null
+  },
+  {
+    "query": "java",
+    "timestamp": "2026-06-17T14:32:00.714Z",
+    "resultsCount": 15,
+    "clickedResult": null
+  },
+  {
+    "query": "java",
+    "timestamp": "2026-06-17T14:32:00.712Z",
+    "resultsCount": 15,
+    "clickedResult": null
+  },
+  {
+    "query": "docker",
+    "timestamp": "2026-06-17T14:36:58.538Z",
+    "resultsCount": 6,
+    "clickedResult": null
+  },
+  {
+    "query": "docker",
+    "timestamp": "2026-06-17T14:36:58.524Z",
+    "resultsCount": 6,
+    "clickedResult": null
+  },
+  {
+    "query": "figma",
+    "timestamp": "2026-06-17T14:37:10.286Z",
+    "resultsCount": 1,
+    "clickedResult": null
+  },
+  {
+    "query": "figma",
+    "timestamp": "2026-06-17T14:37:10.292Z",
+    "resultsCount": 1,
+    "clickedResult": null
+  },
+  {
+    "query": "solidity",
+    "timestamp": "2026-06-17T14:37:16.918Z",
+    "resultsCount": 1,
+    "clickedResult": null
+  },
+  {
+    "query": "solidity",
+    "timestamp": "2026-06-17T14:37:16.925Z",
+    "resultsCount": 1,
+    "clickedResult": null
+  },
+  {
+    "query": "underwater basket weaving career",
+    "timestamp": "2026-06-17T14:48:37.085Z",
+    "resultsCount": 0,
+    "clickedResult": null
+  },
+  {
+    "query": "underwater basket weaving career",
+    "timestamp": "2026-06-17T14:48:37.079Z",
+    "resultsCount": 0,
+    "clickedResult": null
+  },
+  {
+    "query": "Data Science",
+    "timestamp": "2026-06-17T14:49:36.837Z",
+    "resultsCount": 9,
+    "clickedResult": null
+  },
+  {
+    "query": "Data Science",
+    "timestamp": "2026-06-17T14:49:36.839Z",
+    "resultsCount": 9,
+    "clickedResult": null
+  }
+]
