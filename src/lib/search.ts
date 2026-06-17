@@ -41,6 +41,12 @@ const SEARCH_ALIASES: Record<string, string[]> = {
   'mern': ['mongodb', 'express', 'react', 'node'],
   'faang': ['dsa', 'system design', 'data structures'],
   'container orchestration': ['kubernetes', 'docker', 'devops', 'cloud'],
+  'angular': ['frontend'],
+  'vue': ['frontend'],
+  'photoshop': ['ux designer'],
+  'tableau': ['data analyst'],
+  'power bi': ['data analyst'],
+  'powerbi': ['data analyst'],
   
   // Hardcoded Typos (Level 2 Confidence)
   'pyhton': ['python'],
@@ -102,15 +108,21 @@ const INTENT_MAP: Record<string, string> = {
   // Students
   "bca student": "frontend | java",
   "i am a bca student": "frontend | java",
+  "diploma student": "frontend | qa tester",
+  "diploma": "frontend | qa tester",
+  "commerce student": "data analyst",
+  "commerce": "data analyst",
   "skills for placement": "java | python | sql | dsa",
   "projects for resume": "project full stack react",
   "how to get internship": "frontend | react | python",
   "java for placements": "java | sql",
   "best career after bca": "frontend | backend | data",
   "campus placement preparation": "java | python",
+  "placement preparation": "java | python | sql | dsa",
   "skills companies want": "frontend | backend | full stack",
   "resume projects": "project full stack react",
   "how to crack interviews": "java | python",
+  "internship preparation": "frontend | react | python",
 
   // Career Switchers
   "career change at 30": "data analyst",
@@ -123,6 +135,7 @@ const INTENT_MAP: Record<string, string> = {
   "remote career options": "frontend | full stack",
   "high demand careers": "ai engineer | devops | full stack",
   "fast growing careers": "ai engineer | devops",
+  "career gap": "qa tester | frontend developer",
 
   // Salary Driven
   "highest paying tech jobs": "ai engineer | devops",
@@ -135,6 +148,7 @@ const INTENT_MAP: Record<string, string> = {
   "future proof career": "ai engineer | full stack",
   "richest tech field": "ai engineer",
   "best roi career": "full stack | qa tester",
+  "highest salary": "ai engineer | devops",
 
   // Time Constrained
   "i have only 1 hour daily": "frontend | python",
@@ -148,28 +162,44 @@ const INTENT_MAP: Record<string, string> = {
   "part time learning": "frontend",
   "busy student": "frontend",
 
-  // Fear Based
+  // Fear Based / Demographics
   "i hate maths": "ux designer",
   "maths weak": "ux designer | qa tester",
+  "weak in maths": "ux designer | qa tester",
   "bad at coding": "ux designer",
+  "i hate coding": "ux designer | technical writer",
+  "don't like coding": "ux designer | technical writer",
   "can average students learn coding": "frontend | qa tester",
   "not good at logic": "ux designer",
   "afraid of programming": "ux designer",
   "can i do ai without maths": "ai engineer | machine learning",
   "easy tech career": "qa tester",
+  "easiest tech job": "qa tester | technical writer",
+  "easiest job": "qa tester | technical writer",
   "simple career path": "qa tester",
   "beginner friendly career": "frontend | qa tester",
 
-  // Job Seekers
+  // Job Seekers & Work Style
   "entry level jobs": "qa tester | frontend",
   "freshers jobs": "qa tester | frontend",
   "remote jobs": "frontend | full stack",
+  "remote work": "frontend | full stack | technical writer",
   "work from home": "frontend",
   "junior developer": "frontend",
   "react jobs": "frontend",
   "python jobs": "backend",
   "data analyst jobs": "data analyst",
   "cloud jobs": "devops engineer",
+
+  // Psychographic queries
+  "introvert": "technical writer | qa tester | backend developer",
+  "best career for introverts": "technical writer | qa tester | backend developer",
+  "extrovert": "frontend developer",
+  "best career for extroverts": "frontend developer",
+  "creative": "ux designer | frontend developer",
+  "best career for creatives": "ux designer | frontend developer",
+  "business minded": "data analyst | full stack developer",
+  "best career for business minded": "data analyst | full stack developer",
 
   // Random Human
   "help me choose": "frontend | discovery",
@@ -234,10 +264,19 @@ export function expandQuery(query: string): string {
     }
   }
 
-  // Expand standard aliases
-  const aliases = Array.from(new Set(
-    q.split(/\s+/).flatMap(word => SEARCH_ALIASES[word] || [])
-  )).map(word => `'${word}`);
+  // Expand standard aliases (handling both full phrase and individual words)
+  const resolvedAliases: string[] = [];
+  if (SEARCH_ALIASES[q]) {
+    resolvedAliases.push(...SEARCH_ALIASES[q]);
+  }
+  q.split(/\s+/).forEach(word => {
+    if (SEARCH_ALIASES[word]) {
+      resolvedAliases.push(...SEARCH_ALIASES[word]);
+    }
+  });
+  
+  const aliases = Array.from(new Set(resolvedAliases)).map(word => `'${word}`);
+
 
   // Base query logic: keep exact match or fuzzy match the entire phrase, avoid splitting words into loose ORs.
   const baseQuery = q.includes('="') ? q : `'${q}`;
@@ -577,8 +616,22 @@ export function searchAccuracyEngine(query: string): EngineResult {
 
   // Inject Tech Map Match
   diagLog("--- Checking Tech Map Inject ---");
-  const techMatch = TECH_TO_CAREER[normQuery];
-  if (techMatch) {
+  let matchedTechKey = "";
+  if (TECH_TO_CAREER[normQuery]) {
+    matchedTechKey = normQuery;
+  } else {
+    // Check if query contains any tech key as a word boundary
+    for (const key of Object.keys(TECH_TO_CAREER)) {
+      const regex = new RegExp(`\\b${key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i');
+      if (regex.test(normQuery)) {
+        matchedTechKey = key;
+        break;
+      }
+    }
+  }
+
+  if (matchedTechKey) {
+    const techMatch = TECH_TO_CAREER[matchedTechKey];
     const targetCareer = allCareers.find(c => c.slug === techMatch.careers[0]);
     if (targetCareer) {
       const explainStr = `Showing ${targetCareer.title} | Reason: ${techMatch.explanation} We recommend entering the ${targetCareer.title} pathway.`;
@@ -592,6 +645,7 @@ export function searchAccuracyEngine(query: string): EngineResult {
       careers = [res, ...careers.filter(c => c.id !== targetCareer.id)];
     }
   }
+
 
   // Inject Career Evolution Registry Match
   diagLog("--- Checking Career Evolution Registry Inject ---");

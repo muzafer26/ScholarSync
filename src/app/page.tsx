@@ -61,8 +61,19 @@ export default function Home() {
             </motion.p>
             
             {/* Control Panel Search Input */}
-            <motion.div variants={item} className="w-full mb-8 relative p-3 bg-card border border-border bevel-card rounded-md shadow-sm">
+            <motion.div variants={item} className="w-full mb-4 relative p-3 bg-card border border-border bevel-card rounded-md shadow-sm">
               <HeroSearch />
+            </motion.div>
+
+            {/* Quiz Banner CTA */}
+            <motion.div variants={item} className="mb-8 text-center">
+              <Link 
+                href="/quiz"
+                className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-[13px] font-mono border border-primary/20 bg-primary/5 text-primary hover:bg-primary/10 transition-colors"
+              >
+                <span>Confused? Take the 2-Minute Career Profiler Quiz</span>
+                <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
             </motion.div>
 
             {/* Quick Access Tabs */}

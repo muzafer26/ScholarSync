@@ -25,7 +25,11 @@ export async function GET(req: NextRequest) {
     });
 
     if (!response.ok) {
-      throw new Error(`Global Search failed: ${response.statusText}`);
+      console.warn(`Global Search API responded with status ${response.status}: ${response.statusText}`);
+      return NextResponse.json({ 
+        data: [], 
+        error: "External search unavailable. Showing ScholarSync results only." 
+      });
     }
 
     const data = await response.json();
@@ -50,6 +54,10 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ data: results });
   } catch (error: any) {
     console.error("Global Search Error:", error);
-    return NextResponse.json({ data: [], error: error.message }, { status: 500 });
+    return NextResponse.json({ 
+      data: [], 
+      error: "External search unavailable. Showing ScholarSync results only." 
+    });
   }
 }
+

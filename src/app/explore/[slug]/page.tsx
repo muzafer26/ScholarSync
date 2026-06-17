@@ -868,6 +868,30 @@ export default function CareerRoadmapPage({ params }: { params: Promise<{ slug: 
             </Link>
           </div>
         </div>
+
+        {/* RECRUITER PORTFOLIO ACTION PANEL */}
+        <div className="grid md:grid-cols-2 gap-4 mb-24">
+          <div className="p-6 bg-card border border-border bevel-card rounded-md text-center">
+            <h3 className="text-[18px] font-serif font-bold text-foreground mb-2">Compare Career Tracks</h3>
+            <p className="text-[14px] text-muted-foreground font-serif mb-4">Compare {career.title} difficulty, salaries, and timelines with other tech domains.</p>
+            <Link 
+              href="/compare"
+              className="inline-flex items-center gap-1.5 px-4 py-2 bg-secondary text-primary border border-border text-[13px] font-bold rounded-sm hover:border-primary transition-all"
+            >
+              Open Comparison Matrix
+            </Link>
+          </div>
+          <div className="p-6 bg-card border border-border bevel-card rounded-md text-center">
+            <h3 className="text-[18px] font-serif font-bold text-foreground mb-2">Not sure if this fits you?</h3>
+            <p className="text-[14px] text-muted-foreground font-serif mb-4">Take our 2-Minute Career Quiz to align your skills and learning preferences.</p>
+            <Link 
+              href="/quiz"
+              className="inline-flex items-center gap-1.5 px-4 py-2 bg-secondary text-primary border border-border text-[13px] font-bold rounded-sm hover:border-primary transition-all"
+            >
+              Take Profiler Quiz
+            </Link>
+          </div>
+        </div>
       </main>
     </div>
   );

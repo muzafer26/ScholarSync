@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 const NAV = [
   { href: "/explore", label: "Careers" },
   { href: "/compare", label: "Compare" },
+  { href: "/quiz", label: "Quiz" },
   { href: "/resources", label: "Resources" },
   { href: "/jobs", label: "Jobs" },
 ];
