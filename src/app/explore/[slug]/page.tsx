@@ -98,17 +98,19 @@ export default function CareerRoadmapPage({ params }: { params: Promise<{ slug: 
           description: "Best for developers who love craft, design, and direct user interaction."
         },
         reality: {
-          difficulty: "Medium",
+          demand: "Very High",
           competition: "High (Entry-level)",
-          degreeAdvantage: "Weak (Portfolio is everything)",
-          beginnerFriendly: "Very High"
+          degreeAdvantage: "Weak (Portfolio-first)",
+          remotePotential: "Very High",
+          portfolioImportance: "Critical"
         },
         scores: {
           learningDifficulty: 5,
           marketDemand: 9,
           entryBarrier: 4,
           overall: 8.5
-        }
+        },
+        realityCheck: "Most beginners need 6–8 months of consistent study to build a job-ready frontend portfolio. Don't just learn HTML/CSS—focus on mastering vanilla JavaScript and a framework like React."
       };
     }
     
@@ -120,20 +122,22 @@ export default function CareerRoadmapPage({ params }: { params: Promise<{ slug: 
           description: "Best for logical, structured thinkers who enjoy building the engine room of applications."
         },
         reality: {
-          difficulty: "High",
-          competition: "Medium",
+          demand: "High",
+          competition: "Medium-High",
           degreeAdvantage: "Moderate",
-          beginnerFriendly: "Medium"
+          remotePotential: "High",
+          portfolioImportance: "Very High"
         },
         scores: {
           learningDifficulty: 7,
           marketDemand: 9.5,
           entryBarrier: 6,
           overall: 8.2
-        }
+        },
+        realityCheck: "Backend requires solid comprehension of databases, APIs, and basic security. Expect 7-9 months of preparation to build a competitive portfolio of live, deployed servers."
       };
     }
-
+ 
     if (t.includes("full stack")) {
       return {
         whyThisPath: {
@@ -142,20 +146,22 @@ export default function CareerRoadmapPage({ params }: { params: Promise<{ slug: 
           description: "Ideal for future tech founders and product-focused engineers who want to build end-to-end apps."
         },
         reality: {
-          difficulty: "Very High",
-          competition: "High",
+          demand: "Critical",
+          competition: "High (Broad range)",
           degreeAdvantage: "Weak",
-          beginnerFriendly: "Low"
+          remotePotential: "Very High",
+          portfolioImportance: "Critical"
         },
         scores: {
           learningDifficulty: 9,
           marketDemand: 10,
           entryBarrier: 8,
           overall: 8.0
-        }
+        },
+        realityCheck: "Full Stack requires mastering two complete environments (frontend + backend). Expect 9-12 months of structured study. A stellar single-page application with database integration is mandatory for hiring."
       };
     }
-
+ 
     if (t.includes("ai") || t.includes("machine") || t.includes("deep learning")) {
       return {
         whyThisPath: {
@@ -164,20 +170,22 @@ export default function CareerRoadmapPage({ params }: { params: Promise<{ slug: 
           description: "Perfect for research-oriented engineers who thrive on advanced algorithms and statistical math."
         },
         reality: {
-          difficulty: "Extreme",
-          competition: "Very High",
-          degreeAdvantage: "Strong (Masters/PhD preferred)",
-          beginnerFriendly: "Very Low"
+          demand: "Extreme",
+          competition: "Very High (Skill-bound)",
+          degreeAdvantage: "Strong (Masters/PhD)",
+          remotePotential: "High",
+          portfolioImportance: "Critical"
         },
         scores: {
           learningDifficulty: 9.5,
           marketDemand: 10,
           entryBarrier: 9.5,
           overall: 7.8
-        }
+        },
+        realityCheck: "AI Engineering is mathematically intense. Prepare for 12-18 months of studying deep learning, RAG systems, LLMs, and deployment. You need a portfolio displaying fine-tuned or custom-prompted systems with real-world utility."
       };
     }
-
+ 
     if (t.includes("data scientist") || t.includes("data science")) {
       return {
         whyThisPath: {
@@ -186,20 +194,22 @@ export default function CareerRoadmapPage({ params }: { params: Promise<{ slug: 
           description: "Best for math-loving data analysts who want to design predictive models and run experiments."
         },
         reality: {
-          difficulty: "Very High",
+          demand: "High",
           competition: "High",
           degreeAdvantage: "Strong",
-          beginnerFriendly: "Low"
+          remotePotential: "Medium-High",
+          portfolioImportance: "Very High"
         },
         scores: {
           learningDifficulty: 8.5,
           marketDemand: 8.5,
           entryBarrier: 8,
           overall: 7.5
-        }
+        },
+        realityCheck: "Data Science requires strong foundations in statistics and linear algebra. Expect 8-12 months of preparation. Next steps usually include transitioning to ML Engineer, Analytics Engineer, BI Lead, or Research Scientist."
       };
     }
-
+ 
     if (t.includes("devops") || t.includes("infra")) {
       return {
         whyThisPath: {
@@ -208,20 +218,22 @@ export default function CareerRoadmapPage({ params }: { params: Promise<{ slug: 
           description: "Best for systems thinkers who love automation, scripting, and cloud architecture."
         },
         reality: {
-          difficulty: "Very High",
-          competition: "Low-Medium (High skill barrier)",
+          demand: "Very High",
+          competition: "Medium (High skill barrier)",
           degreeAdvantage: "Moderate",
-          beginnerFriendly: "Low"
+          remotePotential: "High",
+          portfolioImportance: "Very High"
         },
         scores: {
           learningDifficulty: 8,
           marketDemand: 9.5,
           entryBarrier: 7.5,
           overall: 8.4
-        }
+        },
+        realityCheck: "DevOps is not an entry-level role. Beginners usually need 10–15 months of consistent study to master infrastructure, networking, and code, whereas existing developers can make the transition in 6–8 months."
       };
     }
-
+ 
     if (t.includes("cybersecurity") || t.includes("security") || t.includes("hacker")) {
       return {
         whyThisPath: {
@@ -230,20 +242,22 @@ export default function CareerRoadmapPage({ params }: { params: Promise<{ slug: 
           description: "Best for naturally curious defenders who enjoy investigating anomalies and secure system designs."
         },
         reality: {
-          difficulty: "High",
+          demand: "Very High",
           competition: "Medium",
           degreeAdvantage: "Moderate (Certifications matter)",
-          beginnerFriendly: "Medium"
+          remotePotential: "Medium-High",
+          portfolioImportance: "Very High"
         },
         scores: {
           learningDifficulty: 7.5,
           marketDemand: 9,
           entryBarrier: 7,
           overall: 8.0
-        }
+        },
+        realityCheck: "Cybersecurity requires operating system and networking mastery. Plan for 9-12 months of studies and focus on earning industry certs (like CompTIA Security+) and publishing writeups of hackable test boxes."
       };
     }
-
+ 
     if (t.includes("ux") || t.includes("design")) {
       return {
         whyThisPath: {
@@ -252,20 +266,22 @@ export default function CareerRoadmapPage({ params }: { params: Promise<{ slug: 
           description: "Perfect for creative, empathetic designers who want to shape digital product experiences."
         },
         reality: {
-          difficulty: "Medium",
+          demand: "High",
           competition: "High",
           degreeAdvantage: "Weak (Case studies rule)",
-          beginnerFriendly: "High"
+          remotePotential: "High",
+          portfolioImportance: "Critical"
         },
         scores: {
           learningDifficulty: 6,
           marketDemand: 8,
           entryBarrier: 5,
           overall: 7.8
-        }
+        },
+        realityCheck: "Figma skills alone are not enough to get hired. Success requires a portfolio with at least 3 detailed case studies, proving you can run user interviews, identify real friction, and iterate prototypes."
       };
     }
-
+ 
     if (t.includes("mobile") || t.includes("android") || t.includes("ios") || t.includes("app")) {
       return {
         whyThisPath: {
@@ -274,43 +290,71 @@ export default function CareerRoadmapPage({ params }: { params: Promise<{ slug: 
           description: "Best for developers focused on consumer-centric app experiences and responsive touch interfaces."
         },
         reality: {
-          difficulty: "Medium-High",
+          demand: "High",
           competition: "Medium",
           degreeAdvantage: "Weak",
-          beginnerFriendly: "Medium"
+          remotePotential: "High",
+          portfolioImportance: "Very High"
         },
         scores: {
           learningDifficulty: 6.5,
           marketDemand: 8.5,
           entryBarrier: 5.5,
           overall: 8.1
-        }
+        },
+        realityCheck: "Mobile development requires testing across different screen sizes and operating systems. Expect 6-8 months of preparation, ending with at least one fully deployed application on the App Store or Play Store."
       };
     }
-
+ 
     if (t.includes("qa") || t.includes("test")) {
       return {
         whyThisPath: {
           enjoy: ["Finding bugs and breaking software", "Writing automated scripts to run tests", "Detail-oriented validation"],
           avoid: ["You dislike repetitive test cases", "You only want to write new features from scratch"],
-          description: "The fastest entry-level engineering path; focuses on code assurance, reliability, and automation."
+          description: "Lower technical barrier than most engineering paths; focuses on code assurance, reliability, and automation."
         },
         reality: {
-          difficulty: "Easy-Medium",
-          competition: "High",
+          demand: "High",
+          competition: "High (Low entry)",
           degreeAdvantage: "Weak",
-          beginnerFriendly: "Very High"
+          remotePotential: "Medium-High",
+          portfolioImportance: "High"
         },
         scores: {
           learningDifficulty: 4.5,
           marketDemand: 8.0,
           entryBarrier: 3.5,
           overall: 8.7
-        }
+        },
+        realityCheck: "While QA has a lower technical barrier than other paths, automation skills (Selenium, Cypress) are essential to stand out. Plan for 5-7 months to build robust automated test suites."
       };
     }
 
-    // Fallback (e.g. Data Analyst, Java Developer, etc)
+    if (t.includes("game")) {
+      return {
+        whyThisPath: {
+          enjoy: ["Creating interactive 3D worlds & game mechanics", "Working with physics, visual rendering, and sound", "Writing gameplay scripts (C# or C++)"],
+          avoid: ["You expect quick, simple web projects", "You expect high pay relative to standard software development roles"],
+          description: "Ideal for passionate creators who want to merge coding with art and interactive storytelling."
+        },
+        reality: {
+          demand: "Medium",
+          competition: "Very High",
+          degreeAdvantage: "Weak (Game demos rule)",
+          remotePotential: "Medium-High",
+          portfolioImportance: "Critical"
+        },
+        scores: {
+          learningDifficulty: 8.5,
+          marketDemand: 7.0,
+          entryBarrier: 7.5,
+          overall: 7.2
+        },
+        realityCheck: "Game development is extremely competitive, and portfolios/playable game demos matter more than anything. Be aware that average salaries in games are often 20-30% lower than standard software engineering, and crunch cycles are common."
+      };
+    }
+ 
+    // Fallback (e.g. Data Analyst, Java Developer, Cloud Engineer, etc)
     return {
       whyThisPath: {
         enjoy: ["Solving structured engineering problems", "Applying logic to optimize pipelines", "Working on enterprise scale code"],
@@ -318,17 +362,19 @@ export default function CareerRoadmapPage({ params }: { params: Promise<{ slug: 
         description: "Best for structured developers who enjoy programming enterprise-ready, robust services."
       },
       reality: {
-        difficulty: "Medium-High",
-        competition: "Medium",
+        demand: "High",
+        competition: "Medium-High",
         degreeAdvantage: "Moderate",
-        beginnerFriendly: "Medium"
+        remotePotential: "Medium-High",
+        portfolioImportance: "Very High"
       },
       scores: {
         learningDifficulty: 6.5,
         marketDemand: 8.8,
         entryBarrier: 6.0,
         overall: 8.0
-      }
+      },
+      realityCheck: "This pathway demands structured engineering practices and solid portfolio verification. Plan for 6-9 months of consistent learning to build robust projects that recruiters will trust."
     };
   }, [career.title]);
 
@@ -562,11 +608,11 @@ export default function CareerRoadmapPage({ params }: { params: Promise<{ slug: 
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.18 }}
-          className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-12"
+          className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-12"
         >
           <div className="bg-card border border-border rounded-md p-4 bevel-card text-center">
-            <span className="text-[11px] font-mono text-muted-foreground uppercase tracking-widest block mb-1">Difficulty</span>
-            <span className="text-[15px] font-serif font-bold text-foreground">{metrics.reality.difficulty}</span>
+            <span className="text-[11px] font-mono text-muted-foreground uppercase tracking-widest block mb-1">Demand</span>
+            <span className="text-[15px] font-serif font-bold text-foreground">{metrics.reality.demand}</span>
           </div>
           <div className="bg-card border border-border rounded-md p-4 bevel-card text-center">
             <span className="text-[11px] font-mono text-muted-foreground uppercase tracking-widest block mb-1">Competition</span>
@@ -577,8 +623,12 @@ export default function CareerRoadmapPage({ params }: { params: Promise<{ slug: 
             <span className="text-[15px] font-serif font-bold text-foreground">{metrics.reality.degreeAdvantage}</span>
           </div>
           <div className="bg-card border border-border rounded-md p-4 bevel-card text-center">
-            <span className="text-[11px] font-mono text-muted-foreground uppercase tracking-widest block mb-1">Beginner Friendly</span>
-            <span className="text-[15px] font-serif font-bold text-foreground">{metrics.reality.beginnerFriendly}</span>
+            <span className="text-[11px] font-mono text-muted-foreground uppercase tracking-widest block mb-1">Remote Potential</span>
+            <span className="text-[15px] font-serif font-bold text-foreground">{metrics.reality.remotePotential}</span>
+          </div>
+          <div className="bg-card border border-border rounded-md p-4 bevel-card text-center">
+            <span className="text-[11px] font-mono text-muted-foreground uppercase tracking-widest block mb-1">Portfolio</span>
+            <span className="text-[15px] font-serif font-bold text-foreground">{metrics.reality.portfolioImportance}</span>
           </div>
         </motion.div>
 
@@ -590,7 +640,7 @@ export default function CareerRoadmapPage({ params }: { params: Promise<{ slug: 
           className="mb-16 space-y-4"
         >
           <WarningBlock title="Reality Check">
-            Most beginners need 6–12 months of consistent study. The average entry-level salary in India is <strong className="text-foreground font-mono">{career.avgSalaryIndia}</strong>, but this heavily depends on your portfolio and location. Do not rely on clickbait numbers.
+            {metrics.realityCheck || "Most beginners need 6–12 months of consistent study. Do not rely on clickbait numbers."} The average packages in India are standardly listed as <strong className="text-foreground font-mono">{career.avgSalaryIndia}</strong>, depending heavily on your portfolio and location.
           </WarningBlock>
           
           <CalloutBlock title="Before You Start">
