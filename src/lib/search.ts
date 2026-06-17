@@ -138,17 +138,17 @@ const INTENT_MAP: Record<string, string> = {
   "career gap": "qa tester | frontend developer",
 
   // Salary Driven
-  "highest paying tech jobs": "ai engineer | devops",
+  "highest paying tech jobs": "ai engineer | devops engineer | full stack developer",
   "best salary in tech": "ai engineer",
   "ai salary": "ai engineer",
   "frontend salary": "frontend",
   "data science salary": "data scientist",
   "career with highest package": "ai engineer",
-  "jobs above 20 lpa": "ai engineer | devops",
+  "jobs above 20 lpa": "ai engineer | devops engineer | full stack developer",
   "future proof career": "ai engineer | full stack",
   "richest tech field": "ai engineer",
   "best roi career": "full stack | qa tester",
-  "highest salary": "ai engineer | devops",
+  "highest salary": "ai engineer | devops engineer | full stack developer",
 
   // Time Constrained
   "i have only 1 hour daily": "frontend | python",
@@ -192,10 +192,10 @@ const INTENT_MAP: Record<string, string> = {
   "cloud jobs": "devops engineer",
 
   // Psychographic queries
-  "introvert": "technical writer | qa tester | backend developer",
-  "best career for introverts": "technical writer | qa tester | backend developer",
-  "extrovert": "frontend developer",
-  "best career for extroverts": "frontend developer",
+  "introvert": "technical writer | qa tester | backend developer | data analyst | cybersecurity analyst",
+  "best career for introverts": "technical writer | qa tester | backend developer | data analyst | cybersecurity analyst",
+  "extrovert": "frontend developer | full stack developer | ux designer",
+  "best career for extroverts": "frontend developer | full stack developer | ux designer",
   "creative": "ux designer | frontend developer",
   "best career for creatives": "ux designer | frontend developer",
   "business minded": "data analyst | full stack developer",
@@ -595,7 +595,15 @@ export function searchAccuracyEngine(query: string): EngineResult {
     
     const res = careerToResult(r.item, r.score);
     res.matchType = mType;
-    if (mType === "alias") {
+    if (normQuery.includes("introvert")) {
+      res.explanation = `Why ${r.item.title}? This career supports focused, deep work and independent execution, which are often preferred by independent thinkers.`;
+    } else if (normQuery.includes("extrovert")) {
+      res.explanation = `Why ${r.item.title}? Frontend and design roles involve collaborative iteration, feedback loops, and cross-functional team engagement.`;
+    } else if (normQuery.includes("creative")) {
+      res.explanation = `Why ${r.item.title}? If you enjoy visual layout, human empathy, and creative interface design, this path bridges tech with user experience.`;
+    } else if (normQuery.includes("salary")) {
+      res.explanation = `Why ${r.item.title}? High compensation potential. Note: Entry salaries vary, and higher salaries require deep skill development.`;
+    } else if (mType === "alias") {
       if (normQuery.includes("cloud") || normQuery.includes("kubernetes") || normQuery.includes("docker")) {
         res.explanation = `Why ${r.item.title}? Most cloud infrastructure roles are standardly hired under DevOps Engineer.`;
       } else if (normQuery.includes("prompt") || normQuery.includes("llm") || normQuery.includes("ai") || normQuery.includes("gpt")) {
