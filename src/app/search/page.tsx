@@ -10,14 +10,38 @@ import {
   Terminal, Monitor, FolderGit2
 } from "lucide-react";
 import { Header } from "@/components/layout/header";
-import { Button } from "@/components/ui/button";
 import {
-  searchCareers, searchResources, searchAccuracyEngine, type EngineResult,
+  searchCareers, searchResources, searchAccuracyEngine,
   TRENDING_QUERIES, getRelatedSuggestions,
 } from "@/lib/search";
-import { cn, getResourceConfidenceBadge } from "@/lib/utils";
+import { getResourceConfidenceBadge, getResourceIcon, getResourceDifficulty } from "@/lib/utils";
 import { TECH_TO_CAREER } from "@/lib/tech-to-career";
 import { careers as seedCareers } from "@/lib/seed-careers";
+
+import { VOCABULARY, getRelatedSearchSuggestions } from "@/lib/searchSuggestions";
+import { getSkillNode } from "@/lib/skillGraph";
+import { getPortfolioProofs } from "@/lib/portfolioProofs";
+import { learningStyles } from "@/lib/learningStyles";
+
+function getLevenshteinDistance(a: string, b: string): number {
+  const tmp = [];
+  for (let i = 0; i <= a.length; i++) {
+    tmp[i] = [i];
+  }
+  for (let j = 0; j <= b.length; j++) {
+    tmp[0][j] = j;
+  }
+  for (let i = 1; i <= a.length; i++) {
+    for (let j = 1; j <= b.length; j++) {
+      tmp[i][j] = Math.min(
+        tmp[i - 1][j] + 1, // deletion
+        tmp[i][j - 1] + 1, // insertion
+        tmp[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1) // substitution
+      );
+    }
+  }
+  return tmp[a.length][b.length];
+}
 
 export default function SearchPage() {
   return (
@@ -37,10 +61,35 @@ function SearchPageContent() {
   const params = useSearchParams();
   const initial = params.get("q") || "";
   const [q, setQ] = useState(initial);
+  const [selectedStyle, setSelectedStyle] = useState<"reader" | "video learner" | "interactive learner" | "project builder">("reader");
 
   useEffect(() => {
     setQ(initial);
   }, [initial]);
+
+  const matchedSkill = useMemo(() => {
+    if (!q.trim()) return null;
+    return getSkillNode(q);
+  }, [q]);
+
+  const matchedProofs = useMemo(() => {
+    if (!matchedSkill) return null;
+    return getPortfolioProofs(matchedSkill.name);
+  }, [matchedSkill]);
+
+  const matchedStyles = useMemo(() => {
+    if (!matchedSkill) return null;
+    return learningStyles[matchedSkill.name];
+  }, [matchedSkill]);
+
+  useEffect(() => {
+    if (matchedStyles) {
+      const keys = Object.keys(matchedStyles.recommendations);
+      if (keys.length > 0 && !keys.includes(selectedStyle)) {
+        setSelectedStyle(keys[0] as any);
+      }
+    }
+  }, [matchedStyles, selectedStyle]);
 
   const engineData = useMemo(() => {
     if (!q.trim()) return { intent: "General", recommended: [], results: [] };
@@ -63,6 +112,28 @@ function SearchPageContent() {
   };
 
   const showFallback = q.trim().length > 0 && allResults.length === 0 && recommended.length === 0;
+
+  // Spell Check / Typo Correction
+  const didYouMean = useMemo(() => {
+    if (!q.trim() || allResults.length > 0 || recommended.length > 0) return null;
+    const target = q.trim().toLowerCase();
+    let bestWord = null;
+    let minDistance = 3; // only suggest if distance < 3
+    for (const word of VOCABULARY) {
+      const dist = getLevenshteinDistance(target, word);
+      if (dist < minDistance) {
+        minDistance = dist;
+        bestWord = word;
+      }
+    }
+    return bestWord;
+  }, [q, allResults, recommended]);
+
+  // People Also Search Suggestions
+  const peopleAlsoSearch = useMemo(() => {
+    if (!q.trim()) return [];
+    return getRelatedSearchSuggestions(q);
+  }, [q]);
 
   const qClean = q.trim().toLowerCase();
   const matchedTechKey = qClean ? Object.keys(TECH_TO_CAREER).find(key => {
@@ -127,6 +198,22 @@ function SearchPageContent() {
           )}
         </div>
 
+        {/* People Also Search suggestions */}
+        {q.trim() && peopleAlsoSearch.length > 0 && (
+          <div className="mt-4 flex flex-wrap items-center gap-2 text-left">
+            <span className="text-[11px] font-mono uppercase tracking-widest text-muted-foreground self-center mr-1">People also search:</span>
+            {peopleAlsoSearch.map((term) => (
+              <button
+                key={term}
+                onClick={() => setQuery(term)}
+                className="text-[12px] px-2.5 py-1 rounded-sm bg-secondary hover:bg-secondary/80 border border-border text-foreground hover:text-primary transition-all font-mono"
+              >
+                {term}
+              </button>
+            ))}
+          </div>
+        )}
+
         {/* Trending */}
         {!q.trim() && (
           <div className="mt-6 flex flex-wrap gap-2 max-w-2xl">
@@ -146,6 +233,234 @@ function SearchPageContent() {
         {/* Results Ecosystem View */}
         {q.trim() && (
           <div className="mt-12" data-testid="search-results">
+            {matchedSkill && (
+              <motion.div
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mb-10 bg-card border border-border bevel-card rounded-md p-6 relative overflow-hidden text-left"
+              >
+                <div className="absolute top-0 right-0 w-8 h-8 bg-muted border-b border-l border-border rounded-bl-md -mr-px -mt-px"></div>
+                <div className="flex flex-wrap items-center gap-3 mb-2">
+                  <h2 className="text-[24px] font-serif font-bold text-foreground">{matchedSkill.name} Skill Intel</h2>
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-sm bg-primary/10 border border-primary/20 text-[10px] font-mono font-bold uppercase tracking-wider text-primary">
+                    {matchedSkill.difficulty} · {matchedSkill.timeEstimate}
+                  </span>
+                </div>
+                <p className="text-[13px] text-muted-foreground font-mono mb-6">
+                  Structured Skill Dependency Graph Telemetry
+                </p>
+
+                {/* Skill Graph Connections */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 border-t border-border pt-6">
+                  <div>
+                    <h3 className="text-[14px] font-mono font-bold uppercase tracking-wider text-muted-foreground mb-3">Learn Before (Prerequisites)</h3>
+                    {matchedSkill.prerequisites.length > 0 ? (
+                      <div className="flex flex-wrap gap-1.5">
+                        {matchedSkill.prerequisites.map((prereq, idx) => (
+                          <button
+                            key={idx}
+                            onClick={() => setQuery(prereq)}
+                            className="px-2 py-1 bg-secondary hover:bg-primary/5 hover:border-primary/40 text-foreground text-[12px] font-mono rounded-sm border border-border transition-colors text-left"
+                          >
+                            {prereq}
+                          </button>
+                        ))}
+                      </div>
+                    ) : (
+                      <span className="text-[13px] font-serif text-muted-foreground italic">No prerequisites. Best starting point!</span>
+                    )}
+                  </div>
+                  <div>
+                    <h3 className="text-[14px] font-mono font-bold uppercase tracking-wider text-primary mb-3">Learn Next (Unlocks)</h3>
+                    {matchedSkill.unlocks.length > 0 ? (
+                      <div className="flex flex-wrap gap-1.5">
+                        {matchedSkill.unlocks.map((unlock, idx) => (
+                          <button
+                            key={idx}
+                            onClick={() => setQuery(unlock)}
+                            className="px-2 py-1 bg-secondary hover:bg-primary/5 hover:border-primary/40 text-foreground text-[12px] font-mono rounded-sm border border-border transition-colors text-left"
+                          >
+                            {unlock}
+                          </button>
+                        ))}
+                      </div>
+                    ) : (
+                      <span className="text-[13px] font-serif text-muted-foreground italic">No further unlocks.</span>
+                    )}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                  <div>
+                    <h3 className="text-[14px] font-mono font-bold uppercase tracking-wider text-muted-foreground mb-3">Used In Careers</h3>
+                    <div className="flex flex-wrap gap-1.5">
+                      {matchedSkill.usedInCareers.map((c, idx) => {
+                        const seedC = seedCareers.find(sc => sc.title.toLowerCase() === c.toLowerCase() || sc.aliases?.some(a => a.toLowerCase() === c.toLowerCase()));
+                        return seedC ? (
+                          <Link
+                            key={idx}
+                            href={`/explore/${seedC.slug}`}
+                            className="px-2 py-1 bg-secondary hover:bg-primary/5 hover:border-primary/40 text-primary font-bold text-[12px] font-mono rounded-sm border border-border transition-colors text-left"
+                          >
+                            {c}
+                          </Link>
+                        ) : (
+                          <span key={idx} className="px-2 py-1 bg-secondary text-foreground text-[12px] font-mono rounded-sm border border-border">
+                            {c}
+                          </span>
+                        );
+                      })}
+                    </div>
+                  </div>
+                  <div>
+                    <h3 className="text-[14px] font-mono font-bold uppercase tracking-wider text-muted-foreground mb-3">Related Technologies</h3>
+                    <div className="flex flex-wrap gap-1.5">
+                      {matchedSkill.relatedTechnologies.map((tech, idx) => (
+                        <button
+                          key={idx}
+                          onClick={() => setQuery(tech)}
+                          className="px-2 py-1 bg-secondary hover:bg-primary/5 hover:border-primary/40 text-foreground text-[12px] font-mono rounded-sm border border-border transition-colors text-left"
+                        >
+                          {tech}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Common Mistakes */}
+                <div className="mb-8 p-4 bg-primary/5 border border-primary/15 rounded-md">
+                  <h3 className="text-[14px] font-mono font-bold uppercase tracking-wider text-primary mb-2">Common Beginner Mistakes</h3>
+                  <ul className="space-y-1.5 list-disc list-inside font-serif text-[13.5px] text-foreground/80 leading-relaxed">
+                    {matchedSkill.commonMistakes.map((mistake, idx) => (
+                      <li key={idx}>{mistake}</li>
+                    ))}
+                  </ul>
+                </div>
+
+                {/* PORTFOLIO PROOFS SYSTEM */}
+                {matchedProofs && (
+                  <div className="mb-8 border-t border-border pt-6">
+                    <h3 className="text-[16px] font-mono font-bold uppercase tracking-widest text-emerald-500 mb-3 flex items-center gap-1.5">
+                      <FolderGit2 className="w-4 h-4 text-emerald-500" /> What Proves You Learned This?
+                    </h3>
+                    <p className="text-[13.5px] text-muted-foreground font-serif mb-4">
+                      Build these projects from scratch to prove you have mastered {matchedSkill.name}:
+                    </p>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="p-4 bg-secondary/30 border border-border rounded-sm">
+                        <span className="text-[10px] font-mono font-bold text-muted-foreground uppercase tracking-widest block mb-1">Beginner Stage</span>
+                        <h4 className="font-serif font-bold text-[14px] text-foreground mb-1">{matchedProofs.beginner.title}</h4>
+                        <p className="text-[12.5px] text-foreground/85 font-serif leading-relaxed mb-3">{matchedProofs.beginner.description}</p>
+                        <details className="cursor-pointer text-[12px] font-mono text-muted-foreground">
+                          <summary className="hover:text-foreground">View Deliverables</summary>
+                          <ul className="mt-2 space-y-1 pl-4 list-disc text-left">
+                            {matchedProofs.beginner.deliverables.map((d, i) => (
+                              <li key={i}>{d}</li>
+                            ))}
+                          </ul>
+                        </details>
+                      </div>
+                      <div className="p-4 bg-secondary/30 border border-border rounded-sm">
+                        <span className="text-[10px] font-mono font-bold text-primary uppercase tracking-widest block mb-1">Intermediate Stage</span>
+                        <h4 className="font-serif font-bold text-[14px] text-foreground mb-1">{matchedProofs.intermediate.title}</h4>
+                        <p className="text-[12.5px] text-foreground/85 font-serif leading-relaxed mb-3">{matchedProofs.intermediate.description}</p>
+                        <details className="cursor-pointer text-[12px] font-mono text-muted-foreground">
+                          <summary className="hover:text-foreground">View Deliverables</summary>
+                          <ul className="mt-2 space-y-1 pl-4 list-disc text-left">
+                            {matchedProofs.intermediate.deliverables.map((d, i) => (
+                              <li key={i}>{d}</li>
+                            ))}
+                          </ul>
+                        </details>
+                      </div>
+                      <div className="p-4 bg-secondary/30 border border-border rounded-sm">
+                        <span className="text-[10px] font-mono font-bold text-amber-500 uppercase tracking-widest block mb-1">Advanced Stage</span>
+                        <h4 className="font-serif font-bold text-[14px] text-foreground mb-1">{matchedProofs.advanced.title}</h4>
+                        <p className="text-[12.5px] text-foreground/85 font-serif leading-relaxed mb-3">{matchedProofs.advanced.description}</p>
+                        <details className="cursor-pointer text-[12px] font-mono text-muted-foreground">
+                          <summary className="hover:text-foreground">View Deliverables</summary>
+                          <ul className="mt-2 space-y-1 pl-4 list-disc text-left">
+                            {matchedProofs.advanced.deliverables.map((d, i) => (
+                              <li key={i}>{d}</li>
+                            ))}
+                          </ul>
+                        </details>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* LEARNING STYLE RECOMMENDATIONS */}
+                {matchedStyles && (
+                  <div className="border-t border-border pt-6">
+                    <h3 className="text-[13px] font-mono font-bold uppercase tracking-widest text-primary mb-3 flex items-center gap-1.5">
+                      <BookOpen className="w-4 h-4 text-primary" /> Choose Your Learning Style
+                    </h3>
+                    <div className="flex flex-wrap gap-1 mb-4">
+                      {Object.keys(matchedStyles.recommendations).map((styleKey) => {
+                        const styleNode = matchedStyles.recommendations[styleKey];
+                        const isActive = styleKey === selectedStyle;
+                        return (
+                          <button
+                            key={styleKey}
+                            onClick={() => setSelectedStyle(styleKey as any)}
+                            className={`px-3 py-1.5 text-[12px] font-mono rounded-sm border transition-colors ${
+                              isActive
+                                ? "bg-primary text-primary-foreground border-primary font-bold"
+                                : "bg-secondary text-muted-foreground border-border hover:border-primary/50 hover:text-foreground"
+                            }`}
+                          >
+                            {styleNode.styleType}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {matchedStyles.recommendations[selectedStyle] && (
+                      <div className="p-4 bg-secondary/20 border border-border rounded-sm">
+                        <p className="text-[13px] text-foreground/80 font-serif leading-relaxed italic mb-4">
+                          &ldquo;{matchedStyles.recommendations[selectedStyle].whyChoose}&rdquo;
+                        </p>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="p-3 bg-card border border-border rounded-sm flex flex-col justify-between">
+                            <div>
+                              <span className="text-[10px] font-mono font-bold text-emerald-500 uppercase tracking-wider block mb-1">Primary Resource</span>
+                              <h4 className="font-serif font-bold text-[14px] text-foreground mb-1">{matchedStyles.recommendations[selectedStyle].primary.title}</h4>
+                              <p className="text-[12.5px] text-muted-foreground font-serif leading-relaxed mb-3">{matchedStyles.recommendations[selectedStyle].primary.description}</p>
+                            </div>
+                            <a
+                              href={matchedStyles.recommendations[selectedStyle].primary.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 text-[12px] font-mono text-primary font-bold hover:underline"
+                            >
+                              Explore Resource <ExternalLink className="w-3 h-3" />
+                            </a>
+                          </div>
+                          <div className="p-3 bg-card border border-border rounded-sm flex flex-col justify-between">
+                            <div>
+                              <span className="text-[10px] font-mono font-bold text-primary uppercase tracking-wider block mb-1">Alternative Option</span>
+                              <h4 className="font-serif font-bold text-[14px] text-foreground mb-1">{matchedStyles.recommendations[selectedStyle].alternative.title}</h4>
+                              <p className="text-[12.5px] text-muted-foreground font-serif leading-relaxed mb-3">{matchedStyles.recommendations[selectedStyle].alternative.description}</p>
+                            </div>
+                            <a
+                              href={matchedStyles.recommendations[selectedStyle].alternative.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 text-[12px] font-mono text-primary font-bold hover:underline"
+                            >
+                              Explore Resource <ExternalLink className="w-3 h-3" />
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </motion.div>
+            )}
+
             {techMapping && matchedCareers.length > 0 && (
               <div className="p-6 bg-primary/5 border border-primary/20 rounded-xl bevel-card relative overflow-hidden mb-8">
                 <div className="absolute top-0 right-0 w-12 h-12 bg-primary/10 border-b border-l border-primary/20 rounded-bl-xl flex items-center justify-center font-bold text-primary text-lg">
@@ -180,13 +495,37 @@ function SearchPageContent() {
             {showFallback ? (
               <div className="space-y-8">
                  <div className="surface p-8 rounded-md border border-dashed border-border bevel-card bg-secondary/20">
-                   <h3 className="text-[20px] font-serif font-bold mb-3">No direct matches for &ldquo;{q}&rdquo;</h3>
+                   <h3 className="text-[20px] font-serif font-bold mb-3">No direct match found</h3>
+                   <p className="text-[14px] font-serif text-muted-foreground mb-4">
+                     We could not map &ldquo;{q}&rdquo; to a specific career, skill, or resource.
+                   </p>
                    
+                   {/* Typo spell check suggestion */}
+                   {didYouMean && (
+                     <div className="mb-6 p-4 bg-primary/5 border border-primary/20 rounded-md text-left">
+                       <span className="text-[14px] font-serif text-muted-foreground">
+                         Did you mean:{" "}
+                         <button 
+                           onClick={() => setQuery(didYouMean)} 
+                           className="font-bold text-primary hover:underline cursor-pointer"
+                         >
+                           {didYouMean}
+                         </button>
+                         ?
+                       </span>
+                     </div>
+                   )}
+
                    {/* Closest Pathways Recommendation */}
-                   <div className="mt-4 mb-6">
+                   <div className="mt-4 mb-6 text-left">
                      <p className="text-[14px] font-mono text-primary font-bold uppercase tracking-wider mb-2">Closest Career Pathways:</p>
                      <ul className="list-disc list-inside space-y-1 text-[14px] text-muted-foreground font-serif">
-                       {getRelatedSuggestions(q).slice(0, 3).map((s) => (
+                       {[
+                         { id: "frontend", title: "Frontend Developer", href: "/explore/frontend-developer" },
+                         { id: "backend", title: "Backend Developer", href: "/explore/backend-developer" },
+                         { id: "ai", title: "AI Engineer", href: "/explore/ai-engineer" },
+                         { id: "devops", title: "DevOps Engineer", href: "/explore/devops-engineer" },
+                       ].map((s) => (
                          <li key={s.id}>
                            <Link href={s.href} className="underline text-foreground hover:text-primary transition-colors">
                              {s.title}
@@ -212,10 +551,9 @@ function SearchPageContent() {
                      ))}
                    </div>
                  </div>
-                 <GlobalResults query={q} />
               </div>
             ) : (
-              <div className="space-y-12">
+              <div className="space-y-12 text-left">
                 {/* Best Starting Point */}
                 {recommended.length > 0 && (
                   <section>
@@ -276,18 +614,18 @@ function SearchPageContent() {
                   </section>
                 )}
 
-                {/* Related Jobs */}
+                {/* Market Signals & Realities */}
                 <section>
                   <h2 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-4 flex items-center gap-2">
-                    <Monitor className="h-4 w-4" /> Related Jobs
+                    <Monitor className="h-4 w-4" /> Market Signals & Realities
                   </h2>
                   <Link href={`/jobs?q=${encodeURIComponent(q)}`}>
                     <div className="surface surface-hover p-5 rounded-2xl border-dashed flex items-center justify-between">
                       <div>
-                        <h3 className="font-serif text-lg text-primary">Search Live Jobs for "{q}"</h3>
+                        <h3 className="font-serif text-lg text-primary">Explore Market Signals for "{q}"</h3>
                       </div>
-                      <span className="pill text-[10px] font-bold uppercase tracking-widest bg-blue-500/10 text-blue-600 border border-blue-500/20">
-                        [JOB] Search
+                      <span className="pill text-[10px] font-bold uppercase tracking-widest bg-primary/10 text-primary border border-primary/20">
+                        Market Telemetry
                       </span>
                     </div>
                   </Link>
@@ -320,21 +658,41 @@ function SearchPageContent() {
 
 function ResultsAll({ results, isRecommended = false }: { results: any[], isRecommended?: boolean }) {
   return (
-    <div className="flex flex-col gap-1">
+    <div className="flex flex-col gap-1 text-left">
       {results.map((r, i) => {
         const isExternal = r.href.startsWith("http");
+        const isResource = r.kind === "resource";
         const inner = (
           <div className="py-4 border-b border-border hover:bg-secondary/30 transition-colors cursor-pointer group">
+            {isRecommended && isResource && (
+              <div className="mb-2">
+                <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-amber-500/10 text-amber-600 border border-amber-500/20 rounded-sm">
+                  ⭐ Recommended First Resource
+                </span>
+              </div>
+            )}
             <h3 className="text-lg font-bold text-primary group-hover:underline flex items-center gap-1.5">
+              {isResource && <span className="mr-1 text-[14px] text-muted-foreground">{getResourceIcon(r.raw || r).split(" ")[0]}</span>}
               {r.title}
               {isExternal && <ExternalLink className="h-3 w-3 text-muted-foreground opacity-50" />}
             </h3>
             
             <div className="flex items-center gap-3 mt-1.5 text-xs text-muted-foreground">
               <span className="font-bold uppercase tracking-widest text-foreground font-mono">
-                {r.kind === "career" ? "CAREER" : getResourceConfidenceBadge(r.raw || r)}
+                {r.kind === "career" ? "CAREER" : r.kind === "action" ? "NEXT STEP" : getResourceConfidenceBadge(r.raw || r)}
               </span>
               
+              {isResource && (
+                <>
+                  <span className="font-bold uppercase tracking-widest text-primary font-mono bg-primary/5 px-1.5 py-0.5 rounded border border-primary/10">
+                    {getResourceDifficulty(r.raw || r)}
+                  </span>
+                  <span className="text-muted-foreground font-mono">
+                    {getResourceIcon(r.raw || r)}
+                  </span>
+                </>
+              )}
+
               {r.kind === "resource" && r.pricingType && (
                 <span className="font-bold uppercase tracking-widest text-emerald-600 font-mono">
                   {r.pricingType.replace("_", " ")}
@@ -365,7 +723,7 @@ function ResultsAll({ results, isRecommended = false }: { results: any[], isReco
 
 function ResultsCareers({ careers }: { careers: ReturnType<typeof searchCareers> }) {
   return (
-    <div className="flex flex-col gap-1">
+    <div className="flex flex-col gap-1 text-left">
       {careers.map((c, i) => (
         <Link key={c.id} href={`/explore/${c.slug}`}>
           <div className="py-4 border-b border-border hover:bg-secondary/30 transition-colors cursor-pointer group">
@@ -383,20 +741,39 @@ function ResultsCareers({ careers }: { careers: ReturnType<typeof searchCareers>
 
 function ResultsResources({ resources }: { resources: ReturnType<typeof searchResources> }) {
   return (
-    <div className="flex flex-col gap-1">
+    <div className="flex flex-col gap-1 text-left">
       {resources.map((r, i) => (
         <a key={r.id} href={r.url} target="_blank" rel="noopener noreferrer">
           <div className="py-4 border-b border-border hover:bg-secondary/30 transition-colors cursor-pointer group">
             <h3 className="text-lg font-bold text-primary group-hover:underline flex items-center gap-1.5">
+              <span className="mr-1 text-[14px] text-muted-foreground">{getResourceIcon(r).split(" ")[0]}</span>
               {r.title}
               <ExternalLink className="h-3 w-3 text-muted-foreground opacity-50" />
             </h3>
-            <div className="flex items-center gap-3 mt-1.5 text-xs text-muted-foreground">
-              <span className="font-bold uppercase tracking-widest text-foreground font-mono">{getResourceConfidenceBadge(r)}</span>
-              {r.pricingType && (
-                <span className="font-bold uppercase tracking-widest text-emerald-600 font-mono">{r.pricingType.replace("_", " ")}</span>
-              )}
-              <span>{r.source}</span>
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 mt-1.5 text-xs text-muted-foreground">
+              <div className="flex flex-wrap items-center gap-2">
+                {r.verified && r.status === "active" && (
+                  <span className="font-bold uppercase tracking-widest text-emerald-500 font-mono bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20">
+                    ✓ Curator-Verified
+                  </span>
+                )}
+                <span className="font-bold uppercase tracking-widest text-foreground font-mono">{getResourceConfidenceBadge(r)}</span>
+                <span className="font-bold uppercase tracking-widest text-primary font-mono bg-primary/5 px-1.5 py-0.5 rounded border border-primary/10">
+                  {getResourceDifficulty(r)}
+                </span>
+                <span className="text-muted-foreground font-mono">
+                  {getResourceIcon(r)}
+                </span>
+                {r.pricingType && (
+                  <span className="font-bold uppercase tracking-widest text-emerald-600 font-mono">{r.pricingType.replace("_", " ")}</span>
+                )}
+              </div>
+              <span className="hidden sm:inline text-muted-foreground/30">|</span>
+              <span>Source: {r.source}</span>
+              <span className="hidden sm:inline text-muted-foreground/30">|</span>
+              <span className="text-emerald-500 font-mono font-bold">
+                Verified: {new Date().toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}
+              </span>
             </div>
             {r.description && <p className="text-sm mt-2 text-foreground/80 line-clamp-2 leading-relaxed">{r.description}</p>}
           </div>
@@ -427,7 +804,7 @@ function GlobalResults({ query }: { query: string }) {
   }, [query]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 text-left">
       <div className="max-w-2xl">
         <p className="eyebrow">Global Education Search</p>
         <h2 className="mt-3 font-serif text-2xl md:text-3xl">Results for &ldquo;{query}&rdquo;</h2>

@@ -110,7 +110,7 @@ export const CAREER_TAXONOMY: Record<string, string[]> = {
     "software test engineer",
     "selenium tester"
   ],
-  "UI/UX Designer": [
+  "UX Designer": [
     "ux designer",
     "ui designer",
     "product designer",

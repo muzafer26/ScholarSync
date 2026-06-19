@@ -48,6 +48,11 @@ export interface Career {
   recommendedResourceIds: string[];
   recommendedJobs: CareerJob[];
   matchExplanation?: string;
+  dailyReality?: string[];
+  beginnersUnderestimate?: string[];
+  avoidThisCareer?: string[];
+  transitionPaths?: string[];
+  sources?: string[];
 }
 
 export interface CareerJob {
@@ -65,9 +70,17 @@ export interface RoadmapStage {
   milestones: string[];
   order: number;
   whyExists?: string;
+  whyThisStep?: string;
+  whyNow?: string;
+  whyBeforeNext?: string;
+  realWorldUsage?: string;
+  sources?: string[];
   prerequisiteKnowledge?: string[];
   estimatedStudyTime?: string;
   expectedOutcome?: string;
+  readyToMoveOn?: string[];
+  commonMistakes?: string[];
+  suggestedProjects?: string[];
 }
 
 export type CareerField =
@@ -85,6 +98,17 @@ export type CareerField =
   | 'Marketing'
   | 'Education'
   | 'Media';
+
+export interface ResourceVerification {
+  lastReviewed: string;
+  reviewedBy: string;
+  isFree: boolean;
+  isActive: boolean;
+  notes?: string;
+  linkChecked?: string; // date string (YYYY-MM-DD)
+  humanReviewed?: string; // date string (YYYY-MM-DD)
+  reviewDue?: string; // date string (YYYY-MM-DD)
+}
 
 // --- Resource ---
 export interface Resource {
@@ -111,10 +135,21 @@ export interface Resource {
   description: string;
   duration?: string;
   whyRecommended?: string;
+  whyChosenOverAlternatives?: string[]; // bullet points comparing to other generic sources
   lastChecked?: string;
   status?: 'Active' | 'Inactive' | 'Verified' | 'Aging' | 'Deprecated' | 'Removed';
   healthScore?: number;
   confidenceScore?: number; // 0-100 scale of authoritative trust
+  
+  // NEW RESOURCE TRUST LAYER PROPERTIES
+  resourceTypeBadge?: string; // e.g., 'Official Documentation', 'Interactive Practice', etc.
+  limitations?: string; // known trade-offs or constraints
+  alternativeResource?: {
+    title: string;
+    url: string;
+    reason: string;
+  };
+  verification?: ResourceVerification;
 }
 
 export type ResourceSource =

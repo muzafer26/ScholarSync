@@ -5,8 +5,9 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Header } from "@/components/layout/header";
 import { Button } from "@/components/ui/button";
-import { HelpCircle, RefreshCw, Trophy, ArrowRight, Flame } from "lucide-react";
+import { HelpCircle, RefreshCw, Trophy, ArrowRight, ShieldCheck, AlertTriangle } from "lucide-react";
 import { careers as allCareers } from "@/lib/seed-careers";
+import { getQuizExplanation } from "@/lib/quizExplanations";
 
 interface Question {
   id: number;
@@ -22,60 +23,77 @@ interface Question {
 const QUESTIONS: Question[] = [
   {
     id: 1,
-    text: "What is your current professional/academic background?",
-    category: "background",
+    text: "Which of the following activities sounds most enjoyable to you?",
+    category: "enjoyable",
     options: [
-      { label: "Technical student", description: "BCA, CS, B.Tech or related technical degree", value: "tech_edu" },
-      { label: "Non-Technical background", description: "Commerce, Arts, Business Administration (BBA)", value: "non_tech_edu" },
-      { label: "Already Working", description: "Looking to switch careers or specialize further", value: "professional" },
-      { label: "School Student", description: "Under 18, researching modern pathways", value: "school" }
+      { label: "Designing interfaces & visual widgets", description: "Polishing layout spacing, CSS alignment, and component visuals.", value: "visuals" },
+      { label: "Writing server routing & scaling databases", description: "Designing database models, system APIs, and logic structures.", value: "systems" },
+      { label: "Orchestrating stats & training model scripts", description: "Managing data flows, tuning parameters, and prompting LLMs.", value: "data_models" },
+      { label: "Configuring servers & deployment pipelines", description: "Setting up CI/CD workflows, VM clusters, and networking protocols.", value: "infrastructure" }
     ]
   },
   {
     id: 2,
-    text: "What is your preference regarding writing code?",
-    category: "coding",
+    text: "What frustrations or tasks would you want to avoid most?",
+    category: "frustrates",
     options: [
-      { label: "I love coding", description: "I want to build software systems, apps, and write logic.", value: "heavy_code" },
-      { label: "Moderate or light coding", description: "I like tech, but want to keep programming minimal.", value: "light_code" },
-      { label: "No coding at all", description: "I want to design products, research users, or write docs.", value: "no_code" },
-      { label: "Data & Systems focus", description: "I prefer working with datasets and databases over building apps.", value: "data_code" }
+      { label: "Wrangling CSS layouts & Safari rendering quirks", description: "I hate adjusting margins, typography spacing, and styling rules.", value: "styling_css" },
+      { label: "Silent database locks & missing API payloads", description: "I don't want to debug database locks, connection leaks, and server errors.", value: "silent_db" },
+      { label: "Complex mathematical theories & statistical modeling", description: "Linear algebra, advanced probability, and tuning weights sound exhausting.", value: "heavy_math" },
+      { label: "Midnight server alerts & on-call operations duty", description: "I hate managing live system warnings, YAML configs, and system crashes.", value: "server_ops" }
     ]
   },
   {
     id: 3,
-    text: "How do you feel about mathematics and statistics?",
-    category: "math",
+    text: "How much coding (writing code files) do you want in your day-to-day?",
+    category: "coding",
     options: [
-      { label: "I love mathematics", description: "I have a strong analytical background and like complex math.", value: "heavy_math" },
-      { label: "I prefer basic/practical math", description: "Basic algebra and logic are fine, but no complex formulas.", value: "basic_math" },
-      { label: "I hate mathematics", description: "I want to avoid math entirely in my day-to-day career.", value: "no_math" }
+      { label: "Heavy coding — I want to live in code files", description: "Writing application logic, algorithms, or complex hooks.", value: "heavy" },
+      { label: "Moderate coding — mix of scripting, config, and tools", description: "Writing scripts and configurations, but not building full apps.", value: "moderate" },
+      { label: "Zero coding — I prefer design, docs, or manual processes", description: "Working visually in Figma or writing developer documentation.", value: "zero" }
     ]
   },
   {
     id: 4,
-    text: "What is your primary career outcome objective?",
-    category: "goal",
+    text: "How much advanced mathematics are you willing to tolerate?",
+    category: "math",
     options: [
-      { label: "Hired as fast as possible", description: "High demand, beginner friendly, fast path to market.", value: "fast_hire" },
-      { label: "Maximum salary potential", description: "Willing to spend 1+ years studying for elite compensation.", value: "high_salary" },
-      { label: "Creative & Visual impact", description: "Designing interfaces, graphics, or frontend layouts.", value: "creative" },
-      { label: "Security & Operations", description: "Protecting systems, scaling servers, automation.", value: "security_infra" }
+      { label: "High tolerance — I like linear algebra & statistics", description: "Required for advanced AI modelling and statistical analyses.", value: "high" },
+      { label: "Basic/Practical math — algebra & logic gates only", description: "Standard programming loops and comparison operators.", value: "basic" },
+      { label: "Zero tolerance — I want absolutely no math", description: "Prefer to focus strictly on text, design, or configs.", value: "none" }
+    ]
+  },
+  {
+    id: 5,
+    text: "If you had to build one piece of a modern application, which would you pick?",
+    category: "buildTarget",
+    options: [
+      { label: "Visual layouts, interactive buttons, and styles", description: "Creating the user interface (Frontend).", value: "visuals" },
+      { label: "Secure APIs, logical routes, and database pipelines", description: "Creating the background logic (Backend).", value: "systems" },
+      { label: "Data charts, prediction models, and prompt checks", description: "Setting up prediction models (AI Engineering).", value: "data_models" },
+      { label: "Deployment scripts, automated builds, and networks", description: "Automating cloud deployment (DevOps / Infrastructure).", value: "infrastructure" }
     ]
   }
 ];
+
+interface QuizResults {
+  recommendedSlug: string;
+  secondSlug: string;
+  eliminatedSlugs: string[];
+  selectionSummary: string[];
+  reasoning: string;
+  explanationData: {
+    recommendedReason: string;
+    secondReason: string;
+    eliminatedReason: string;
+  };
+}
 
 export default function QuizPage() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [quizComplete, setQuizComplete] = useState(false);
-  const [recommendations, setRecommendations] = useState<{
-    slug: string;
-    title: string;
-    score: number;
-    explanation: string;
-    description: string;
-  }[]>([]);
+  const [results, setResults] = useState<QuizResults | null>(null);
 
   const handleSelectOption = (category: string, value: string) => {
     const nextAnswers = { ...answers, [category]: value };
@@ -84,103 +102,168 @@ export default function QuizPage() {
     if (currentQuestionIndex < QUESTIONS.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
     } else {
-      calculateResults(nextAnswers);
+      processDecisionEngine(nextAnswers);
     }
   };
 
-  const calculateResults = (finalAnswers: Record<string, string>) => {
-    const scores = allCareers.map(career => {
-      let score = 0;
-      let reasons: string[] = [];
+  const processDecisionEngine = (finalAnswers: Record<string, string>) => {
+    const enjoyable = finalAnswers["enjoyable"];
+    const frustrates = finalAnswers["frustrates"];
+    const coding = finalAnswers["coding"];
+    const math = finalAnswers["math"];
+    const buildTarget = finalAnswers["buildTarget"];
 
-      const bg = finalAnswers["background"];
-      const codePref = finalAnswers["coding"];
-      const mathPref = finalAnswers["math"];
-      const goalPref = finalAnswers["goal"];
+    // Initialize scores for our key tracks
+    const scores: Record<string, number> = {
+      "frontend-developer": 0,
+      "backend-developer": 0,
+      "devops-engineer": 0,
+      "cloud-engineer": 0,
+      "ai-engineer": 0,
+      "cybersecurity-analyst": 0
+    };
 
-      // 1. Coding Rules
-      if (codePref === "heavy_code") {
-        if (["frontend-developer", "backend-developer", "full-stack-developer", "java-developer", "game-developer"].includes(career.slug)) {
-          score += 100;
-          reasons.push("Matches your desire to build systems and write code.");
-        }
-        if (["ux-designer", "technical-writer"].includes(career.slug)) {
-          score -= 100;
-        }
-      } else if (codePref === "light_code") {
-        if (["qa-tester", "data-analyst", "mobile-developer"].includes(career.slug)) {
-          score += 80;
-          reasons.push("Perfect balance of software engagement without heavy core backend development.");
-        }
-      } else if (codePref === "no_code") {
-        if (["ux-designer", "technical-writer"].includes(career.slug)) {
-          score += 150;
-          reasons.push("Zero-code requirements align perfectly with your career preferences.");
-        } else {
-          score -= 150; // Heavily penalize coding paths
-        }
-      } else if (codePref === "data_code") {
-        if (["data-analyst", "data-scientist", "ai-engineer", "backend-developer"].includes(career.slug)) {
-          score += 100;
-          reasons.push("Aligns with a focus on data, databases, and structured schemas.");
-        }
+    // Keep track of explicit elimination flags
+    const eliminated: string[] = [];
+
+    // 1. Question 1 (Enjoyable) mapping
+    if (enjoyable === "visuals") {
+      scores["frontend-developer"] += 3;
+    } else if (enjoyable === "systems") {
+      scores["backend-developer"] += 3;
+    } else if (enjoyable === "data_models") {
+      scores["ai-engineer"] += 3;
+    } else if (enjoyable === "infrastructure") {
+      scores["devops-engineer"] += 3;
+      scores["cloud-engineer"] += 3;
+    }
+
+    // 2. Question 2 (Frustrates) mapping -> HARD ELIMINATION
+    if (frustrates === "styling_css") {
+      eliminated.push("frontend-developer");
+      scores["frontend-developer"] -= 10;
+    } else if (frustrates === "silent_db") {
+      eliminated.push("backend-developer");
+      scores["backend-developer"] -= 10;
+    } else if (frustrates === "heavy_math") {
+      eliminated.push("ai-engineer");
+      scores["ai-engineer"] -= 10;
+    } else if (frustrates === "server_ops") {
+      eliminated.push("devops-engineer");
+      eliminated.push("cloud-engineer");
+      scores["devops-engineer"] -= 10;
+      scores["cloud-engineer"] -= 10;
+    }
+
+    // 3. Question 3 (Coding) mapping
+    if (coding === "heavy") {
+      scores["frontend-developer"] += 2;
+      scores["backend-developer"] += 2;
+      scores["ai-engineer"] += 2;
+      scores["devops-engineer"] += 1;
+    } else if (coding === "moderate") {
+      scores["devops-engineer"] += 3;
+      scores["cloud-engineer"] += 3;
+      scores["cybersecurity-analyst"] += 2;
+      scores["frontend-developer"] -= 1;
+      scores["backend-developer"] -= 1;
+    } else if (coding === "zero") {
+      eliminated.push("frontend-developer");
+      eliminated.push("backend-developer");
+      eliminated.push("ai-engineer");
+      scores["frontend-developer"] -= 15;
+      scores["backend-developer"] -= 15;
+      scores["ai-engineer"] -= 15;
+      scores["devops-engineer"] -= 5;
+    }
+
+    // 4. Question 4 (Math) mapping
+    if (math === "high") {
+      scores["ai-engineer"] += 3;
+    } else if (math === "basic") {
+      scores["frontend-developer"] += 1;
+      scores["backend-developer"] += 1;
+      scores["devops-engineer"] += 1;
+      scores["cloud-engineer"] += 1;
+      scores["cybersecurity-analyst"] += 1;
+      scores["ai-engineer"] -= 1;
+    } else if (math === "none") {
+      eliminated.push("ai-engineer");
+      scores["ai-engineer"] -= 15;
+      scores["frontend-developer"] += 2;
+      scores["cybersecurity-analyst"] += 1;
+    }
+
+    // 5. Question 5 (Build Target) mapping
+    if (buildTarget === "visuals") {
+      scores["frontend-developer"] += 3;
+    } else if (buildTarget === "systems") {
+      scores["backend-developer"] += 3;
+    } else if (buildTarget === "data_models") {
+      scores["ai-engineer"] += 3;
+    } else if (buildTarget === "infrastructure") {
+      scores["devops-engineer"] += 3;
+      scores["cloud-engineer"] += 3;
+      scores["cybersecurity-analyst"] += 2;
+    }
+
+    // Summary of choices for review
+    const selectionSummary: string[] = [];
+    if (enjoyable) {
+      const q = QUESTIONS[0].options.find(o => o.value === enjoyable);
+      if (q) selectionSummary.push(`✓ Prefers: ${q.label}`);
+    }
+    if (frustrates) {
+      const q = QUESTIONS[1].options.find(o => o.value === frustrates);
+      if (q) selectionSummary.push(`✓ Avoids: ${q.label}`);
+    }
+    if (coding) {
+      const q = QUESTIONS[2].options.find(o => o.value === coding);
+      if (q) selectionSummary.push(`✓ Coding density: ${q.label}`);
+    }
+    if (math) {
+      const q = QUESTIONS[3].options.find(o => o.value === math);
+      if (q) selectionSummary.push(`✓ Math level: ${q.label}`);
+    }
+
+    // Process arrays into sorted recommendations
+    const scoredCareers = Object.entries(scores).map(([slug, score]) => ({
+      slug,
+      score,
+      isEliminated: eliminated.includes(slug)
+    }));
+
+    const survived = scoredCareers.filter(c => !c.isEliminated && c.score >= 0);
+    const sortedSurvived = survived.sort((a, b) => b.score - a.score);
+
+    let recommendedSlug = "frontend-developer";
+    let secondSlug = "backend-developer";
+    const finalEliminated = Array.from(new Set(scoredCareers.filter(c => c.isEliminated || c.score < 0).map(c => c.slug)));
+
+    if (sortedSurvived.length > 0) {
+      recommendedSlug = sortedSurvived[0].slug;
+      if (sortedSurvived.length > 1) {
+        secondSlug = sortedSurvived[1].slug;
+      } else {
+        const remaining = scoredCareers.filter(c => c.slug !== recommendedSlug).sort((a, b) => b.score - a.score);
+        secondSlug = remaining[0]?.slug || "backend-developer";
       }
+    } else {
+      const fallbackSorted = scoredCareers.sort((a, b) => b.score - a.score);
+      recommendedSlug = fallbackSorted[0].slug;
+      secondSlug = fallbackSorted[1].slug;
+    }
 
-      // 2. Math Rules
-      if (mathPref === "heavy_math") {
-        if (["ai-engineer", "data-scientist"].includes(career.slug)) {
-          score += 120;
-          reasons.push("Leverages your strong mathematical and analytical skills.");
-        }
-      } else if (mathPref === "no_math") {
-        if (["ai-engineer", "data-scientist"].includes(career.slug)) {
-          score -= 150; // Heavy penalty
-        } else if (["frontend-developer", "ux-designer", "technical-writer", "qa-tester"].includes(career.slug)) {
-          score += 50;
-          reasons.push("Requires absolutely zero advanced mathematics.");
-        }
-      }
+    const explanationData = getQuizExplanation(recommendedSlug, secondSlug, finalEliminated[0] || "ai-engineer");
 
-      // 3. Goal Rules
-      if (goalPref === "fast_hire") {
-        if (["qa-tester", "frontend-developer", "data-analyst"].includes(career.slug)) {
-          score += 90;
-          reasons.push("Has high entry-level volume and a shorter path to job readiness.");
-        }
-      } else if (goalPref === "high_salary") {
-        if (["ai-engineer", "devops-engineer", "full-stack-developer"].includes(career.slug)) {
-          score += 100;
-          reasons.push("Offers elite tier salary structures at senior levels.");
-        }
-      } else if (goalPref === "creative") {
-        if (["ux-designer", "frontend-developer"].includes(career.slug)) {
-          score += 100;
-          reasons.push("Visual rendering, interface building, and user layout mapping.");
-        }
-      } else if (goalPref === "security_infra") {
-        if (["cybersecurity-analyst", "devops-engineer", "backend-developer"].includes(career.slug)) {
-          score += 100;
-          reasons.push("Involves system security, server scaling, and continuous deployment.");
-        }
-      }
-
-      // 4. Background tweaks
-      if (bg === "non_tech_edu" && ["ux-designer", "technical-writer", "data-analyst"].includes(career.slug)) {
-        score += 40;
-        reasons.push("Very welcoming to self-taught candidates from non-CS degrees.");
-      }
-
-      return {
-        slug: career.slug,
-        title: career.title,
-        description: career.shortDescription,
-        score,
-        explanation: reasons.length > 0 ? reasons.join(" ") : "Matches your balanced input preferences."
-      };
+    setResults({
+      recommendedSlug,
+      secondSlug,
+      eliminatedSlugs: finalEliminated.length > 0 ? finalEliminated : ["ai-engineer"],
+      selectionSummary,
+      reasoning: explanationData.recommendedReason,
+      explanationData
     });
-
-    const sorted = scores.sort((a, b) => b.score - a.score).slice(0, 3);
-    setRecommendations(sorted);
     setQuizComplete(true);
   };
 
@@ -188,7 +271,11 @@ export default function QuizPage() {
     setCurrentQuestionIndex(0);
     setAnswers({});
     setQuizComplete(false);
-    setRecommendations([]);
+    setResults(null);
+  };
+
+  const getCareerTitle = (slug: string): string => {
+    return allCareers.find(c => c.slug === slug)?.title || slug.split("-").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
   };
 
   return (
@@ -203,7 +290,7 @@ export default function QuizPage() {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -15 }}
-              className="bg-card border border-border rounded-md p-8 bevel-card shadow-sm"
+              className="bg-card border border-border rounded-md p-8 bevel-card shadow-sm text-left"
             >
               {/* Quiz Header Progress */}
               <div className="flex items-center justify-between mb-8 pb-4 border-b border-border/60">
@@ -245,73 +332,89 @@ export default function QuizPage() {
               </div>
             </motion.div>
           ) : (
-            <motion.div
-              key="results"
-              initial={{ opacity: 0, scale: 0.98 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0 }}
-              className="space-y-6"
-            >
-              <div className="bg-card border border-border rounded-md p-8 bevel-card shadow-sm text-center">
-                <div className="inline-flex h-12 w-12 bg-primary/10 border border-primary/20 rounded-full items-center justify-center mb-4">
-                  <Trophy className="h-6 w-6 text-primary" />
+            results && (
+              <motion.div
+                key="results"
+                initial={{ opacity: 0, scale: 0.98 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0 }}
+                className="space-y-6 text-left"
+              >
+                <div className="bg-card border border-border rounded-md p-8 bevel-card shadow-sm text-center">
+                  <div className="inline-flex h-12 w-12 bg-primary/10 border border-primary/20 rounded-full items-center justify-center mb-4">
+                    <Trophy className="h-6 w-6 text-primary" />
+                  </div>
+                  <h2 className="text-[24px] font-serif font-bold text-foreground mb-2">Recommended Career Matches</h2>
+                  <p className="text-[14px] text-muted-foreground font-serif max-w-md mx-auto">
+                    We mapped your responses to find surviving pathways and filter out structural misfits.
+                  </p>
                 </div>
-                <h2 className="text-[24px] font-serif font-bold text-foreground mb-2">Recommended Career Matches</h2>
-                <p className="text-[14px] text-muted-foreground font-serif max-w-md mx-auto">
-                  Based on your academic profile, coding style preferences, mathematical confidence, and career targets:
-                </p>
-              </div>
 
-              {/* Recommendations List */}
-              <div className="space-y-4">
-                {recommendations.map((rec, idx) => (
-                  <motion.div
-                    key={rec.slug}
-                    initial={{ opacity: 0, y: 15 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: idx * 0.1 }}
-                    className="bg-card border border-border rounded-md p-6 bevel-card flex flex-col md:flex-row items-start justify-between gap-4 hover:border-primary/30 transition-colors"
-                  >
-                    <div className="flex-1 space-y-2">
-                      <div className="flex items-center gap-2">
-                        <span className="h-5 w-5 rounded-full bg-primary/10 text-primary text-[11px] font-mono font-bold flex items-center justify-center border border-primary/20">
-                          #{idx + 1}
-                        </span>
-                        <h3 className="text-[18px] font-serif font-bold text-foreground">{rec.title}</h3>
-                      </div>
+                {/* Why We Matched You Panel */}
+                <div className="bg-card border border-border rounded-md p-6 bevel-card text-left space-y-4">
+                  <h3 className="text-[18px] font-serif font-bold text-foreground">Why We Matched You</h3>
+                  
+                  <div className="space-y-2">
+                    <span className="text-[11px] font-mono text-muted-foreground uppercase tracking-wider block">You selected:</span>
+                    <ul className="space-y-1.5 text-[13px] font-mono text-foreground/80">
+                      {results.selectionSummary.map((sel, idx) => (
+                        <li key={idx} className="flex items-center gap-1.5">
+                          <span className="text-emerald-500 font-bold">✓</span> {sel.replace("✓ ", "").replace("Prefers: ", "").replace("Avoids: ", "").replace("Coding density: ", "").replace("Math level: ", "")}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div className="pt-4 border-t border-border/60 space-y-2">
+                    <span className="text-[11px] font-mono text-muted-foreground uppercase tracking-wider block">Decision Engine Trace:</span>
+                    <ul className="space-y-2.5 text-[13px] font-serif text-foreground/85 leading-relaxed">
+                      <li className="flex items-start gap-2">
+                        <span className="text-emerald-500 font-mono font-bold mt-0.5">✓</span>
+                        <span><strong>{getCareerTitle(results.recommendedSlug)}</strong> survived. {results.explanationData.recommendedReason}</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-emerald-500 font-mono font-bold mt-0.5">✓</span>
+                        <span><strong>{getCareerTitle(results.secondSlug)}</strong> survived. {results.explanationData.secondReason}</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-red-500 font-mono font-bold mt-0.5">✗</span>
+                        <span><strong>{getCareerTitle(results.eliminatedSlugs[0] || "ai-engineer")}</strong> was eliminated or ranked lower. {results.explanationData.eliminatedReason}</span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+
+                {/* Recommended Section Card */}
+                <div className="bg-card border border-border rounded-md p-6 bevel-card relative overflow-hidden border-l-4 border-l-primary">
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <span className="text-[11px] font-mono text-primary uppercase font-bold tracking-widest block mb-1">Recommended Pathway</span>
+                      <h3 className="text-[20px] font-serif font-bold text-foreground mb-3">{getCareerTitle(results.recommendedSlug)}</h3>
                       <p className="text-[14px] text-muted-foreground font-serif leading-relaxed">
-                        {rec.description}
+                        Learn details, daily scenarios, and verify top curated free resources for this role.
                       </p>
-                      
-                      {/* Personal Rationale Callout */}
-                      <div className="mt-3 p-3 bg-secondary/30 border border-border/40 rounded-sm text-[13px] font-mono text-foreground/80 flex items-start gap-2">
-                        <Flame className="h-4 w-4 text-orange-500 shrink-0 mt-0.5" />
-                        <span>{rec.explanation}</span>
-                      </div>
                     </div>
-
                     <Link 
-                      href={`/explore/${rec.slug}`}
-                      className="inline-flex items-center justify-center gap-1.5 px-4 py-2 h-[35px] bg-secondary text-primary border border-border font-sans text-[13px] font-bold rounded-sm hover:border-primary transition-colors shrink-0 md:mt-2"
+                      href={`/explore/${results.recommendedSlug}`}
+                      className="inline-flex items-center justify-center gap-1 px-4 py-2 bg-primary text-primary-foreground font-mono text-[12px] font-bold uppercase tracking-wider rounded-sm hover:bg-primary/95 transition-colors cursor-pointer shrink-0 mt-6"
                     >
-                      View Roadmap
-                      <ArrowRight className="h-3.5 w-3.5" />
+                      Start Learning <ArrowRight className="h-3.5 w-3.5" />
                     </Link>
-                  </motion.div>
-                ))}
-              </div>
+                  </div>
+                </div>
 
-              <div className="flex justify-center pt-4">
-                <Button 
-                  onClick={handleRestart} 
-                  variant="outline"
-                  className="flex items-center gap-2 text-[13px] font-mono"
-                >
-                  <RefreshCw className="h-3.5 w-3.5" />
-                  Restart Quiz
-                </Button>
-              </div>
-            </motion.div>
+                <div className="flex justify-center pt-4">
+                  <Button 
+                    onClick={handleRestart} 
+                    variant="outline"
+                    className="flex items-center gap-2 text-[13px] font-mono"
+                  >
+                    <RefreshCw className="h-3.5 w-3.5" />
+                    Restart Decision Engine
+                  </Button>
+                </div>
+              </motion.div>
+            )
           )}
         </AnimatePresence>
       </main>

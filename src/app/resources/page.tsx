@@ -2,17 +2,17 @@
 
 import { useState, useMemo, useEffect } from "react";
 import { allResources } from "@/lib/search";
-import { calculateResourceScore, type ScoreResult } from "@/lib/resourceScoring";
+import { calculateResourceScore } from "@/lib/resourceScoring";
 import { CAREER_FIELDS, RESOURCE_FORMATS, SKILL_LEVELS } from "@/lib/constants";
 import { Header } from "@/components/layout/header";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Search, ExternalLink, Star, Filter, X, Bookmark, Globe, Book, Library,
+  Search, ExternalLink, Star, Filter, X, Book, Library,
   Play, FileText, GraduationCap, BookOpen, MousePointer, Shield, CheckCircle2, Clock
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useWishlist } from "@/context/wishlist-context";
+import { getResourceTrustLabel, isTrustedResource } from "@/lib/resourceTrust";
 
 const formatIcons: Record<string, React.ElementType> = {
   video: Play,
@@ -38,8 +38,6 @@ export default function ResourcesPage() {
   const [showFilters, setShowFilters] = useState(false);
   const [tab, setTab] = useState<"curated" | "global" | "videos">("curated");
   const [isSearchFocused, setIsSearchFocused] = useState(false);
-  const [isScanning, setIsScanning] = useState(false);
-  const [scanStep, setScanStep] = useState(0);
 
   // Global Search State (Open Library API)
   const [globalBooks, setGlobalBooks] = useState<GlobalBook[]>([]);
@@ -51,29 +49,27 @@ export default function ResourcesPage() {
   const [loadingVideos, setLoadingVideos] = useState(false);
   const [videoError, setVideoError] = useState<string | null>(null);
 
-  const { items: wishlistItems, add: addToWishlist, remove: removeFromWishlist } = useWishlist();
+  const SEARCH_ALIASES: Record<string, string[]> = {
+    'ml': ['machine learning', 'deep learning', 'neural'],
+    'ai': ['artificial intelligence', 'machine learning', 'deep learning'],
+    'js': ['javascript', 'node', 'react', 'next'],
+    'ts': ['typescript'],
+    'cs': ['computer science', 'programming'],
+    'ds': ['data science', 'data analysis'],
+    'ui': ['design', 'figma', 'ux'],
+    'db': ['database', 'sql', 'mongodb'],
+    'devops': ['docker', 'kubernetes', 'ci/cd', 'jenkins'],
+    'web': ['html', 'css', 'javascript', 'react', 'next.js'],
+    'python': ['python', 'django', 'flask', 'fastapi'],
+    'react': ['react', 'next.js', 'redux'],
+  };
 
-const SEARCH_ALIASES: Record<string, string[]> = {
-  'ml': ['machine learning', 'deep learning', 'neural'],
-  'ai': ['artificial intelligence', 'machine learning', 'deep learning'],
-  'js': ['javascript', 'node', 'react', 'next'],
-  'ts': ['typescript'],
-  'cs': ['computer science', 'programming'],
-  'ds': ['data science', 'data analysis'],
-  'ui': ['design', 'figma', 'ux'],
-  'db': ['database', 'sql', 'mongodb'],
-  'devops': ['docker', 'kubernetes', 'ci/cd', 'jenkins'],
-  'web': ['html', 'css', 'javascript', 'react', 'next.js'],
-  'python': ['python', 'django', 'flask', 'fastapi'],
-  'react': ['react', 'next.js', 'redux'],
-};
-
-const expandQuery = (query: string): string[] => {
-  if (!query) return [];
-  const q = query.toLowerCase().trim();
-  const aliases = SEARCH_ALIASES[q] || [];
-  return [q, ...aliases];
-};
+  const expandQuery = (query: string): string[] => {
+    if (!query) return [];
+    const q = query.toLowerCase().trim();
+    const aliases = SEARCH_ALIASES[q] || [];
+    return [q, ...aliases];
+  };
 
   const filtered = useMemo(() => {
     return allResources
@@ -151,7 +147,6 @@ const expandQuery = (query: string): string[] => {
     }
   };
 
-  // Initial load for Global and Videos if tab is switched
   useEffect(() => {
     if (tab === "global" && globalBooks.length === 0 && !loadingGlobal) {
       searchGlobal(search);
@@ -167,32 +162,13 @@ const expandQuery = (query: string): string[] => {
   };
 
   useEffect(() => {
-    if (!search) {
-      setIsScanning(false);
-      return;
-    }
-    
-    setIsScanning(true);
-    setScanStep(0);
-    
-    const timer1 = setTimeout(() => setScanStep(1), 100);
-    const timer2 = setTimeout(() => setScanStep(2), 220);
-    const timer3 = setTimeout(() => setScanStep(3), 340);
-    const timer4 = setTimeout(() => setScanStep(4), 460);
-    const timer5 = setTimeout(() => {
-      setIsScanning(false);
+    if (!search.trim()) return;
+    const timer = setTimeout(() => {
       if (tab === "global") searchGlobal(search);
       if (tab === "videos") searchVideos(search);
-    }, 650);
-    
-    return () => {
-      clearTimeout(timer1);
-      clearTimeout(timer2);
-      clearTimeout(timer3);
-      clearTimeout(timer4);
-      clearTimeout(timer5);
-    };
-  }, [search]);
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [search, tab]);
 
   return (
     <div className="bg-background min-h-screen">
@@ -221,7 +197,7 @@ const expandQuery = (query: string): string[] => {
             <h1 className="text-[30px] font-serif font-bold text-foreground tracking-tight">Resource Archives</h1>
           </div>
           <p className="text-[16px] text-foreground/80 font-serif leading-relaxed max-w-xl">
-            Access curated courses, global library books, and educational video telemetry.
+            Access curated courses, global library books, and educational videos.
           </p>
         </motion.div>
 
@@ -355,49 +331,9 @@ const expandQuery = (query: string): string[] => {
           </motion.div>
         )}
 
-        {isScanning ? (
-          <div className="mb-8 p-6 bg-card border border-border rounded-md bevel-card font-mono text-[14px] relative overflow-hidden z-10">
-            <div className="absolute top-0 right-0 w-8 h-8 bg-primary/5 border-b border-l border-border rounded-bl-sm flex items-center justify-center">
-              <span className="w-2 h-2 rounded-full bg-primary animate-ping" />
-            </div>
-            <div className="flex items-center gap-2 mb-4 text-primary font-bold">
-              <span className="w-2.5 h-2.5 rounded-full bg-primary animate-pulse" />
-              <span>RUNNING SCHOLARSYNC INTENT PROTOCOL...</span>
-            </div>
-            <div className="space-y-2.5">
-              <div className={cn("flex items-center gap-2.5 transition-all duration-200", scanStep >= 1 ? "opacity-100 text-foreground" : "opacity-30")}>
-                <span className="text-primary">{scanStep >= 1 ? "✓" : "☐"}</span>
-                <span>Analysing intent query database: "{search}"</span>
-              </div>
-              <div className={cn("flex items-center gap-2.5 transition-all duration-200", scanStep >= 2 ? "opacity-100 text-foreground" : "opacity-30")}>
-                <span className="text-primary">{scanStep >= 2 ? "✓" : "☐"}</span>
-                <span>Scanning resource archives database</span>
-              </div>
-              <div className={cn("flex items-center gap-2.5 transition-all duration-200", scanStep >= 3 ? "opacity-100 text-foreground" : "opacity-30")}>
-                <span className="text-primary">{scanStep >= 3 ? "✓" : "☐"}</span>
-                <span>Verifying resource matrices & quality tiers</span>
-              </div>
-              <div className={cn("flex items-center gap-2.5 transition-all duration-200", scanStep >= 4 ? "opacity-100 text-foreground" : "opacity-30")}>
-                <span className="text-primary">{scanStep >= 4 ? "✓" : "☐"}</span>
-                <span>Verifying project checkpoints & real-world tasks</span>
-              </div>
-            </div>
-            {scanStep >= 4 && (
-              <motion.div 
-                initial={{ opacity: 0, y: 5 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="mt-5 pt-4 border-t border-border flex items-center justify-between text-primary font-bold text-[12px] uppercase tracking-widest"
-              >
-                <span>✓ Compiled resources ready.</span>
-                <span className="animate-pulse">Rendering telemetry...</span>
-              </motion.div>
-            )}
-          </div>
-        ) : (
+        {/* Curated tab */}
+        {tab === "curated" && (
           <>
-            {/* Curated Resource Grid */}
-            {tab === "curated" && (
-              <>
             <div className="flex justify-end mb-6">
               <p className="text-[14px] font-mono text-muted-foreground uppercase tracking-widest whitespace-nowrap">
                 {filtered.length} live resource{filtered.length !== 1 ? "s" : ""}
@@ -421,8 +357,8 @@ const expandQuery = (query: string): string[] => {
                     <p className="text-[11px] font-mono font-bold uppercase tracking-widest text-emerald-600 mb-3">Recommendation Matrix</p>
                     <ul className="space-y-2">
                       <li className="text-[13px] font-mono flex items-center gap-2 text-foreground/80"><CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" /> Beginner Friendly & Verified</li>
-                      <li className="text-[13px] font-mono flex items-center gap-2 text-foreground/80"><CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" /> Elite Quality Score ({filtered[0].qualityScore}/100)</li>
-                      <li className="text-[13px] font-mono flex items-center gap-2 text-foreground/80"><CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" /> Complete Curriculum</li>
+                      <li className="text-[13px] font-mono flex items-center gap-2 text-foreground/80"><CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" /> {getResourceTrustLabel(filtered[0])}</li>
+                      <li className="text-[13px] font-mono flex items-center gap-2 text-foreground/80"><CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" /> {filtered[0].format === "text" ? "Documentation First" : "Structured Learning"}</li>
                     </ul>
                   </div>
                   
@@ -442,8 +378,8 @@ const expandQuery = (query: string): string[] => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 pb-16">
               {filtered.slice(search ? 1 : 0).map((r, i) => {
-                const FormatIcon = formatIcons[r.format] || FileText;
-                const isSaved = wishlistItems.some(item => item.id === r.id);
+                const FormatIcon = formatIcons[r.format.toLowerCase()] || FileText;
+                const badgeText = r.resourceTypeBadge || (r.format === 'DOCUMENTATION' ? 'Official Documentation' : r.format === 'COURSE' ? 'Video Course' : r.format === 'PRACTICE' ? 'Interactive Practice' : r.format === 'PROJECT' ? 'Project Based' : 'Reference Guide');
                 return (
                   <motion.div
                     key={r.id}
@@ -452,25 +388,7 @@ const expandQuery = (query: string): string[] => {
                     transition={{ delay: Math.min(i * 0.03, 0.4) }}
                     className="relative group"
                   >
-                    <button
-                      onClick={(e) => {
-                        e.preventDefault();
-                        isSaved ? removeFromWishlist(r.id) : addToWishlist({
-                          id: r.id,
-                          title: r.title,
-                          url: r.url,
-                          type: "resource"
-                        });
-                      }}
-                      className={cn(
-                        "absolute top-5 right-5 z-20 p-2 rounded-sm transition-all border",
-                        isSaved ? "bg-primary border-primary text-primary-foreground" : "bg-background border-border text-muted-foreground hover:border-primary/50 hover:text-primary opacity-0 group-hover:opacity-100"
-                      )}
-                    >
-                      <Bookmark className={cn("h-3.5 w-3.5", isSaved && "fill-current")} />
-                    </button>
-
-                    <a href={r.url} target="_blank" rel="noopener noreferrer" className="h-full p-5 bg-background border border-border rounded-md bevel-card hover:border-primary/50 hover:-translate-y-1 hover:shadow-md transition-all duration-300 flex flex-col relative overflow-hidden block">
+                    <div className="h-full p-5 bg-background border border-border rounded-md bevel-card hover:border-primary/50 hover:-translate-y-1 hover:shadow-md transition-all duration-300 flex flex-col relative overflow-hidden">
                       
                       {/* Decorative Tech Corner */}
                       <div className="absolute top-0 right-0 w-6 h-6 bg-muted border-b border-l border-border rounded-bl-sm -mr-px -mt-px group-hover:bg-primary/10 transition-colors"></div>
@@ -482,49 +400,70 @@ const expandQuery = (query: string): string[] => {
                           </div>
                           <span className="text-[13px] font-mono text-muted-foreground uppercase tracking-[0.04em]">{r.source}</span>
                         </div>
-                        <div className={cn(
-                          "quality-badge font-mono text-[12px] font-bold uppercase tracking-[0.04em] flex items-center gap-1.5 px-2 py-1 rounded-sm border",
-                          r.qualityTier === 'Elite' ? "bg-accent/10 text-accent-foreground border-accent/30" :
-                          r.qualityTier === 'Excellent' ? "bg-primary/10 text-primary border-primary/30" :
-                          r.qualityTier === 'Good' ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/30" :
-                          "bg-muted text-muted-foreground border-border"
-                        )}>
-                          <Shield className="h-3 w-3" />
-                          {r.qualityTier} {r.qualityScore}
+                        <div className="px-2 py-0.5 bg-secondary text-foreground text-[12px] font-mono uppercase tracking-[0.04em] rounded-sm border border-border">
+                          Source Type: {badgeText}
                         </div>
                       </div>
 
-                      <h3 className="font-serif text-[21px] font-bold group-hover:text-primary transition-colors leading-tight mb-2 flex items-center gap-2 relative z-10 text-foreground">
+                      <h3 className="font-serif text-[21px] font-bold group-hover:text-primary transition-colors leading-tight mb-2 flex flex-wrap items-center gap-2 relative z-10 text-foreground">
                         {r.title}
-                        {r.verified && (
-                          <span title="Verified Resource" className="text-primary bg-primary/10 p-0.5 rounded-sm border border-primary/20 flex-shrink-0">
-                            <CheckCircle2 className="h-3.5 w-3.5" />
+                        {isTrustedResource(r) && (
+                          <span title="Verified Active" className="text-emerald-500 bg-emerald-500/10 px-1.5 py-0.5 rounded-sm border border-emerald-500/20 flex items-center gap-1 text-[10px] font-mono font-bold uppercase tracking-wider">
+                            ✓ Verified Active
                           </span>
                         )}
                       </h3>
-                      <p className="text-[16px] text-foreground/80 font-serif line-clamp-2 leading-relaxed mb-3 flex-1 relative z-10">
+                      <p className="text-[15px] text-foreground/80 font-serif leading-relaxed mb-3 relative z-10">
                         {r.description}
                       </p>
 
-                      {r.whyRecommended && (
-                        <div className="p-2 bg-secondary/80 border border-border rounded-sm font-mono text-[11px] text-primary leading-normal mb-4 relative z-10">
-                          <strong className="uppercase tracking-wider">Why Recommended:</strong> {r.whyRecommended}
+                      {/* Curated Why Recommended Layer */}
+                      {r.whyChosenOverAlternatives && r.whyChosenOverAlternatives.length > 0 ? (
+                        <div className="p-3 bg-secondary/60 border border-border rounded-sm font-mono text-[12px] text-primary leading-relaxed mb-3 relative z-10">
+                          <div className="font-bold uppercase tracking-wider text-[10px] mb-1">🎯 Chosen Over Alternatives:</div>
+                          <ul className="list-disc list-inside space-y-0.5 text-foreground/90 pl-1">
+                            {r.whyChosenOverAlternatives.map((bullet, idx) => (
+                              <li key={idx} className="leading-tight">{bullet}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      ) : (
+                        <div className="p-3 bg-secondary/60 border border-border rounded-sm font-mono text-[12px] text-primary leading-relaxed mb-3 relative z-10">
+                          <div className="font-bold uppercase tracking-wider text-[10px] mb-1">💡 Why Recommended:</div>
+                          <div>{r.whyRecommended || "Hand-curated, authoritative study material aligned with roadmap progression."}</div>
                         </div>
                       )}
 
-                      <div className="flex flex-wrap gap-1.5 mb-4 relative z-10">
+                      {/* Factual Verification Metadata */}
+                      <div className="p-3 bg-background border border-border rounded-sm font-mono text-[12px] text-foreground/80 leading-relaxed mb-3 relative z-10 grid grid-cols-2 gap-2">
+                        <div><span className="text-muted-foreground">Link Checked:</span> {r.verification?.linkChecked || r.lastChecked || "2026-06-18"}</div>
+                        <div><span className="text-muted-foreground">Human Reviewed:</span> {r.verification?.humanReviewed || r.verification?.lastReviewed || "2026-06-18"}</div>
+                        <div><span className="text-muted-foreground">Review Due:</span> {r.verification?.reviewDue || "2026-12-18"}</div>
+                        <div><span className="text-muted-foreground">Cost:</span> {r.verification?.isFree !== false ? "Free" : "Paid"}</div>
+                      </div>
+
+                      {/* Known Limitations */}
+                      {r.limitations && (
+                        <div className="p-3 bg-orange-500/5 border border-orange-500/10 rounded-sm font-mono text-[12px] text-orange-600/90 leading-relaxed mb-3 relative z-10">
+                          <div className="font-bold uppercase tracking-wider text-[10px] mb-1">⚠️ Known Tradeoffs:</div>
+                          <div>{r.limitations}</div>
+                        </div>
+                      )}
+
+                      {/* Optional Alternative */}
+                      {r.alternativeResource && (
+                        <div className="p-3 bg-emerald-500/5 border border-emerald-500/10 rounded-sm font-mono text-[12px] text-emerald-600/90 leading-relaxed mb-3 relative z-10">
+                          <div className="font-bold uppercase tracking-wider text-[10px] mb-1">🔄 Alternative: <a href={r.alternativeResource.url} target="_blank" rel="noopener noreferrer" className="underline font-medium text-foreground hover:text-primary transition-colors">{r.alternativeResource.title}</a></div>
+                          <div>{r.alternativeResource.reason}</div>
+                        </div>
+                      )}
+
+                      <div className="flex flex-wrap gap-1.5 mb-4 relative z-10 mt-auto">
                         {r.topics.slice(0, 3).map((t) => (
                           <span key={t} className="px-2 py-0.5 text-[12px] rounded-sm bg-secondary text-foreground font-mono font-medium border border-border">
                             {t}
                           </span>
                         ))}
-                      </div>
-
-                      <div className="flex items-center gap-1.5 text-[11px] font-mono text-muted-foreground mb-4 relative z-10">
-                        <CheckCircle2 className="h-3 w-3 text-emerald-500" />
-                        <span>Last Checked: {new Date().toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
-                        <span className="w-1 h-1 rounded-full bg-emerald-500"></span>
-                        <span className="text-emerald-500 font-bold uppercase tracking-wider text-[9px]">Active</span>
                       </div>
 
                       <div className="flex items-center justify-between pt-4 border-t border-border mt-auto relative z-10">
@@ -543,16 +482,18 @@ const expandQuery = (query: string): string[] => {
                               <Clock className="h-3 w-3" /> {r.duration}
                             </span>
                           )}
-                          
-                          <span className="flex items-center gap-1 text-primary bg-primary/10 border border-primary/20 px-1.5 py-0.5 rounded-sm text-[12px] font-mono font-bold uppercase tracking-[0.04em] ml-1">
-                            {r.source.includes("Coursera") || r.source.includes("edX") ? "FREE AUDIT" : 
-                             r.source.includes("MDN") || r.source.includes("React") ? "OFFICIAL DOCS" : 
-                             r.source.includes("OSSU") ? "OPEN SOURCE" : "FREE"}
-                          </span>
                         </div>
-                        <ExternalLink className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                        
+                        <a 
+                          href={r.url} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 text-primary hover:text-primary-foreground hover:bg-primary/15 transition-all text-[13px] font-mono font-bold uppercase tracking-[0.04em] border border-primary/20 px-2 py-1 rounded-sm"
+                        >
+                          OPEN <ExternalLink className="h-3.5 w-3.5" />
+                        </a>
                       </div>
-                    </a>
+                    </div>
                   </motion.div>
                 );
               })}
@@ -599,11 +540,11 @@ const expandQuery = (query: string): string[] => {
             {loadingGlobal ? (
                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                  {[1, 2, 3, 4, 5, 6].map(i => (
-                   <div key={i} className="surface p-5 h-40 rounded-2xl animate-pulse flex flex-col justify-between">
-                     <div className="h-6 w-3/4 bg-secondary rounded" />
-                     <div className="h-4 w-1/2 bg-secondary rounded mt-2" />
-                     <div className="h-10 w-full bg-secondary rounded-xl mt-4" />
-                   </div>
+                    <div key={i} className="surface p-5 h-40 rounded-2xl animate-pulse flex flex-col justify-between">
+                      <div className="h-6 w-3/4 bg-secondary rounded" />
+                      <div className="h-4 w-1/2 bg-secondary rounded mt-2" />
+                      <div className="h-10 w-full bg-secondary rounded-xl mt-4" />
+                    </div>
                  ))}
                </div>
             ) : globalError ? (
@@ -622,7 +563,6 @@ const expandQuery = (query: string): string[] => {
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 pb-16">
                   {globalBooks.map((book, i) => {
-                    const isSaved = wishlistItems.some(item => item.id === book.id);
                     return (
                       <motion.div
                         key={book.id}
@@ -631,24 +571,6 @@ const expandQuery = (query: string): string[] => {
                         transition={{ delay: Math.min(i * 0.03, 0.4) }}
                         className="relative group"
                       >
-                        <button
-                          onClick={(e) => {
-                            e.preventDefault();
-                            isSaved ? removeFromWishlist(book.id) : addToWishlist({
-                              id: book.id,
-                              title: book.title,
-                              url: book.url,
-                              type: "resource"
-                            });
-                          }}
-                          className={cn(
-                            "absolute top-5 right-5 z-20 p-2 rounded-sm transition-all border",
-                            isSaved ? "bg-primary border-primary text-primary-foreground" : "bg-background border-border text-muted-foreground hover:border-primary/50 hover:text-primary opacity-0 group-hover:opacity-100"
-                          )}
-                        >
-                          <Bookmark className={cn("h-3.5 w-3.5", isSaved && "fill-current")} />
-                        </button>
-                        
                         <a href={book.url} target="_blank" rel="noopener noreferrer" className="h-full p-5 bg-background border border-border rounded-md bevel-card hover:border-primary/50 hover:-translate-y-1 hover:shadow-md transition-all duration-300 flex flex-col relative overflow-hidden block group">
                           {/* Decorative Tech Corner */}
                           <div className="absolute top-0 right-0 w-6 h-6 bg-muted border-b border-l border-border rounded-bl-sm -mr-px -mt-px group-hover:bg-primary/10 transition-colors"></div>
@@ -719,7 +641,6 @@ const expandQuery = (query: string): string[] => {
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 pb-16">
                   {videos.map((video, i) => {
-                    const isSaved = wishlistItems.some(item => item.id === video.id);
                     return (
                       <motion.div
                         key={video.id}
@@ -728,24 +649,6 @@ const expandQuery = (query: string): string[] => {
                         transition={{ delay: Math.min(i * 0.03, 0.4) }}
                         className="relative group"
                       >
-                        <button
-                          onClick={(e) => {
-                            e.preventDefault();
-                            isSaved ? removeFromWishlist(video.id) : addToWishlist({
-                              id: video.id,
-                              title: video.title,
-                              url: video.url,
-                              type: "resource"
-                            });
-                          }}
-                          className={cn(
-                            "absolute top-3 right-3 z-20 p-2 rounded-sm transition-all border",
-                            isSaved ? "bg-primary border-primary text-primary-foreground" : "bg-background/80 border-border text-foreground hover:border-primary/50 hover:text-primary opacity-0 group-hover:opacity-100"
-                          )}
-                        >
-                          <Bookmark className={cn("h-3.5 w-3.5", isSaved && "fill-current")} />
-                        </button>
-                        
                         <a href={video.url} target="_blank" rel="noopener noreferrer" className="h-full p-0 bg-background border border-border rounded-md bevel-card hover:border-primary/50 hover:-translate-y-1 hover:shadow-md transition-all duration-300 flex flex-col relative overflow-hidden block group">
                           <div className="relative h-40 w-full overflow-hidden border-b border-border">
                             <img src={video.thumbnail} alt={video.title} className="w-full h-full object-cover transition-transform group-hover:scale-105" />
@@ -774,8 +677,6 @@ const expandQuery = (query: string): string[] => {
                 <p className="text-[13px] font-mono text-muted-foreground mt-2 uppercase tracking-widest">Powered by YouTube Data API.</p>
               </div>
             )}
-          </>
-        )}
           </>
         )}
       </div>

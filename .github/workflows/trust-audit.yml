@@ -1,0 +1,28 @@
+name: ScholarSync Trust Audit
+
+on:
+  schedule:
+    - cron: '0 0 1 * *' # Every 1st of the month at midnight UTC
+  workflow_dispatch: # Allows manual triggers
+
+jobs:
+  trust-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Codebase
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run Search Trust Audit
+        run: npx tsx scripts/trust-audit.ts
+
+      - name: Run Database and Resource Integrity Audit
+        run: npx tsx scripts/audit-db.ts

@@ -2,16 +2,20 @@ import Fuse from "fuse.js";
 // HMR Cache Bust: 1718600000
 import { careers } from "@/lib/seed-careers";
 import { resources as rawResources } from "@/lib/seed-resources";
+import { additionalResources } from "@/lib/seed-resources-extra";
 import type { Career, Resource, Job } from "@/types";
 import { TAXONOMY_LOOKUP } from "@/lib/career-taxonomy";
 import { CAREER_EVOLUTION_REGISTRY } from "./career-evolution";
 import { TECH_TO_CAREER } from "./tech-to-career";
+import { getResourceStatus, isTrustedResource } from "@/lib/resourceTrust";
 
 // Unified search dataset
 export const allCareers: Career[] = careers;
 // Dynamically enforce "100% Free Resources" by filtering out paid/audit-heavy platforms
-export const allResources: Resource[] = rawResources.filter(
-  (r) => !["coursera", "udemy", "edx"].some((paid) => r.source.toLowerCase().includes(paid))
+export const allResources: Resource[] = [...rawResources, ...additionalResources].filter(
+  (r) => r.isFree !== false && !["coursera", "udemy", "edx"].some((paid) => 
+    r.source.toLowerCase().includes(paid) || r.url.toLowerCase().includes(paid)
+  )
 );
 export const allJobs: Job[] = [
   { id: 'j-1', title: 'Frontend Developer', source: 'LinkedIn', location: 'Remote', experience: 'Junior', requiredSkills: ['React', 'JavaScript', 'CSS', 'HTML'], lastUpdated: new Date().toISOString() },
@@ -103,7 +107,15 @@ const INTENT_MAP: Record<string, string> = {
   "i am totally confused": "frontend | beginner",
   "i am confused": "frontend | beginner",
   "i don't know what to choose": "frontend | discovery",
+  "i dont know what to choose": "frontend | discovery",
+  "i don't know where to start": "frontend | python",
+  "i dont know where to start": "frontend | python",
   "which tech field is best": "frontend | discovery",
+  "i don't know what to do": "quiz | explore | frontend | backend | ai | cloud",
+  "i dont know what to do": "quiz | explore | frontend | backend | ai | cloud",
+  "which path should i choose": "quiz | explore | frontend | backend | ai | cloud",
+  "confused about career": "quiz | explore | frontend | backend | ai | cloud",
+  "help me decide": "quiz | explore | frontend | backend | ai | cloud",
 
   // Students
   "bca student": "frontend | java",
@@ -197,6 +209,7 @@ const INTENT_MAP: Record<string, string> = {
   "extrovert": "frontend developer | full stack developer | ux designer",
   "best career for extroverts": "frontend developer | full stack developer | ux designer",
   "creative": "ux designer | frontend developer",
+  "creative person": "ux designer | frontend developer",
   "best career for creatives": "ux designer | frontend developer",
   "business minded": "data analyst | full stack developer",
   "best career for business minded": "data analyst | full stack developer",
@@ -243,6 +256,7 @@ const INTENT_MAP: Record<string, string> = {
 export function expandQuery(query: string): string {
   if (!query) return "";
   let q = query.toLowerCase().trim();
+  if (!normalizeQuery(q)) return "";
   
   let intentAppend = "";
   // Check for scenario matches
@@ -330,7 +344,7 @@ export const jobFuse = new Fuse(allJobs, {
 export type MatchType = "exact" | "prefix" | "alias" | "fuzzy";
 
 export interface UnifiedResult {
-  kind: "career" | "resource" | "job";
+  kind: "career" | "resource" | "job" | "action";
   id: string;
   title: string;
   subtitle?: string;
@@ -368,7 +382,7 @@ function resourceToResult(r: Resource, score?: number): UnifiedResult {
     href: r.url,
     tags: r.topics,
     score,
-    isVerified: r.verified,
+    isVerified: isTrustedResource(r),
     pricingType: r.pricingType,
     whyRecommended: r.whyRecommended
   };
@@ -384,6 +398,30 @@ function jobToResult(j: Job, score?: number): UnifiedResult {
     tags: j.requiredSkills,
     score,
   };
+}
+
+function actionToResult(id: string, title: string, href: string, description: string): UnifiedResult {
+  return {
+    kind: "action",
+    id,
+    title,
+    href,
+    description,
+    explanation: "Recommended because your query is asking for help choosing a direction.",
+    adjustedScore: -2500,
+  };
+}
+
+function isDecisionQuery(query: string): boolean {
+  return [
+    "i don't know what to do",
+    "i dont know what to do",
+    "which path should i choose",
+    "confused about career",
+    "help me decide",
+    "i am confused",
+    "i am totally confused",
+  ].some((phrase) => query.includes(phrase));
 }
 
 export function searchAll(query: string, limit = 20): UnifiedResult[] {
@@ -404,8 +442,8 @@ export function searchAll(query: string, limit = 20): UnifiedResult[] {
   const merged = [...c, ...r, ...j].map(item => {
     let rankingPenalty = 0;
     if (item.kind === 'resource') {
-      if (item.isVerified) rankingPenalty = -0.2; // Verified resources at the top
-      else rankingPenalty = 0.3; // Unverified at the bottom
+      if (item.isVerified) rankingPenalty = -0.2; // Trusted active resources at the top
+      else rankingPenalty = 0.3; // Needs-review resources lower
     } else if (item.kind === 'career') {
       rankingPenalty = -0.5; // Roadmaps high priority (was -0.1)
     } else if (item.kind === 'job') {
@@ -421,7 +459,28 @@ export function searchCareers(query: string): Career[] {
   if (!query.trim()) return allCareers;
   
   const normQuery = query.toLowerCase().trim();
+  if (!normalizeQuery(normQuery)) return [];
   let results = careerFuse.search(expandQuery(query)).map((r) => r.item);
+
+  const normalizedQuery = normalizeQuery(normQuery);
+  const directTechKey = TECH_TO_CAREER[normalizedQuery]
+    ? normalizedQuery
+    : Object.keys(TECH_TO_CAREER).find((key) => {
+        const escaped = key.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        return new RegExp(`\\b${escaped}\\b`, "i").test(normalizedQuery);
+      });
+
+  if (directTechKey) {
+    const mappedCareers = TECH_TO_CAREER[directTechKey].careers
+      .map((slug) => allCareers.find((c) => c.slug === slug))
+      .filter(Boolean) as Career[];
+    if (mappedCareers.length) {
+      results = [
+        ...mappedCareers,
+        ...results.filter((c) => !mappedCareers.some((mapped) => mapped.id === c.id)),
+      ];
+    }
+  }
   
   // Tier 3: Taxonomy Explanation Layer
   const taxonomyTarget = TAXONOMY_LOOKUP[normQuery];
@@ -431,20 +490,20 @@ export function searchCareers(query: string): Career[] {
     if (targetCareer) {
       // Attach the explanation
       let whyText = `'${query}' is not a standardized hiring title. ${targetCareer.title} is the closest industry pathway.`;
-      let confidence = "85% Match";
+      let confidence = "Good Match";
       
       if (normQuery.includes("cloud") || normQuery.includes("kubernetes") || normQuery.includes("docker") || normQuery.includes("sre")) {
         whyText = "Cloud Developer is not a standardized role. DevOps/Cloud Engineering is the closest industry pathway.";
-        confidence = "85% Match";
+        confidence = "Good Match";
       } else if (normQuery.includes("prompt") || normQuery.includes("llm") || normQuery.includes("rag") || normQuery.includes("genai")) {
         whyText = "Prompt/LLM Engineering is a specialized subset. AI Engineering is the primary industry pathway.";
-        confidence = "90% Match";
+        confidence = "Excellent Match";
       } else if (normQuery.includes("unity") || normQuery.includes("unreal")) {
         whyText = "Unity & Unreal are engine tools. Game Developer is the standard industry path.";
-        confidence = "92% Match";
+        confidence = "Excellent Match";
       } else if (normQuery.includes("react") || normQuery.includes("next") || normQuery.includes("vue") || normQuery.includes("angular")) {
         whyText = "These are web frameworks. Frontend Developer is the primary standardized pathway.";
-        confidence = "95% Match";
+        confidence = "Excellent Match";
       }
       
       const explainedCareer: Career = {
@@ -457,42 +516,38 @@ export function searchCareers(query: string): Career[] {
     }
   }
 
-  // Never return an empty state. If strict search fails, force a fallback to the most popular/related careers.
+  // Do not force unrelated fallback careers for random or invalid queries.
   if (results.length === 0) {
-    // Relax the threshold manually to force the closest matches
     const looseFuse = new Fuse(allCareers, {
       keys: ["title", "tags", "description"],
-      threshold: 0.8, // extremely loose matching
+      threshold: 0.45,
       ignoreLocation: true,
+      includeScore: true,
     });
-    results = looseFuse.search(query).map((r) => r.item);
-    
-    // If even the loose search fails, provide 3 highly popular entry-point careers as guided fallbacks instead of returning everything.
-    if (results.length === 0) {
-      return allCareers.filter(c => ["frontend-developer", "data-analyst", "full-stack-developer"].includes(c.slug));
-    }
+    results = looseFuse.search(query).filter((r) => (r.score ?? 1) <= 0.45).map((r) => r.item);
   }
   
   return results;
 }
 export function searchResources(query: string): Resource[] {
   if (!query.trim()) return allResources;
+  if (!normalizeQuery(query)) return [];
   return resourceFuse.search(expandQuery(query)).map((r) => r.item);
 }
 
 export const TRENDING_QUERIES = [
-  "Python",
+  "React",
+  "Highest salary tech jobs",
+  "I hate maths",
+  "Commerce student",
+  "Remote work",
+  "Career change at 30",
   "AI Engineer",
-  "Web Development",
-  "Cybersecurity",
-  "Data Science",
-  "Machine Learning",
   "Cloud Engineer",
-  "Product Design",
-  "Blockchain",
-  "Game Development",
-  "Free Courses",
-  "MIT OCW",
+  "QA Tester",
+  "UX Designer",
+  "Python",
+  "freeCodeCamp",
 ];
 
 export function getRelatedSuggestions(query: string, max = 6): UnifiedResult[] {
@@ -563,8 +618,9 @@ function inferPricingType(source: string, title: string): string {
 }
 
 const diagLog = (...args: any[]) => {
+  if (process.env.NODE_ENV === "production") return;
   const str = args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ');
-  console.log(str);
+  if ((globalThis as any).enableSearchDiagnostics) console.log(str);
   if (!(globalThis as any).diagnosticLogs) (globalThis as any).diagnosticLogs = [];
   (globalThis as any).diagnosticLogs.push(str);
 };
@@ -573,6 +629,10 @@ export function searchAccuracyEngine(query: string): EngineResult {
   diagLog(`--- Diagnostic Start for query: "${query}" ---`);
   const normQuery = normalizeQuery(query);
   diagLog(`Raw input after preprocessing (normalizeQuery): "${normQuery}"`);
+  if (!normQuery) {
+    diagLog("Query has no searchable tokens. Returning empty result set.");
+    return { intent: "General", recommended: [], results: [] };
+  }
   
   const intent = detectIntent(normQuery);
   diagLog(`Intent detected: "${intent}" (via detectIntent)`);
@@ -640,8 +700,10 @@ export function searchAccuracyEngine(query: string): EngineResult {
 
   if (matchedTechKey) {
     const techMatch = TECH_TO_CAREER[matchedTechKey];
-    const targetCareer = allCareers.find(c => c.slug === techMatch.careers[0]);
-    if (targetCareer) {
+    const mappedCareers = techMatch.careers
+      .map((slug) => allCareers.find(c => c.slug === slug))
+      .filter(Boolean) as Career[];
+    for (const targetCareer of mappedCareers.slice().reverse()) {
       const explainStr = `Showing ${targetCareer.title} | Reason: ${techMatch.explanation} We recommend entering the ${targetCareer.title} pathway.`;
       diagLog(`Injected Tech Map: "${targetCareer.title}" with adjustedScore: -2000`);
       const res = {
@@ -682,9 +744,11 @@ export function searchAccuracyEngine(query: string): EngineResult {
     
     const mType = determineMatchType(r.item.title, r.item.topics, normQuery, activeAliases);
     const relevance = 1 - (r.score ?? 0.5);
-    const trustBase = r.item.pricingType === 'OFFICIAL_DOCS' ? 100 : r.item.verified ? 95 : 70;
+    const trusted = isTrustedResource(r.item);
+    const status = getResourceStatus(r.item);
+    const trustBase = r.item.pricingType === 'OFFICIAL_DOCS' ? 100 : trusted ? 95 : 60;
     const trustScore = ((r.item.qualityScore || 80) + trustBase) / 200;
-    const freshnessScore = r.item.status === 'Active' || r.item.status === 'Verified' ? 1.0 : 0.8;
+    const freshnessScore = status === "Active" ? 1.0 : status === "Needs Review" ? 0.65 : 0.25;
     const compositeScore = (relevance * 0.5) + (trustScore * 0.3) + (freshnessScore * 0.2);
     let boost = getMatchScoreBoost(mType);
     let adjustedScore = isJavaJsConflict ? 9999 : -compositeScore + boost;
@@ -698,7 +762,9 @@ export function searchAccuracyEngine(query: string): EngineResult {
     } else {
       if (r.item.level === "beginner") reasons.push("Best starting point for beginners");
       if (r.item.qualityTier === "Elite") reasons.push("Exceptional depth and clarity");
-      if (r.item.verified) reasons.push("Human reviewed and updated recently");
+      if (trusted) reasons.push("Verified free and active");
+      if (status === "Inactive") reasons.push("Inactive: needs review before use");
+      if (status === "Needs Review") reasons.push("Needs review before being treated as verified");
     }
     res.explanation = reasons.length > 0 ? "✓ " + reasons.join(" · ") : "✓ Community verified learning path";
     res.matchType = mType;
@@ -745,13 +811,29 @@ export function searchAccuracyEngine(query: string): EngineResult {
 
   // Filtering out penalized items
   diagLog("--- Filtering Candidates ---");
+  const actions = isDecisionQuery(normQuery)
+    ? [
+        actionToResult("quiz", "Quiz", "/quiz", "Answer a short preference quiz when you are unsure which path fits you."),
+        actionToResult("explore", "Explore", "/explore", "Browse all roadmaps before committing to a pathway."),
+        careerToResult(allCareers.find((c) => c.slug === "frontend-developer")!, -1800),
+        careerToResult(allCareers.find((c) => c.slug === "backend-developer")!, -1790),
+        careerToResult(allCareers.find((c) => c.slug === "ai-engineer")!, -1780),
+        careerToResult(allCareers.find((c) => c.slug === "cloud-engineer")!, -1770),
+      ].filter(Boolean)
+    : [];
+
+  actions.forEach((item) => {
+    item.explanation ||= "Recommended starting point for unclear career-choice queries.";
+    item.adjustedScore ??= item.score ?? -1700;
+  });
+
   const beforeFilterCount = careers.length + resources.length + jobs.length;
   const filteredOutList = [...careers, ...resources, ...jobs].filter(a => a.adjustedScore! >= 9000);
   filteredOutList.forEach(a => {
     diagLog(`Filtered OUT: [${a.kind}] "${a.title}" | Adjusted Score: ${a.adjustedScore} | Reason: Java/JS conflict penalty`);
   });
 
-  const allMerged = [...careers, ...resources, ...jobs]
+  const allMerged = [...actions, ...careers, ...resources, ...jobs]
     .filter(a => a.adjustedScore! < 9000)
     .sort((a, b) => a.adjustedScore! - b.adjustedScore!);
 

@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
-import { WishlistProvider } from "@/context/wishlist-context";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://scholarsync.app"),
@@ -10,16 +9,16 @@ export const metadata: Metadata = {
     template: "%s · ScholarSync",
   },
   description:
-    "An AI-powered educational discovery platform — careers, scholarships, internships, and free learning resources. Free for every learner, forever.",
+    "A premium Career Decision Engine — mapping careers, skills, and verified free learning resources. Free for every student, forever.",
   keywords: [
     "scholarsync", "educational discovery", "career guidance",
     "free courses", "scholarships", "internships",
-    "Sage AI", "AI mentor", "career roadmap",
+    "Career Decision Engine", "career discovery", "career roadmap",
   ],
   openGraph: {
     title: "ScholarSync — Discover your future, beautifully.",
     description:
-      "AI-powered educational discovery for careers, scholarships, internships, and learning resources. Free for every learner.",
+      "Premium Career Decision Engine for discoverability of careers, skills, and verified free learning resources.",
     siteName: "ScholarSync",
     type: "website",
   },
@@ -31,12 +30,10 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className="font-sans antialiased bg-background text-foreground">
-        <WishlistProvider>
-          <div className="relative flex min-h-dvh flex-col">
-            <main className="flex-1">{children}</main>
-          </div>
-          <Toaster />
-        </WishlistProvider>
+        <div className="relative flex min-h-dvh flex-col">
+          <main className="flex-1">{children}</main>
+        </div>
+        <Toaster />
       </body>
     </html>
   );

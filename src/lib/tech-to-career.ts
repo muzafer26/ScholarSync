@@ -396,5 +396,61 @@ export const TECH_TO_CAREER: Record<string, {
   "apis": {
     careers: ["technical-writer", "backend-developer"],
     explanation: "APIs allow software systems to communicate and are a subject of technical documentation."
+  },
+  "langchain": {
+    careers: ["ai-engineer", "full-stack-developer"],
+    explanation: "LangChain is a widely used orchestration framework for developing applications powered by language models."
+  },
+  "hugging face": {
+    careers: ["ai-engineer"],
+    explanation: "Hugging Face is the leading hub for pre-trained model sharing, datasets, and NLP pipelines."
+  },
+  "pinecone": {
+    careers: ["ai-engineer"],
+    explanation: "Pinecone is a managed vector database designed for high-performance similarity search in RAG pipelines."
+  },
+  "excel": {
+    careers: ["data-analyst"],
+    explanation: "Excel remains a foundational data analysis tool for structuring and auditing business records."
+  },
+  "cypress": {
+    careers: ["qa-tester", "frontend-developer"],
+    explanation: "Cypress is a next-generation front-end testing tool built for modern web applications."
+  },
+  "playwright": {
+    careers: ["qa-tester", "frontend-developer"],
+    explanation: "Playwright enables reliable end-to-end testing for modern web apps across all major browsers."
+  },
+  "wireshark": {
+    careers: ["cybersecurity-analyst"],
+    explanation: "Wireshark is the world's foremost network protocol analyzer, critical for security packet audits."
+  },
+  "nmap": {
+    careers: ["cybersecurity-analyst"],
+    explanation: "Nmap is an open-source utility for network discovery and vulnerability scanning."
+  },
+  "metasploit": {
+    careers: ["cybersecurity-analyst"],
+    explanation: "Metasploit is a penetration testing platform that helps security teams find and exploit vulnerabilities."
+  },
+  "godot": {
+    careers: ["game-developer"],
+    explanation: "Godot is a lightweight, open-source 2D and 3D game engine popular for indie development."
+  },
+  "react native": {
+    careers: ["mobile-developer"],
+    explanation: "React Native is a framework for building native mobile applications using React."
+  },
+  "ansible": {
+    careers: ["devops-engineer"],
+    explanation: "Ansible is an IT automation tool that automates provisioning, configuration management, and application deployment."
+  },
+  "jenkins": {
+    careers: ["devops-engineer"],
+    explanation: "Jenkins is a leading open-source automation server used to build and deploy CI/CD pipelines."
+  },
+  "gitbook": {
+    careers: ["technical-writer"],
+    explanation: "GitBook is a documentation platform where teams write and publish technical manuals."
   }
 };

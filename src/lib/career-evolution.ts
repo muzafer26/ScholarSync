@@ -38,7 +38,7 @@ export const CAREER_EVOLUTION_REGISTRY: EvolutionRegistry = {
     aliases: ["Android Developer", "Flutter Developer", "Dart Programmer", "iOS Developer", "React Native Developer"],
     explanation: "Mobile Developers build native and cross-platform smartphone applications using Flutter, Swift, or Kotlin."
   },
-  "UI/UX Designer": {
+  "UX Designer": {
     aliases: ["Figma Designer", "UX Researcher", "Product Designer", "Interaction Designer", "Information Architect"],
     explanation: "UX Designers draft interface wireframes, perform user research, and structure accessible design systems."
   },

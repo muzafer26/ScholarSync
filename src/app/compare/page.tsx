@@ -8,26 +8,7 @@ import { ArrowLeftRight, X, ArrowRight, Check, Sparkles, HelpCircle } from "luci
 import { motion } from "framer-motion";
 import Link from "next/link";
 import type { Career } from "@/types";
-
-const getBestSuitedFor = (slug: string): string => {
-  const SUITED: Record<string, string> = {
-    "frontend-developer": "People who love visual, fast-feedback work and building interfaces.",
-    "backend-developer": "People who like systems, APIs, database design, and logic.",
-    "java-developer": "Enterprise software developers interested in robust, large-scale systems.",
-    "full-stack-developer": "Generalists who want to build end-to-end applications from database to UI.",
-    "data-scientist": "Analytically minded people who enjoy finding patterns in data and math.",
-    "ai-engineer": "People comfortable with math, neural networks, and experimentation.",
-    "devops-engineer": "System builders who love automation, scaling servers, and infrastructure.",
-    "mobile-developer": "Developers wanting to build fast, tactile mobile applications.",
-    "ux-designer": "Creative problem solvers focused on user research, wireframes, and design.",
-    "cybersecurity-analyst": "Security-focused minds who enjoy threat hunting and network defense.",
-    "qa-tester": "Detail-oriented testers who like automation and breaking software to improve it.",
-    "data-analyst": "Business-minded people who enjoy building dashboards and querying databases.",
-    "game-developer": "Creatives who love interactive stories, 3D math, and game loop design.",
-    "technical-writer": "Communicators who enjoy explaining complex technologies to other developers."
-  };
-  return SUITED[slug] || "Aspiring builders seeking structured career roadmaps.";
-};
+import { getCareerCompareInfo } from "@/lib/compareInsights";
 
 const parseDurationToMonths = (durationStr: string): number => {
   const clean = durationStr.toLowerCase();
@@ -94,8 +75,12 @@ function CompareContent() {
   // Read slugs from URL query param: careers=frontend-developer,backend-developer
   const urlSlugs = useMemo(() => {
     const param = searchParams.get("careers");
-    if (!param) return ["frontend-developer", "backend-developer"];
-    return param.split(",").filter(Boolean).slice(0, 3);
+    const defaultSlugs = ["frontend-developer", "backend-developer"];
+    if (!param) return defaultSlugs;
+    const split = param.split(",").filter(Boolean).slice(0, 3);
+    const validSlugs = split.filter(s => careers.some(c => c.slug === s));
+    if (validSlugs.length === 0) return defaultSlugs;
+    return validSlugs;
   }, [searchParams]);
 
   // Update query params when selection changes
@@ -276,14 +261,124 @@ function CompareContent() {
                     })}
                   </tr>
 
-                  {/* Best Suited For */}
+                  {/* Best For */}
                   <tr>
-                    <td className="p-4 font-mono text-[11px] uppercase text-muted-foreground">Best Suited For</td>
-                    {selectedCareers.map((c) => (
-                      <td key={c.id} className="p-4 text-[13px] text-foreground/80 leading-relaxed font-serif">
-                        {getBestSuitedFor(c.slug)}
-                      </td>
-                    ))}
+                    <td className="p-4 font-mono text-[11px] uppercase text-muted-foreground">Best For</td>
+                    {selectedCareers.map((c) => {
+                      const compareInfo = getCareerCompareInfo(c.slug);
+                      return (
+                        <td key={c.id} className="p-4 text-[13px] text-foreground/80 leading-relaxed font-serif">
+                          {compareInfo?.bestFor || "Compare Insights Coming Soon"}
+                        </td>
+                      );
+                    })}
+                  </tr>
+
+                  {/* First Job Difficulty */}
+                  <tr>
+                    <td className="p-4 font-mono text-[11px] uppercase text-muted-foreground">First Job Difficulty</td>
+                    {selectedCareers.map((c) => {
+                      const compareInfo = getCareerCompareInfo(c.slug);
+                      return (
+                        <td key={c.id} className="p-4 text-[13px] text-foreground/80 leading-relaxed font-serif">
+                          {compareInfo?.firstJobDifficulty || "Compare Insights Coming Soon"}
+                        </td>
+                      );
+                    })}
+                  </tr>
+
+                  {/* Learning Curve */}
+                  <tr>
+                    <td className="p-4 font-mono text-[11px] uppercase text-muted-foreground">Learning Curve</td>
+                    {selectedCareers.map((c) => {
+                      const compareInfo = getCareerCompareInfo(c.slug);
+                      return (
+                        <td key={c.id} className="p-4 text-[13px] text-foreground/80 leading-relaxed font-serif">
+                          {compareInfo?.learningCurve || "Compare Insights Coming Soon"}
+                        </td>
+                      );
+                    })}
+                  </tr>
+
+                  {/* Freelance Potential */}
+                  <tr>
+                    <td className="p-4 font-mono text-[11px] uppercase text-muted-foreground">Freelance Potential</td>
+                    {selectedCareers.map((c) => {
+                      const compareInfo = getCareerCompareInfo(c.slug);
+                      return (
+                        <td key={c.id} className="p-4 text-[13px] text-foreground/80 leading-relaxed font-serif">
+                          {compareInfo?.freelancePotential || "Compare Insights Coming Soon"}
+                        </td>
+                      );
+                    })}
+                  </tr>
+
+                  {/* Remote Opportunities */}
+                  <tr>
+                    <td className="p-4 font-mono text-[11px] uppercase text-muted-foreground">Remote Opportunities</td>
+                    {selectedCareers.map((c) => {
+                      const compareInfo = getCareerCompareInfo(c.slug);
+                      return (
+                        <td key={c.id} className="p-4 text-[13px] text-foreground/80 leading-relaxed font-serif">
+                          {compareInfo?.remoteOpportunities || "Compare Insights Coming Soon"}
+                        </td>
+                      );
+                    })}
+                  </tr>
+
+                  {/* AI Impact */}
+                  <tr>
+                    <td className="p-4 font-mono text-[11px] uppercase text-muted-foreground">AI Impact</td>
+                    {selectedCareers.map((c) => {
+                      const compareInfo = getCareerCompareInfo(c.slug);
+                      return (
+                        <td key={c.id} className="p-4 text-[13px] text-foreground/80 leading-relaxed font-serif">
+                          {compareInfo?.aiImpact || "Compare Insights Coming Soon"}
+                        </td>
+                      );
+                    })}
+                  </tr>
+
+                  {/* Who Thrives Here */}
+                  <tr>
+                    <td className="p-4 font-mono text-[11px] uppercase text-muted-foreground">Who Thrives Here</td>
+                    {selectedCareers.map((c) => {
+                      const compareInfo = getCareerCompareInfo(c.slug);
+                      return (
+                        <td key={c.id} className="p-4 text-[13px] text-foreground/80 leading-relaxed font-serif">
+                          {compareInfo?.whoThrives || "Compare Insights Coming Soon"}
+                        </td>
+                      );
+                    })}
+                  </tr>
+
+                  {/* Who Struggles Here */}
+                  <tr>
+                    <td className="p-4 font-mono text-[11px] uppercase text-muted-foreground">Who Struggles Here</td>
+                    {selectedCareers.map((c) => {
+                      const compareInfo = getCareerCompareInfo(c.slug);
+                      return (
+                        <td key={c.id} className="p-4 text-[13px] text-foreground/80 leading-relaxed font-serif text-red-600/90 bg-red-500/[0.01]">
+                          {compareInfo?.whoStruggles || "Compare Insights Coming Soon"}
+                        </td>
+                      );
+                    })}
+                  </tr>
+
+                  {/* Portfolio Importance */}
+                  <tr>
+                    <td className="p-4 font-mono text-[11px] uppercase text-muted-foreground">Portfolio Importance</td>
+                    {selectedCareers.map((c) => {
+                      const compareInfo = getCareerCompareInfo(c.slug);
+                      const importance = compareInfo?.portfolioImportance || "Moderate";
+                      return (
+                        <td key={c.id} className="p-4">
+                          <span className={`px-2 py-0.5 rounded-sm font-mono text-[11px] uppercase font-bold border ${importance === "Critical" ? "bg-red-500/10 text-red-500 border-red-500/20" : importance === "High" ? "bg-primary/10 text-primary border-primary/20" : "bg-secondary text-foreground/85 border-border"}`}>
+                            {importance}
+                          </span>
+                        </td>
+                      );
+                    })}
                   </tr>
 
                   {/* Core Skills */}

@@ -9,7 +9,9 @@
     "start:prod": "next start -p 3000 -H 0.0.0.0",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "verify": "npx tsx scripts/verify-deploy.ts"
+    "verify": "npx tsx scripts/verify-deploy.ts",
+    "audit:careers": "npx tsx scripts/audit-careers.ts",
+    "audit:resources": "npx tsx scripts/audit-resources.ts"
   },
   "dependencies": {
     "@genkit-ai/googleai": "^1.8.0",

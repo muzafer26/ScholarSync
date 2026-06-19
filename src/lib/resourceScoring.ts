@@ -59,6 +59,20 @@ export const calculateResourceScore = (resource: Resource, allResources: Resourc
     score += 5;
   }
 
+  // NEW RESOURCE TRUST LAYER RANKING LOGIC
+  const typeBadge = (resource.resourceTypeBadge || '').toLowerCase();
+  if (typeBadge.includes('official documentation') || typeBadge.includes('official docs') || resource.pricingType === 'OFFICIAL_DOCS') {
+    score += 25; // Official Documentation is top priority
+  } else if (typeBadge.includes('university curriculum')) {
+    score += 20; // University Curriculum
+  } else if (typeBadge.includes('community gold standards') || typeBadge.includes('community recommended')) {
+    score += 15; // Community Gold Standards
+  } else if (typeBadge.includes('interactive practice')) {
+    score += 10; // Interactive Practice
+  } else if (typeBadge.includes('project based') || typeBadge.includes('project-based')) {
+    score += 5;  // Project-Based Learning
+  }
+
   // PENALTIES
   if (!resource.description || resource.description.trim() === '') {
     score -= 10;
