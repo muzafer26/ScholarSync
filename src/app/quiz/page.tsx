@@ -7,7 +7,7 @@ import { Header } from "@/components/layout/header";
 import { Button } from "@/components/ui/button";
 import { HelpCircle, RefreshCw, Trophy, ArrowRight, ShieldCheck, AlertTriangle } from "lucide-react";
 import { careers as allCareers } from "@/lib/seed-careers";
-import { getQuizExplanation } from "@/lib/quizExplanations";
+import { getQuizExplanation, getEliminationReason } from "@/lib/quizExplanations";
 
 interface Question {
   id: number;
@@ -86,6 +86,7 @@ interface QuizResults {
     recommendedReason: string;
     secondReason: string;
     eliminatedReason: string;
+    butConsider?: string;
   };
 }
 
@@ -254,7 +255,7 @@ export default function QuizPage() {
       secondSlug = fallbackSorted[1].slug;
     }
 
-    const explanationData = getQuizExplanation(recommendedSlug, secondSlug, finalEliminated[0] || "ai-engineer");
+    const explanationData = getQuizExplanation(recommendedSlug, secondSlug, finalEliminated[0] || "ai-engineer", finalAnswers);
 
     setResults({
       recommendedSlug,
@@ -355,7 +356,7 @@ export default function QuizPage() {
                   <h3 className="text-[18px] font-serif font-bold text-foreground">Why We Matched You</h3>
                   
                   <div className="space-y-2">
-                    <span className="text-[11px] font-mono text-muted-foreground uppercase tracking-wider block">You selected:</span>
+                    <span className="text-xs font-mono text-muted-foreground uppercase tracking-wider block">You selected:</span>
                     <ul className="space-y-1.5 text-[13px] font-mono text-foreground/80">
                       {results.selectionSummary.map((sel, idx) => (
                         <li key={idx} className="flex items-center gap-1.5">
@@ -366,7 +367,7 @@ export default function QuizPage() {
                   </div>
 
                   <div className="pt-4 border-t border-border/60 space-y-2">
-                    <span className="text-[11px] font-mono text-muted-foreground uppercase tracking-wider block">Decision Engine Trace:</span>
+                    <span className="text-xs font-mono text-muted-foreground uppercase tracking-wider block">Decision Engine Trace:</span>
                     <ul className="space-y-2.5 text-[13px] font-serif text-foreground/85 leading-relaxed">
                       <li className="flex items-start gap-2">
                         <span className="text-emerald-500 font-mono font-bold mt-0.5">✓</span>
@@ -376,19 +377,31 @@ export default function QuizPage() {
                         <span className="text-emerald-500 font-mono font-bold mt-0.5">✓</span>
                         <span><strong>{getCareerTitle(results.secondSlug)}</strong> survived. {results.explanationData.secondReason}</span>
                       </li>
-                      <li className="flex items-start gap-2">
-                        <span className="text-red-500 font-mono font-bold mt-0.5">✗</span>
-                        <span><strong>{getCareerTitle(results.eliminatedSlugs[0] || "ai-engineer")}</strong> was eliminated or ranked lower. {results.explanationData.eliminatedReason}</span>
-                      </li>
+                      {results.eliminatedSlugs.slice(0, 3).map((elimSlug) => (
+                        <li key={elimSlug} className="flex items-start gap-2">
+                          <span className="text-red-500 font-mono font-bold mt-0.5">✗</span>
+                          <span>
+                            <strong>{getCareerTitle(elimSlug)}</strong> was eliminated or ranked lower.{" "}
+                            {getEliminationReason(elimSlug, answers)}
+                          </span>
+                        </li>
+                      ))}
                     </ul>
                   </div>
                 </div>
+
+                {results.explanationData.butConsider && (
+                  <div className="p-4 bg-amber-500/5 border border-amber-500/25 rounded-sm text-xs font-mono text-amber-600/90 leading-relaxed flex items-start gap-2.5">
+                    <AlertTriangle className="h-4 w-4 text-amber-500 shrink-0 mt-0.5" />
+                    <div>{results.explanationData.butConsider}</div>
+                  </div>
+                )}
 
                 {/* Recommended Section Card */}
                 <div className="bg-card border border-border rounded-md p-6 bevel-card relative overflow-hidden border-l-4 border-l-primary">
                   <div className="flex items-start justify-between gap-4">
                     <div>
-                      <span className="text-[11px] font-mono text-primary uppercase font-bold tracking-widest block mb-1">Recommended Pathway</span>
+                      <span className="text-xs font-mono text-primary uppercase font-bold tracking-widest block mb-1">Recommended Pathway</span>
                       <h3 className="text-[20px] font-serif font-bold text-foreground mb-3">{getCareerTitle(results.recommendedSlug)}</h3>
                       <p className="text-[14px] text-muted-foreground font-serif leading-relaxed">
                         Learn details, daily scenarios, and verify top curated free resources for this role.

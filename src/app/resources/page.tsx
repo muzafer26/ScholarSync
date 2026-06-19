@@ -38,6 +38,25 @@ export default function ResourcesPage() {
   const [showFilters, setShowFilters] = useState(false);
   const [tab, setTab] = useState<"curated" | "global" | "videos">("curated");
   const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [bookmarkedResources, setBookmarkedResources] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setBookmarkedResources(JSON.parse(localStorage.getItem("savedResources") || "[]"));
+    }
+  }, []);
+
+  const toggleResourceBookmark = (id: string) => {
+    const saved = JSON.parse(localStorage.getItem("savedResources") || "[]");
+    let nextSaved = [];
+    if (saved.includes(id)) {
+      nextSaved = saved.filter((rId: string) => rId !== id);
+    } else {
+      nextSaved = [...saved, id];
+    }
+    setBookmarkedResources(nextSaved);
+    localStorage.setItem("savedResources", JSON.stringify(nextSaved));
+  };
 
   // Global Search State (Open Library API)
   const [globalBooks, setGlobalBooks] = useState<GlobalBook[]>([]);
@@ -354,7 +373,7 @@ export default function ResourcesPage() {
                   <p className="text-[16px] font-serif text-muted-foreground mb-6 max-w-2xl leading-relaxed">{filtered[0].description}</p>
                   
                   <div className="bg-background/80 border border-emerald-500/20 rounded-sm p-4 inline-block mb-6 inset-panel">
-                    <p className="text-[11px] font-mono font-bold uppercase tracking-widest text-emerald-600 mb-3">Recommendation Matrix</p>
+                    <p className="text-xs font-mono font-bold uppercase tracking-widest text-emerald-600 mb-3">Recommendation Matrix</p>
                     <ul className="space-y-2">
                       <li className="text-[13px] font-mono flex items-center gap-2 text-foreground/80"><CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" /> Beginner Friendly & Verified</li>
                       <li className="text-[13px] font-mono flex items-center gap-2 text-foreground/80"><CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" /> {getResourceTrustLabel(filtered[0])}</li>
@@ -408,8 +427,8 @@ export default function ResourcesPage() {
                       <h3 className="font-serif text-[21px] font-bold group-hover:text-primary transition-colors leading-tight mb-2 flex flex-wrap items-center gap-2 relative z-10 text-foreground">
                         {r.title}
                         {isTrustedResource(r) && (
-                          <span title="Verified Active" className="text-emerald-500 bg-emerald-500/10 px-1.5 py-0.5 rounded-sm border border-emerald-500/20 flex items-center gap-1 text-[10px] font-mono font-bold uppercase tracking-wider">
-                            ✓ Verified Active
+                          <span title="Link Verified" className="text-emerald-500 bg-emerald-500/10 px-1.5 py-0.5 rounded-sm border border-emerald-500/20 flex items-center gap-1 text-xs font-mono font-bold uppercase tracking-wider">
+                            ✓ Link Verified
                           </span>
                         )}
                       </h3>
@@ -419,8 +438,8 @@ export default function ResourcesPage() {
 
                       {/* Curated Why Recommended Layer */}
                       {r.whyChosenOverAlternatives && r.whyChosenOverAlternatives.length > 0 ? (
-                        <div className="p-3 bg-secondary/60 border border-border rounded-sm font-mono text-[12px] text-primary leading-relaxed mb-3 relative z-10">
-                          <div className="font-bold uppercase tracking-wider text-[10px] mb-1">🎯 Chosen Over Alternatives:</div>
+                        <div className="p-3 bg-secondary/60 border border-border rounded-sm font-mono text-[13px] text-primary leading-relaxed mb-3 relative z-10">
+                          <div className="font-bold uppercase tracking-wider text-xs mb-1">🎯 Chosen Over Alternatives:</div>
                           <ul className="list-disc list-inside space-y-0.5 text-foreground/90 pl-1">
                             {r.whyChosenOverAlternatives.map((bullet, idx) => (
                               <li key={idx} className="leading-tight">{bullet}</li>
@@ -428,14 +447,14 @@ export default function ResourcesPage() {
                           </ul>
                         </div>
                       ) : (
-                        <div className="p-3 bg-secondary/60 border border-border rounded-sm font-mono text-[12px] text-primary leading-relaxed mb-3 relative z-10">
-                          <div className="font-bold uppercase tracking-wider text-[10px] mb-1">💡 Why Recommended:</div>
+                        <div className="p-3 bg-secondary/60 border border-border rounded-sm font-mono text-[13px] text-primary leading-relaxed mb-3 relative z-10">
+                          <div className="font-bold uppercase tracking-wider text-xs mb-1">💡 Why Recommended:</div>
                           <div>{r.whyRecommended || "Hand-curated, authoritative study material aligned with roadmap progression."}</div>
                         </div>
                       )}
 
                       {/* Factual Verification Metadata */}
-                      <div className="p-3 bg-background border border-border rounded-sm font-mono text-[12px] text-foreground/80 leading-relaxed mb-3 relative z-10 grid grid-cols-2 gap-2">
+                      <div className="p-3 bg-background border border-border rounded-sm font-mono text-[13px] text-foreground/80 leading-relaxed mb-3 relative z-10 grid grid-cols-2 gap-2">
                         <div><span className="text-muted-foreground">Link Checked:</span> {r.verification?.linkChecked || r.lastChecked || "2026-06-18"}</div>
                         <div><span className="text-muted-foreground">Human Reviewed:</span> {r.verification?.humanReviewed || r.verification?.lastReviewed || "2026-06-18"}</div>
                         <div><span className="text-muted-foreground">Review Due:</span> {r.verification?.reviewDue || "2026-12-18"}</div>
@@ -444,16 +463,16 @@ export default function ResourcesPage() {
 
                       {/* Known Limitations */}
                       {r.limitations && (
-                        <div className="p-3 bg-orange-500/5 border border-orange-500/10 rounded-sm font-mono text-[12px] text-orange-600/90 leading-relaxed mb-3 relative z-10">
-                          <div className="font-bold uppercase tracking-wider text-[10px] mb-1">⚠️ Known Tradeoffs:</div>
+                        <div className="p-3 bg-orange-500/5 border border-orange-500/10 rounded-sm font-mono text-[13px] text-orange-600/90 leading-relaxed mb-3 relative z-10">
+                          <div className="font-bold uppercase tracking-wider text-xs mb-1">⚠️ Known Tradeoffs:</div>
                           <div>{r.limitations}</div>
                         </div>
                       )}
 
                       {/* Optional Alternative */}
                       {r.alternativeResource && (
-                        <div className="p-3 bg-emerald-500/5 border border-emerald-500/10 rounded-sm font-mono text-[12px] text-emerald-600/90 leading-relaxed mb-3 relative z-10">
-                          <div className="font-bold uppercase tracking-wider text-[10px] mb-1">🔄 Alternative: <a href={r.alternativeResource.url} target="_blank" rel="noopener noreferrer" className="underline font-medium text-foreground hover:text-primary transition-colors">{r.alternativeResource.title}</a></div>
+                        <div className="p-3 bg-emerald-500/5 border border-emerald-500/10 rounded-sm font-mono text-[13px] text-emerald-600/90 leading-relaxed mb-3 relative z-10">
+                          <div className="font-bold uppercase tracking-wider text-xs mb-1">🔄 Alternative: <a href={r.alternativeResource.url} target="_blank" rel="noopener noreferrer" className="underline font-medium text-foreground hover:text-primary transition-colors">{r.alternativeResource.title}</a></div>
                           <div>{r.alternativeResource.reason}</div>
                         </div>
                       )}
@@ -484,14 +503,23 @@ export default function ResourcesPage() {
                           )}
                         </div>
                         
-                        <a 
-                          href={r.url} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1.5 text-primary hover:text-primary-foreground hover:bg-primary/15 transition-all text-[13px] font-mono font-bold uppercase tracking-[0.04em] border border-primary/20 px-2 py-1 rounded-sm"
-                        >
-                          OPEN <ExternalLink className="h-3.5 w-3.5" />
-                        </a>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => toggleResourceBookmark(r.id)}
+                            className="p-1 rounded-sm border border-border text-muted-foreground hover:text-amber-500 hover:border-amber-500/30 transition-all bg-background cursor-pointer"
+                            title="Bookmark resource"
+                          >
+                            <Star className={`h-3.5 w-3.5 ${bookmarkedResources.includes(r.id) ? "fill-amber-500 text-amber-500" : ""}`} />
+                          </button>
+                          <a 
+                            href={r.url} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 text-primary hover:text-primary-foreground hover:bg-primary/15 transition-all text-[13px] font-mono font-bold uppercase tracking-[0.04em] border border-primary/20 px-2 py-1 rounded-sm"
+                          >
+                            OPEN <ExternalLink className="h-3.5 w-3.5" />
+                          </a>
+                        </div>
                       </div>
                     </div>
                   </motion.div>

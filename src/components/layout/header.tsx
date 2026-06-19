@@ -12,6 +12,7 @@ const NAV = [
   { href: "/compare", label: "Compare" },
   { href: "/resources", label: "Resources" },
   { href: "/jobs", label: "Career Signals" },
+  { href: "/wishlist", label: "Wishlist" },
 ];
 
 export function Header() {

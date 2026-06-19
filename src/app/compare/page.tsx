@@ -49,6 +49,25 @@ const getMathIntensity = (career: Career): "Low" | "Medium" | "High" => {
   return "Low";
 };
 
+const getDifficultyBadge = (val: string) => {
+  const v = val.toLowerCase();
+  let color = "bg-secondary text-foreground/85 border-border";
+  if (v.includes("very high") || v.includes("extreme") || v.includes("steepest")) {
+    color = "bg-red-500/10 text-red-500 border-red-500/20";
+  } else if (v.includes("high") || v.includes("stee")) {
+    color = "bg-orange-500/10 text-orange-600 border-orange-500/20";
+  } else if (v.includes("medium") || v.includes("moderate") || v.includes("steeper")) {
+    color = "bg-yellow-500/10 text-yellow-600 border-yellow-500/20";
+  } else if (v.includes("low") || v.includes("easy")) {
+    color = "bg-emerald-500/10 text-emerald-500 border-emerald-500/20";
+  }
+  return (
+    <span className={`px-2 py-0.5 rounded-sm font-mono text-xs uppercase font-bold border ${color}`}>
+      {val}
+    </span>
+  );
+};
+
 export default function CareerComparePage() {
   return (
     <Suspense fallback={
@@ -136,12 +155,12 @@ function CompareContent() {
         <div className="grid grid-cols-1 md:grid-cols-3 items-center gap-6 mb-10 p-5 bg-card border border-border bevel-card rounded-md max-w-4xl mx-auto">
           {urlSlugs.map((slug, idx) => (
             <div key={idx} className="relative">
-              <label className="text-[11px] font-mono font-bold uppercase tracking-wider text-muted-foreground block mb-2 flex justify-between">
+              <label className="text-xs font-mono font-bold uppercase tracking-wider text-muted-foreground block mb-2 flex justify-between">
                 <span>Column {idx + 1}</span>
                 {urlSlugs.length > 1 && (
                   <button 
                     onClick={() => handleRemoveCareer(idx)}
-                    className="text-muted-foreground hover:text-red-500 transition-colors text-[10px]"
+                    className="text-muted-foreground hover:text-red-500 transition-colors text-xs"
                   >
                     Remove
                   </button>
@@ -183,7 +202,7 @@ function CompareContent() {
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="border-b border-border bg-secondary/30">
-                    <th className="p-4 font-mono text-[11px] uppercase tracking-widest text-muted-foreground w-1/4">Metric</th>
+                    <th className="p-4 font-mono text-xs uppercase tracking-widest text-muted-foreground w-1/4">Metric</th>
                     {selectedCareers.map((c) => (
                       <th key={c.id} className="p-4 font-serif text-[18px] font-bold text-primary">
                         <div className="flex items-center justify-between">
@@ -196,7 +215,7 @@ function CompareContent() {
                 <tbody className="divide-y divide-border font-serif text-[14px] text-foreground">
                   {/* Parent Field */}
                   <tr>
-                    <td className="p-4 font-mono text-[11px] uppercase text-muted-foreground">Parent Field</td>
+                    <td className="p-4 font-mono text-xs uppercase text-muted-foreground">Parent Field</td>
                     {selectedCareers.map((c) => (
                       <td key={c.id} className="p-4 font-bold">{c.field}</td>
                     ))}
@@ -204,7 +223,7 @@ function CompareContent() {
 
                   {/* Average Salary (India) */}
                   <tr>
-                    <td className="p-4 font-mono text-[11px] uppercase text-muted-foreground">Salary (India)</td>
+                    <td className="p-4 font-mono text-xs uppercase text-muted-foreground">Salary (India)</td>
                     {selectedCareers.map((c) => (
                       <td key={c.id} className="p-4 font-mono font-bold text-emerald-500">{c.avgSalaryIndia}</td>
                     ))}
@@ -212,7 +231,7 @@ function CompareContent() {
 
                   {/* Average Salary (Global) */}
                   <tr>
-                    <td className="p-4 font-mono text-[11px] uppercase text-muted-foreground">Salary (Global)</td>
+                    <td className="p-4 font-mono text-xs uppercase text-muted-foreground">Salary (Global)</td>
                     {selectedCareers.map((c) => (
                       <td key={c.id} className="p-4 font-mono text-emerald-500">{c.avgSalaryGlobal}</td>
                     ))}
@@ -220,10 +239,10 @@ function CompareContent() {
 
                   {/* Demand Trend */}
                   <tr>
-                    <td className="p-4 font-mono text-[11px] uppercase text-muted-foreground">Demand Trend</td>
+                    <td className="p-4 font-mono text-xs uppercase text-muted-foreground">Demand Trend</td>
                     {selectedCareers.map((c) => (
                       <td key={c.id} className="p-4 capitalize">
-                        <span className={`px-2 py-0.5 rounded-sm font-mono text-[11px] uppercase font-bold border ${c.demandTrend === "rising" ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" : "bg-yellow-500/10 text-yellow-600 border-yellow-500/20"}`}>
+                        <span className={`px-2 py-0.5 rounded-sm font-mono text-xs uppercase font-bold border ${c.demandTrend === "rising" ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" : "bg-yellow-500/10 text-yellow-600 border-yellow-500/20"}`}>
                           {c.demandTrend}
                         </span>
                       </td>
@@ -232,7 +251,7 @@ function CompareContent() {
 
                   {/* Time to Job-Ready */}
                   <tr>
-                    <td className="p-4 font-mono text-[11px] uppercase text-muted-foreground">Time to Job-Ready</td>
+                    <td className="p-4 font-mono text-xs uppercase text-muted-foreground">Time to Job-Ready</td>
                     {selectedCareers.map((c) => (
                       <td key={c.id} className="p-4 font-bold text-foreground/90">{getDurationSum(c)}</td>
                     ))}
@@ -240,7 +259,7 @@ function CompareContent() {
 
                   {/* Total Roadmap Stages */}
                   <tr>
-                    <td className="p-4 font-mono text-[11px] uppercase text-muted-foreground">Roadmap Stages</td>
+                    <td className="p-4 font-mono text-xs uppercase text-muted-foreground">Roadmap Stages</td>
                     {selectedCareers.map((c) => (
                       <td key={c.id} className="p-4 font-bold">{c.stages.length} Milestones</td>
                     ))}
@@ -248,12 +267,12 @@ function CompareContent() {
 
                   {/* Math Intensity */}
                   <tr>
-                    <td className="p-4 font-mono text-[11px] uppercase text-muted-foreground">Math Intensity</td>
+                    <td className="p-4 font-mono text-xs uppercase text-muted-foreground">Math Intensity</td>
                     {selectedCareers.map((c) => {
                       const intensity = getMathIntensity(c);
                       return (
                         <td key={c.id} className="p-4">
-                          <span className={`px-2 py-0.5 rounded-sm font-mono text-[11px] uppercase font-bold border ${intensity === "High" ? "bg-red-500/10 text-red-500 border-red-500/20" : intensity === "Medium" ? "bg-yellow-500/10 text-yellow-600 border-yellow-500/20" : "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"}`}>
+                          <span className={`px-2 py-0.5 rounded-sm font-mono text-xs uppercase font-bold border ${intensity === "High" ? "bg-red-500/10 text-red-500 border-red-500/20" : intensity === "Medium" ? "bg-yellow-500/10 text-yellow-600 border-yellow-500/20" : "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"}`}>
                             {intensity}
                           </span>
                         </td>
@@ -263,7 +282,7 @@ function CompareContent() {
 
                   {/* Best For */}
                   <tr>
-                    <td className="p-4 font-mono text-[11px] uppercase text-muted-foreground">Best For</td>
+                    <td className="p-4 font-mono text-xs uppercase text-muted-foreground">Best For</td>
                     {selectedCareers.map((c) => {
                       const compareInfo = getCareerCompareInfo(c.slug);
                       return (
@@ -276,12 +295,12 @@ function CompareContent() {
 
                   {/* First Job Difficulty */}
                   <tr>
-                    <td className="p-4 font-mono text-[11px] uppercase text-muted-foreground">First Job Difficulty</td>
+                    <td className="p-4 font-mono text-xs uppercase text-muted-foreground">First Job Difficulty</td>
                     {selectedCareers.map((c) => {
                       const compareInfo = getCareerCompareInfo(c.slug);
                       return (
-                        <td key={c.id} className="p-4 text-[13px] text-foreground/80 leading-relaxed font-serif">
-                          {compareInfo?.firstJobDifficulty || "Compare Insights Coming Soon"}
+                        <td key={c.id} className="p-4">
+                          {compareInfo ? getDifficultyBadge(compareInfo.firstJobDifficulty) : <span className="text-muted-foreground font-mono text-xs">N/A</span>}
                         </td>
                       );
                     })}
@@ -289,12 +308,12 @@ function CompareContent() {
 
                   {/* Learning Curve */}
                   <tr>
-                    <td className="p-4 font-mono text-[11px] uppercase text-muted-foreground">Learning Curve</td>
+                    <td className="p-4 font-mono text-xs uppercase text-muted-foreground">Learning Curve</td>
                     {selectedCareers.map((c) => {
                       const compareInfo = getCareerCompareInfo(c.slug);
                       return (
-                        <td key={c.id} className="p-4 text-[13px] text-foreground/80 leading-relaxed font-serif">
-                          {compareInfo?.learningCurve || "Compare Insights Coming Soon"}
+                        <td key={c.id} className="p-4">
+                          {compareInfo ? getDifficultyBadge(compareInfo.learningCurve) : <span className="text-muted-foreground font-mono text-xs">N/A</span>}
                         </td>
                       );
                     })}
@@ -302,12 +321,12 @@ function CompareContent() {
 
                   {/* Freelance Potential */}
                   <tr>
-                    <td className="p-4 font-mono text-[11px] uppercase text-muted-foreground">Freelance Potential</td>
+                    <td className="p-4 font-mono text-xs uppercase text-muted-foreground">Freelance Potential</td>
                     {selectedCareers.map((c) => {
                       const compareInfo = getCareerCompareInfo(c.slug);
                       return (
-                        <td key={c.id} className="p-4 text-[13px] text-foreground/80 leading-relaxed font-serif">
-                          {compareInfo?.freelancePotential || "Compare Insights Coming Soon"}
+                        <td key={c.id} className="p-4">
+                          {compareInfo ? getDifficultyBadge(compareInfo.freelancePotential) : <span className="text-muted-foreground font-mono text-xs">N/A</span>}
                         </td>
                       );
                     })}
@@ -315,12 +334,12 @@ function CompareContent() {
 
                   {/* Remote Opportunities */}
                   <tr>
-                    <td className="p-4 font-mono text-[11px] uppercase text-muted-foreground">Remote Opportunities</td>
+                    <td className="p-4 font-mono text-xs uppercase text-muted-foreground">Remote Opportunities</td>
                     {selectedCareers.map((c) => {
                       const compareInfo = getCareerCompareInfo(c.slug);
                       return (
-                        <td key={c.id} className="p-4 text-[13px] text-foreground/80 leading-relaxed font-serif">
-                          {compareInfo?.remoteOpportunities || "Compare Insights Coming Soon"}
+                        <td key={c.id} className="p-4">
+                          {compareInfo ? getDifficultyBadge(compareInfo.remoteOpportunities) : <span className="text-muted-foreground font-mono text-xs">N/A</span>}
                         </td>
                       );
                     })}
@@ -328,12 +347,12 @@ function CompareContent() {
 
                   {/* AI Impact */}
                   <tr>
-                    <td className="p-4 font-mono text-[11px] uppercase text-muted-foreground">AI Impact</td>
+                    <td className="p-4 font-mono text-xs uppercase text-muted-foreground">AI Impact</td>
                     {selectedCareers.map((c) => {
                       const compareInfo = getCareerCompareInfo(c.slug);
                       return (
-                        <td key={c.id} className="p-4 text-[13px] text-foreground/80 leading-relaxed font-serif">
-                          {compareInfo?.aiImpact || "Compare Insights Coming Soon"}
+                        <td key={c.id} className="p-4">
+                          {compareInfo ? getDifficultyBadge(compareInfo.aiImpact) : <span className="text-muted-foreground font-mono text-xs">N/A</span>}
                         </td>
                       );
                     })}
@@ -341,7 +360,7 @@ function CompareContent() {
 
                   {/* Who Thrives Here */}
                   <tr>
-                    <td className="p-4 font-mono text-[11px] uppercase text-muted-foreground">Who Thrives Here</td>
+                    <td className="p-4 font-mono text-xs uppercase text-muted-foreground">Who Thrives Here</td>
                     {selectedCareers.map((c) => {
                       const compareInfo = getCareerCompareInfo(c.slug);
                       return (
@@ -354,7 +373,7 @@ function CompareContent() {
 
                   {/* Who Struggles Here */}
                   <tr>
-                    <td className="p-4 font-mono text-[11px] uppercase text-muted-foreground">Who Struggles Here</td>
+                    <td className="p-4 font-mono text-xs uppercase text-muted-foreground">Who Struggles Here</td>
                     {selectedCareers.map((c) => {
                       const compareInfo = getCareerCompareInfo(c.slug);
                       return (
@@ -367,13 +386,13 @@ function CompareContent() {
 
                   {/* Portfolio Importance */}
                   <tr>
-                    <td className="p-4 font-mono text-[11px] uppercase text-muted-foreground">Portfolio Importance</td>
+                    <td className="p-4 font-mono text-xs uppercase text-muted-foreground">Portfolio Importance</td>
                     {selectedCareers.map((c) => {
                       const compareInfo = getCareerCompareInfo(c.slug);
                       const importance = compareInfo?.portfolioImportance || "Moderate";
                       return (
                         <td key={c.id} className="p-4">
-                          <span className={`px-2 py-0.5 rounded-sm font-mono text-[11px] uppercase font-bold border ${importance === "Critical" ? "bg-red-500/10 text-red-500 border-red-500/20" : importance === "High" ? "bg-primary/10 text-primary border-primary/20" : "bg-secondary text-foreground/85 border-border"}`}>
+                          <span className={`px-2 py-0.5 rounded-sm font-mono text-xs uppercase font-bold border ${importance === "Critical" ? "bg-red-500/10 text-red-500 border-red-500/20" : importance === "High" ? "bg-primary/10 text-primary border-primary/20" : "bg-secondary text-foreground/85 border-border"}`}>
                             {importance}
                           </span>
                         </td>
@@ -383,14 +402,14 @@ function CompareContent() {
 
                   {/* Core Skills */}
                   <tr>
-                    <td className="p-4 font-mono text-[11px] uppercase text-muted-foreground">Core Skills</td>
+                    <td className="p-4 font-mono text-xs uppercase text-muted-foreground">Core Skills</td>
                     {selectedCareers.map((c) => {
                       const skills = Array.from(new Set(c.stages.flatMap(st => st.skills)));
                       return (
                         <td key={c.id} className="p-4">
                           <div className="flex flex-wrap gap-1.5 pt-1">
                             {skills.slice(0, 6).map(s => (
-                              <span key={s} className="px-2 py-0.5 bg-secondary text-foreground text-[11px] font-mono rounded-sm border border-border">
+                              <span key={s} className="px-2 py-0.5 bg-secondary text-foreground text-xs font-mono rounded-sm border border-border">
                                 {s}
                               </span>
                             ))}
@@ -402,7 +421,7 @@ function CompareContent() {
 
                   {/* Actions */}
                   <tr>
-                    <td className="p-4 font-mono text-[11px] uppercase text-muted-foreground">Roadmap</td>
+                    <td className="p-4 font-mono text-xs uppercase text-muted-foreground">Roadmap</td>
                     {selectedCareers.map((c) => (
                       <td key={c.id} className="p-4">
                         <Link href={`/explore/${c.slug}`} className="text-primary font-bold hover:text-primary-hover inline-flex items-center gap-1 group/btn">
@@ -415,6 +434,18 @@ function CompareContent() {
               </table>
             </div>
           </motion.div>
+        )}
+
+        {selectedCareers.length > 0 && (
+          <div className="max-w-6xl mx-auto mt-6 p-5 bg-secondary/10 border border-border rounded-sm text-xs font-mono text-muted-foreground leading-relaxed text-left">
+            <h4 className="font-bold text-foreground mb-2 uppercase tracking-wider text-xs">📊 Methodology & Regional Context Note</h4>
+            <ul className="space-y-1.5 list-disc pl-4">
+              <li><strong>Salary (India)</strong>: Measured in Lakhs Per Annum (LPA INR). e.g., 6 LPA = ₹600,000 yearly.</li>
+              <li><strong>Salary (Global)</strong>: Measured in USD per annum.</li>
+              <li><strong>PPP (Purchasing Power Parity)</strong>: Due to regional cost-of-living variances, 10 LPA in tier-1 Indian tech hubs yields standard-of-living purchasing equivalence to ~$40,000 USD in urban United States.</li>
+              <li><strong>Qualitative Metrics</strong>: Difficulty levels and learning curves are standardized based on entry-level market saturation, coding density, and structural theory requirements.</li>
+            </ul>
+          </div>
         )}
 
         {/* Still Not Sure Callout */}

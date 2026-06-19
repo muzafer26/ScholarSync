@@ -244,7 +244,7 @@ export default function JobsPage() {
           
         {/* LEFT SIDEBAR: CAREER PATHWAYS */}
           <div className="lg:col-span-4 bg-card border border-border bevel-card rounded-md p-4 max-h-[700px] overflow-y-auto custom-scrollbar">
-            <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest block mb-4 px-2">Select Career Pathway</span>
+            <span className="text-xs font-mono text-muted-foreground uppercase tracking-widest block mb-4 px-2">Select Career Pathway</span>
             <div className="space-y-1">
               {careers.map((c) => {
                 const isActive = c.slug === activeSlug;
@@ -284,19 +284,19 @@ export default function JobsPage() {
               {compare && (
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-6 border-t border-border font-mono text-[12px]">
                   <div>
-                    <span className="text-muted-foreground block text-[10px] uppercase tracking-wider mb-0.5">First Job Difficulty</span>
+                    <span className="text-muted-foreground block text-xs uppercase tracking-wider mb-0.5">First Job Difficulty</span>
                     <span className="text-foreground font-bold">{compare.firstJobDifficulty}</span>
                   </div>
                   <div>
-                    <span className="text-muted-foreground block text-[10px] uppercase tracking-wider mb-0.5">Learning Curve</span>
+                    <span className="text-muted-foreground block text-xs uppercase tracking-wider mb-0.5">Learning Curve</span>
                     <span className="text-foreground font-bold">{compare.learningCurve}</span>
                   </div>
                   <div>
-                    <span className="text-muted-foreground block text-[10px] uppercase tracking-wider mb-0.5">Portfolio Importance</span>
+                    <span className="text-muted-foreground block text-xs uppercase tracking-wider mb-0.5">Portfolio Importance</span>
                     <span className="text-emerald-500 font-bold">{compare.portfolioImportance}</span>
                   </div>
                   <div>
-                    <span className="text-muted-foreground block text-[10px] uppercase tracking-wider mb-0.5">Remote Option</span>
+                    <span className="text-muted-foreground block text-xs uppercase tracking-wider mb-0.5">Remote Option</span>
                     <span className="text-foreground font-bold">{compare.remoteOpportunities}</span>
                   </div>
                 </div>
@@ -461,7 +461,7 @@ export default function JobsPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* GitHub Octoverse */}
             <div className="p-6 bg-card border border-border bevel-card rounded-md">
-              <span className="text-[10px] font-mono text-primary uppercase tracking-wider block mb-1">GitHub Octoverse</span>
+              <span className="text-xs font-mono text-primary uppercase tracking-wider block mb-1">GitHub Octoverse</span>
               <h3 className="text-[18px] font-serif font-bold text-foreground mb-4">Top Programming Languages</h3>
               <div className="space-y-3 font-mono text-[12px]">
                 {industryData.githubOctoverse.topLanguages.map((l, i) => (
@@ -475,7 +475,7 @@ export default function JobsPage() {
 
             {/* Stack Overflow Survey */}
             <div className="p-6 bg-card border border-border bevel-card rounded-md">
-              <span className="text-[10px] font-mono text-primary uppercase tracking-wider block mb-1">Stack Overflow Survey</span>
+              <span className="text-xs font-mono text-primary uppercase tracking-wider block mb-1">Stack Overflow Survey</span>
               <h3 className="text-[18px] font-serif font-bold text-foreground mb-4">Median Salary Tiers (USD)</h3>
               <div className="space-y-3 font-mono text-[12px]">
                 {industryData.stackOverflowSurvey.popularRolesAndSalaries.map((s, i) => (
@@ -489,7 +489,7 @@ export default function JobsPage() {
 
             {/* State of JS */}
             <div className="p-6 bg-card border border-border bevel-card rounded-md">
-              <span className="text-[10px] font-mono text-primary uppercase tracking-wider block mb-1">State of JS</span>
+              <span className="text-xs font-mono text-primary uppercase tracking-wider block mb-1">State of JS</span>
               <h3 className="text-[18px] font-serif font-bold text-foreground mb-4">Frontend Framework Usage</h3>
               <div className="space-y-3 font-mono text-[12px]">
                 {industryData.stateOfJs.frontendFrameworks.map((f, i) => (
@@ -508,7 +508,7 @@ export default function JobsPage() {
 
             {/* Kaggle Survey */}
             <div className="p-6 bg-card border border-border bevel-card rounded-md">
-              <span className="text-[10px] font-mono text-primary uppercase tracking-wider block mb-1">Kaggle Survey</span>
+              <span className="text-xs font-mono text-primary uppercase tracking-wider block mb-1">Kaggle Survey</span>
               <h3 className="text-[18px] font-serif font-bold text-foreground mb-4">Popular ML Frameworks</h3>
               <div className="space-y-3 font-mono text-[12px]">
                 {industryData.kaggleSurvey.mlFrameworks.map((m, i) => (
@@ -522,7 +522,7 @@ export default function JobsPage() {
 
             {/* CNCF Cloud Native */}
             <div className="p-6 bg-card border border-border bevel-card rounded-md">
-              <span className="text-[10px] font-mono text-primary uppercase tracking-wider block mb-1">CNCF Cloud Native</span>
+              <span className="text-xs font-mono text-primary uppercase tracking-wider block mb-1">CNCF Cloud Native</span>
               <h3 className="text-[18px] font-serif font-bold text-foreground mb-4">Kubernetes & Runtime Stats</h3>
               <div className="space-y-3 font-mono text-[12px]">
                 <div className="flex justify-between pb-2 border-b border-border/40">
@@ -540,7 +540,7 @@ export default function JobsPage() {
 
             {/* Hugging Face AI Ecosystem */}
             <div className="p-6 bg-card border border-border bevel-card rounded-md">
-              <span className="text-[10px] font-mono text-primary uppercase tracking-wider block mb-1">Hugging Face AI Ecosystem</span>
+              <span className="text-xs font-mono text-primary uppercase tracking-wider block mb-1">Hugging Face AI Ecosystem</span>
               <h3 className="text-[18px] font-serif font-bold text-foreground mb-4">Deep Learning Libraries</h3>
               <div className="space-y-3 font-mono text-[12px]">
                 {Object.entries(industryData.huggingFaceReports.deepLearningLibrariesShare).map(([lib, share]) => (

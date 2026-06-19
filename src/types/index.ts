@@ -97,7 +97,17 @@ export type CareerField =
   | 'Science'
   | 'Marketing'
   | 'Education'
-  | 'Media';
+  | 'Media'
+  | 'Web Development'
+  | 'Backend'
+  | 'AI'
+  | 'Machine Learning'
+  | 'Cybersecurity'
+  | 'Cloud'
+  | 'DevOps'
+  | 'UI UX'
+  | 'Business'
+  | 'Content Creation';
 
 export interface ResourceVerification {
   lastReviewed: string;
@@ -152,32 +162,23 @@ export interface Resource {
   verification?: ResourceVerification;
 }
 
-export type ResourceSource =
-  | 'YouTube'
-  | 'GitHub'
-  | 'MIT OCW'
-  | 'Khan Academy'
-  | 'Coursera'
-  | 'edX'
-  | 'freeCodeCamp'
-  | 'NPTEL'
-  | 'Udacity'
-  | 'fast.ai'
-  | 'Kaggle'
-  | 'Google'
-  | 'Stanford'
-  | 'Harvard'
-  | 'Yale'
-  | 'Project Gutenberg'
-  | 'Archive.org'
-  | 'Zerodha Varsity'
-  | 'NCERT'
-  | 'PW'
-  | 'Unacademy'
-  | 'Class Central'
-  | 'Other';
+export type ResourceSource = string;
 
-export type ResourceFormat = 'COURSE' | 'DOCUMENTATION' | 'PRACTICE' | 'PROJECT' | 'REFERENCE';
+export type ResourceFormat =
+  | 'COURSE'
+  | 'DOCUMENTATION'
+  | 'PRACTICE'
+  | 'PROJECT'
+  | 'REFERENCE'
+  | 'course'
+  | 'video'
+  | 'book'
+  | 'interactive'
+  | 'text'
+  | 'documentation'
+  | 'practice'
+  | 'project'
+  | 'reference';
 
 export type SkillLevel = 'beginner' | 'intermediate' | 'advanced';
 

@@ -33,6 +33,6 @@ export function getResourceTrustLabel(resource: Resource): string {
   if (status === "Needs Review") return "Needs Review";
   if (resource.pricingType === "OFFICIAL_DOCS") return "Official Documentation";
   if (resource.pricingType === "OPEN_SOURCE") return "Open Source";
-  if (isTrustedResource(resource)) return "Verified Free";
+  if (isTrustedResource(resource)) return "Link Verified";
   return "Free";
 }

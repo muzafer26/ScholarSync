@@ -28,7 +28,7 @@ export function FloatingCards() {
           <div className="relative surface px-4 py-3 rounded-2xl flex items-center gap-2.5">
             <span className="h-2 w-2 rounded-full bg-accent animate-pulse" />
             <span className="font-serif text-base">ScholarSync</span>
-            <span className="text-[11px] text-muted-foreground font-mono">// Live Updates</span>
+            <span className="text-xs text-muted-foreground font-mono">// Live Updates</span>
           </div>
         </div>
       </div>
@@ -62,7 +62,7 @@ export function FloatingCards() {
               </span>
               <span className="flex flex-col">
                 <span className="text-[12px] font-medium leading-tight">{c.title}</span>
-                <span className="text-[10px] text-muted-foreground leading-tight font-mono">{c.meta}</span>
+                <span className="text-xs text-muted-foreground leading-tight font-mono">{c.meta}</span>
               </span>
             </div>
           </motion.div>

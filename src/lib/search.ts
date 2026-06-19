@@ -12,11 +12,16 @@ import { getResourceStatus, isTrustedResource } from "@/lib/resourceTrust";
 // Unified search dataset
 export const allCareers: Career[] = careers;
 // Dynamically enforce "100% Free Resources" by filtering out paid/audit-heavy platforms
-export const allResources: Resource[] = [...rawResources, ...additionalResources].filter(
-  (r) => r.isFree !== false && !["coursera", "udemy", "edx"].some((paid) => 
-    r.source.toLowerCase().includes(paid) || r.url.toLowerCase().includes(paid)
-  )
-);
+export const allResources: Resource[] = [...rawResources, ...additionalResources]
+  .map(r => ({
+    ...r,
+    status: r.status || getResourceStatus(r)
+  }))
+  .filter(
+    (r) => r.isFree !== false && !["coursera", "udemy", "edx"].some((paid) => 
+      r.source.toLowerCase().includes(paid) || r.url.toLowerCase().includes(paid)
+    )
+  );
 export const allJobs: Job[] = [
   { id: 'j-1', title: 'Frontend Developer', source: 'LinkedIn', location: 'Remote', experience: 'Junior', requiredSkills: ['React', 'JavaScript', 'CSS', 'HTML'], lastUpdated: new Date().toISOString() },
   { id: 'j-2', title: 'Data Scientist', source: 'Indeed', location: 'New York, NY', experience: 'Mid-Level', requiredSkills: ['Python', 'Machine Learning', 'SQL', 'Pandas'], lastUpdated: new Date().toISOString() },

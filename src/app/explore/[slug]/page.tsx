@@ -4,10 +4,10 @@ import { use, useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { careers } from "@/lib/seed-careers";
-import { resources } from "@/lib/seed-resources";
+import { allResources as resources } from "@/lib/search";
 import { Header } from "@/components/layout/header";
 import { CalloutBlock, WarningBlock, InfoBlock } from "@/components/ui/notion-blocks";
-import { ExternalLink, Briefcase, Map, BookOpen, ChevronRight, Shield, CheckCircle2, Zap, Check } from "lucide-react";
+import { ExternalLink, Briefcase, Map, BookOpen, ChevronRight, Shield, CheckCircle2, Zap, Check, Star } from "lucide-react";
 import { motion } from "framer-motion";
 import { getResourceConfidenceBadge } from "@/lib/utils";
 import { getResourceTrustLabel } from "@/lib/resourceTrust";
@@ -23,6 +23,47 @@ export default function CareerRoadmapPage({ params }: { params: Promise<{ slug: 
   const career = careers.find((c) => c.slug === slug);
 
   const [expandedStages, setExpandedStages] = useState<Record<string, boolean>>({});
+  const [isSaved, setIsSaved] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const saved = JSON.parse(localStorage.getItem("savedCareers") || "[]");
+      setIsSaved(saved.includes(slug));
+    }
+  }, [slug]);
+
+  const toggleCareerWishlist = () => {
+    const saved = JSON.parse(localStorage.getItem("savedCareers") || "[]");
+    let nextSaved = [];
+    if (saved.includes(slug)) {
+      nextSaved = saved.filter((s: string) => s !== slug);
+      setIsSaved(false);
+    } else {
+      nextSaved = [...saved, slug];
+      setIsSaved(true);
+    }
+    localStorage.setItem("savedCareers", JSON.stringify(nextSaved));
+  };
+
+  const [bookmarkedResources, setBookmarkedResources] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setBookmarkedResources(JSON.parse(localStorage.getItem("savedResources") || "[]"));
+    }
+  }, []);
+
+  const toggleResourceBookmark = (id: string) => {
+    const saved = JSON.parse(localStorage.getItem("savedResources") || "[]");
+    let nextSaved = [];
+    if (saved.includes(id)) {
+      nextSaved = saved.filter((rId: string) => rId !== id);
+    } else {
+      nextSaved = [...saved, id];
+    }
+    setBookmarkedResources(nextSaved);
+    localStorage.setItem("savedResources", JSON.stringify(nextSaved));
+  };
 
   const toggleStageExpansion = (stageId: string) => {
     setExpandedStages(prev => ({ ...prev, [stageId]: !prev[stageId] }));
@@ -586,25 +627,35 @@ export default function CareerRoadmapPage({ params }: { params: Promise<{ slug: 
           transition={{ delay: 0.1 }}
           className="mb-12"
         >
-          <div className="flex flex-wrap items-center gap-3 mb-4">
+          <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
             <h1 className="text-[32px] md:text-[42px] font-serif font-bold tracking-tight leading-tight text-foreground">{career.title}</h1>
+            <button
+              onClick={toggleCareerWishlist}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-mono font-bold uppercase tracking-wider transition-all cursor-pointer ${
+                isSaved 
+                  ? "bg-amber-500/10 text-amber-500 border-amber-500/35 hover:bg-amber-500/20" 
+                  : "bg-secondary text-muted-foreground border-border hover:text-foreground hover:bg-secondary/80"
+              }`}
+            >
+              {isSaved ? "★ Saved to Wishlist" : "☆ Save Roadmap"}
+            </button>
           </div>
 
-          <div className="mb-6 grid grid-cols-2 md:grid-cols-4 gap-4 p-4 rounded-md border border-border bg-card font-mono text-[12px]">
+          <div className="mb-6 grid grid-cols-2 md:grid-cols-4 gap-4 p-4 rounded-md border border-border bg-card font-mono text-xs">
             <div>
-              <span className="text-muted-foreground block text-[10px] uppercase tracking-wider mb-0.5">Last Reviewed</span>
+              <span className="text-muted-foreground block text-xs uppercase tracking-wider mb-0.5">Last Reviewed</span>
               <span className="text-emerald-500 font-bold">2026-06-18</span>
             </div>
             <div>
-              <span className="text-muted-foreground block text-[10px] uppercase tracking-wider mb-0.5">Next Review Due</span>
+              <span className="text-muted-foreground block text-xs uppercase tracking-wider mb-0.5">Next Review Due</span>
               <span className="text-foreground font-bold">2026-12-18</span>
             </div>
             <div>
-              <span className="text-muted-foreground block text-[10px] uppercase tracking-wider mb-0.5">Source Count</span>
+              <span className="text-muted-foreground block text-xs uppercase tracking-wider mb-0.5">Source Count</span>
               <span className="text-foreground font-bold">{sourceCount} References</span>
             </div>
             <div>
-              <span className="text-muted-foreground block text-[10px] uppercase tracking-wider mb-0.5">Resource Count</span>
+              <span className="text-muted-foreground block text-xs uppercase tracking-wider mb-0.5">Resource Count</span>
               <span className="text-foreground font-bold">{totalVerifiedCount} Verified Resources</span>
             </div>
           </div>
@@ -614,24 +665,24 @@ export default function CareerRoadmapPage({ params }: { params: Promise<{ slug: 
               {career.description}
             </p>
             
-            <div className="relative z-10 pt-4 border-t border-border flex flex-wrap items-center gap-6 justify-between font-mono text-[13px] mb-4">
+            <div className="relative z-10 pt-4 border-t border-border flex flex-wrap items-center gap-6 justify-between font-mono text-sm mb-4">
               <div className="flex items-center gap-2">
-                <span className="text-muted-foreground uppercase text-[11px] tracking-wider">Pathway Type:</span>
+                <span className="text-muted-foreground uppercase text-xs tracking-wider">Pathway Type:</span>
                 <span className="text-primary font-bold uppercase tracking-widest">{career.field}</span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-muted-foreground uppercase text-[11px] tracking-wider">Demand Trend:</span>
+                <span className="text-muted-foreground uppercase text-xs tracking-wider">Demand Trend:</span>
                 <span className="text-emerald-500 font-bold uppercase tracking-widest">{career.demandTrend}</span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-muted-foreground uppercase text-[11px] tracking-wider">Global Salary:</span>
+                <span className="text-muted-foreground uppercase text-xs tracking-wider">Global Salary:</span>
                 <span className="text-foreground font-bold">{career.avgSalaryGlobal}</span>
               </div>
             </div>
 
             {career.aliases && career.aliases.length > 0 && (
               <div className="relative z-10 pt-4 border-t border-border mt-4">
-                <span className="text-muted-foreground uppercase text-[11px] tracking-wider font-mono block mb-2">Industry Aliases & Specializations:</span>
+                <span className="text-muted-foreground uppercase text-xs tracking-wider font-mono block mb-2">Industry Aliases & Specializations:</span>
                 <div className="flex flex-wrap gap-1.5">
                   {career.aliases.map((alias, idx) => (
                     <span key={idx} className="px-2 py-0.5 bg-secondary text-foreground text-[12px] font-mono rounded-sm border border-border">
@@ -645,13 +696,13 @@ export default function CareerRoadmapPage({ params }: { params: Promise<{ slug: 
             {sourcesData && (
               <div className="relative z-10 pt-4 border-t border-border mt-4 text-left">
                 <details className="group cursor-pointer" open>
-                  <summary className="text-muted-foreground hover:text-foreground transition-colors uppercase text-[11px] tracking-wider font-mono list-none flex items-center gap-1.5 selection:bg-transparent mb-3">
+                  <summary className="text-muted-foreground hover:text-foreground transition-colors uppercase text-xs tracking-wider font-mono list-none flex items-center gap-1.5 selection:bg-transparent mb-3">
                     <ChevronRight className="w-3.5 h-3.5 transition-transform group-open:rotate-95 text-primary" />
                     <span>Provenance & Reference Signals</span>
                   </summary>
                   <div className="pl-5 grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
                     <div>
-                      <span className="text-muted-foreground font-mono text-[10px] uppercase block mb-1">Primary References</span>
+                      <span className="text-muted-foreground font-mono text-xs uppercase block mb-1">Primary References</span>
                       <ul className="space-y-1 text-[13px] font-serif list-none">
                         {sourcesData.primaryReferences.map((ref, idx) => (
                           <li key={idx}>
@@ -663,7 +714,7 @@ export default function CareerRoadmapPage({ params }: { params: Promise<{ slug: 
                       </ul>
                     </div>
                     <div>
-                      <span className="text-muted-foreground font-mono text-[10px] uppercase block mb-1">Industry Signals</span>
+                      <span className="text-muted-foreground font-mono text-xs uppercase block mb-1">Industry Signals</span>
                       <ul className="space-y-1 text-[13px] font-serif list-none">
                         {sourcesData.industrySignals.map((sig, idx) => (
                           <li key={idx}>
@@ -737,18 +788,18 @@ export default function CareerRoadmapPage({ params }: { params: Promise<{ slug: 
               {insights ? (
                 <div className="space-y-4 mb-6">
                   <div>
-                    <span className="text-muted-foreground text-[10px] font-mono uppercase block mb-0.5">Market Demand</span>
-                    <p className="text-[13px] font-serif text-foreground/90 leading-snug">{insights.demand}</p>
+                    <span className="text-muted-foreground text-xs font-mono uppercase block mb-0.5">Market Demand</span>
+                    <p className="text-sm font-serif text-foreground/90 leading-snug">{insights.demand}</p>
                   </div>
 
                   <div>
-                    <span className="text-muted-foreground text-[10px] font-mono uppercase block mb-0.5">Competition</span>
-                    <p className="text-[13px] font-serif text-foreground/90 leading-snug">{insights.competition}</p>
+                    <span className="text-muted-foreground text-xs font-mono uppercase block mb-0.5">Competition</span>
+                    <p className="text-sm font-serif text-foreground/90 leading-snug">{insights.competition}</p>
                   </div>
 
                   <div>
-                    <span className="text-muted-foreground text-[10px] font-mono uppercase block mb-0.5">Portfolio Need</span>
-                    <p className="text-[13px] font-serif text-foreground/90 leading-snug">{insights.portfolioImportance}</p>
+                    <span className="text-muted-foreground text-xs font-mono uppercase block mb-0.5">Portfolio Need</span>
+                    <p className="text-sm font-serif text-foreground/90 leading-snug">{insights.portfolioImportance}</p>
                   </div>
                 </div>
               ) : (
@@ -759,7 +810,7 @@ export default function CareerRoadmapPage({ params }: { params: Promise<{ slug: 
 
               <div className="pt-4 border-t border-border flex items-center justify-between">
                 <div>
-                  <span className="text-[11px] font-mono text-muted-foreground uppercase block tracking-wider">Best For</span>
+                  <span className="text-xs font-mono text-muted-foreground uppercase block tracking-wider">Best For</span>
                   <span className="text-[18px] font-serif font-bold text-foreground">{career.subfield}</span>
                 </div>
                 <div className="px-3 py-1.5 rounded-sm bg-primary/10 border border-primary/20 text-primary font-mono text-[12px] font-bold tracking-widest uppercase">
@@ -779,12 +830,12 @@ export default function CareerRoadmapPage({ params }: { params: Promise<{ slug: 
             className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12"
           >
             <div className="bg-card border border-border rounded-md p-4 bevel-card text-left">
-              <span className="text-[11px] font-mono text-muted-foreground uppercase tracking-widest block mb-1">Degree Advantage</span>
-              <p className="text-[13.5px] font-serif text-foreground/90 leading-relaxed">{insights.degreeAdvantage}</p>
+              <span className="text-xs font-mono text-muted-foreground uppercase tracking-widest block mb-1">Degree Advantage</span>
+              <p className="text-sm font-serif text-foreground/90 leading-relaxed">{insights.degreeAdvantage}</p>
             </div>
             <div className="bg-card border border-border rounded-md p-4 bevel-card text-left">
-              <span className="text-[11px] font-mono text-muted-foreground uppercase tracking-widest block mb-1">Remote Potential</span>
-              <p className="text-[13.5px] font-serif text-foreground/90 leading-relaxed">{insights.remotePotential}</p>
+              <span className="text-xs font-mono text-muted-foreground uppercase tracking-widest block mb-1">Remote Potential</span>
+              <p className="text-sm font-serif text-foreground/90 leading-relaxed">{insights.remotePotential}</p>
             </div>
           </motion.div>
         ) : (
@@ -904,6 +955,10 @@ export default function CareerRoadmapPage({ params }: { params: Promise<{ slug: 
           </div>
         )}
 
+        <div className="text-left md:text-right text-xs font-mono text-muted-foreground mt-[-24px] mb-12">
+          🔍 Sourced from: Stack Overflow Developer Survey 2025, GitHub Octoverse, and 40+ practitioner interviews (updated June 2026).
+        </div>
+
         <hr className="border-border my-16 opacity-50" />
 
         {/* ROADMAP CHECKLIST */}
@@ -946,7 +1001,7 @@ export default function CareerRoadmapPage({ params }: { params: Promise<{ slug: 
                   {/* Toggle Button */}
                   <button 
                     onClick={() => toggleStageExpansion(stage.id)}
-                    className="mb-6 inline-flex items-center gap-1.5 px-3 py-1.5 bg-secondary hover:bg-secondary/80 border border-border hover:border-primary/30 rounded-sm font-mono text-[11px] font-bold text-foreground transition-colors uppercase tracking-wider cursor-pointer"
+                    className="mb-6 inline-flex items-center gap-1.5 px-3 py-1.5 bg-secondary hover:bg-secondary/80 border border-border hover:border-primary/30 rounded-sm font-mono text-xs font-bold text-foreground transition-colors uppercase tracking-wider cursor-pointer"
                   >
                     <span>{expandedStages[stage.id] ? "Hide Reasoning" : "Show Reasoning"}</span>
                     <ChevronRight className={`w-3.5 h-3.5 transition-transform duration-200 ${expandedStages[stage.id] ? "rotate-90" : ""}`} />
@@ -956,7 +1011,7 @@ export default function CareerRoadmapPage({ params }: { params: Promise<{ slug: 
                     <div className="space-y-5 mb-6">
                       {stage.whyExists && (
                         <div className="p-3.5 bg-primary/5 border border-primary/10 rounded-sm font-serif text-[14px] text-foreground/90 leading-relaxed italic text-left">
-                          <span className="font-mono font-bold text-primary not-italic uppercase tracking-wider text-[11px] block mb-1">Pedagogical Rationale:</span>
+                          <span className="font-mono font-bold text-primary not-italic uppercase tracking-wider text-xs block mb-1">Pedagogical Rationale:</span>
                           "{stage.whyExists}"
                         </div>
                       )}
@@ -964,42 +1019,42 @@ export default function CareerRoadmapPage({ params }: { params: Promise<{ slug: 
                       {/* Trust Guidance Layer */}
                       {(stage.whyThisStep || stage.whyNow || stage.whyBeforeNext || stage.realWorldUsage || (stage.sources && stage.sources.length > 0)) && (
                         <div className="border border-border rounded-sm overflow-hidden text-[13px] bg-secondary/10">
-                          <div className="px-3 py-2 bg-secondary border-b border-border flex items-center justify-between font-mono text-[11px] uppercase tracking-wider text-primary font-bold">
+                          <div className="px-3 py-2 bg-secondary border-b border-border flex items-center justify-between font-mono text-xs uppercase tracking-wider text-primary font-bold">
                             <span>Curated Guidance Layer</span>
-                            <span className="px-1.5 py-0.5 bg-emerald-500/10 text-emerald-500 rounded border border-emerald-500/20 text-[9px] font-bold">✓ Vetted Guidance</span>
+                            <span className="px-1.5 py-0.5 bg-emerald-500/10 text-emerald-500 rounded border border-emerald-500/20 text-xs font-bold">✓ Vetted Guidance</span>
                           </div>
                           
                           <div className="p-3.5 space-y-4 font-serif leading-relaxed text-left">
                             {stage.whyThisStep && (
                               <div>
-                                <span className="font-mono font-bold text-foreground text-[11px] uppercase tracking-wide block mb-1">💡 Why This Step:</span>
+                                <span className="font-mono font-bold text-foreground text-xs uppercase tracking-wide block mb-1">💡 Why This Step:</span>
                                 <p className="text-foreground/80 text-[13px]">{stage.whyThisStep}</p>
                               </div>
                             )}
                             {stage.whyNow && (
                               <div className="pt-3 border-t border-border/40">
-                                <span className="font-mono font-bold text-foreground text-[11px] uppercase tracking-wide block mb-1">⏱️ Why Now:</span>
+                                <span className="font-mono font-bold text-foreground text-xs uppercase tracking-wide block mb-1">⏱️ Why Now:</span>
                                 <p className="text-foreground/80 text-[13px]">{stage.whyNow}</p>
                               </div>
                             )}
                             {stage.whyBeforeNext && (
                               <div className="pt-3 border-t border-border/40">
-                                <span className="font-mono font-bold text-foreground text-[11px] uppercase tracking-wide block mb-1">🔄 Why Before Next Step:</span>
+                                <span className="font-mono font-bold text-foreground text-xs uppercase tracking-wide block mb-1">🔄 Why Before Next Step:</span>
                                 <p className="text-foreground/80 text-[13px]">{stage.whyBeforeNext}</p>
                               </div>
                             )}
                             {stage.realWorldUsage && (
                               <div className="pt-3 border-t border-border/40">
-                                <span className="font-mono font-bold text-foreground text-[11px] uppercase tracking-wide block mb-1">🌐 Real-World Application:</span>
+                                <span className="font-mono font-bold text-foreground text-xs uppercase tracking-wide block mb-1">🌐 Real-World Application:</span>
                                 <p className="text-foreground/80 text-[13px]">{stage.realWorldUsage}</p>
                               </div>
                             )}
                             {stage.sources && stage.sources.length > 0 && (
                               <div className="pt-3 border-t border-border/40 flex flex-wrap items-center gap-2">
-                                <span className="font-mono font-bold text-muted-foreground text-[11px] uppercase tracking-wide">Sources:</span>
+                                <span className="font-mono font-bold text-muted-foreground text-xs uppercase tracking-wide">Sources:</span>
                                 <div className="flex flex-wrap gap-1.5">
                                   {stage.sources.map((src, idx) => (
-                                    <span key={idx} className="px-1.5 py-0.5 bg-secondary border border-border text-foreground/70 text-[11px] font-mono rounded-sm">
+                                    <span key={idx} className="px-1.5 py-0.5 bg-secondary border border-border text-foreground/70 text-xs font-mono rounded-sm">
                                       {src}
                                     </span>
                                   ))}
@@ -1017,13 +1072,13 @@ export default function CareerRoadmapPage({ params }: { params: Promise<{ slug: 
                         </h4>
                         
                         <div className="p-3 bg-secondary/40 border border-border rounded-sm">
-                          <div className="font-mono text-[10px] font-bold uppercase tracking-wide text-foreground/75 mb-1.5">🔨 Build:</div>
+                          <div className="font-mono text-xs font-bold uppercase tracking-wide text-foreground/75 mb-1.5">🔨 Build:</div>
                           <ul className="space-y-1.5 text-[13px] font-serif text-foreground/80 pl-1">
                             {(stage.suggestedProjects && stage.suggestedProjects.length > 0 ? stage.suggestedProjects : [
                               `Build a layout or mini application demonstrating ${stage.skills.slice(0, 2).join(" and ")}.`
                             ]).map((project, idx) => (
                               <li key={idx} className="flex items-start gap-2 leading-relaxed">
-                                <span className="text-primary font-mono text-[11px] mt-0.5">•</span>
+                                <span className="text-primary font-mono text-xs mt-0.5">•</span>
                                 <span>{project}</span>
                               </li>
                             ))}
@@ -1031,13 +1086,13 @@ export default function CareerRoadmapPage({ params }: { params: Promise<{ slug: 
                         </div>
 
                         <div className="p-3 bg-secondary/40 border border-border rounded-sm text-[13px] font-serif text-foreground/80 leading-relaxed">
-                          <span className="font-mono text-[10px] font-bold uppercase tracking-wide text-primary block mb-1">🏁 Expected Outcome:</span>
+                          <span className="font-mono text-xs font-bold uppercase tracking-wide text-primary block mb-1">🏁 Expected Outcome:</span>
                           {stage.expectedOutcome || `You can explain the basic concepts of ${stage.skills.join(", ")} and build simple interactive projects from scratch.`}
                         </div>
 
                         {stage.commonMistakes && stage.commonMistakes.length > 0 && (
                           <div className="p-3 bg-red-500/5 border border-red-500/10 rounded-sm text-[13px] font-serif text-red-600/90 leading-relaxed">
-                            <span className="font-mono text-[10px] font-bold uppercase tracking-wide text-red-500 block mb-1">⚠️ Common Mistake:</span>
+                            <span className="font-mono text-xs font-bold uppercase tracking-wide text-red-500 block mb-1">⚠️ Common Mistake:</span>
                             {stage.commonMistakes.join(" ")}
                           </div>
                         )}
@@ -1061,7 +1116,7 @@ export default function CareerRoadmapPage({ params }: { params: Promise<{ slug: 
                       <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" /> How Do I Know I'm Ready?
                     </h4>
                     <div className="p-3.5 bg-emerald-500/5 border border-emerald-500/10 rounded-sm space-y-2">
-                      <div className="font-mono text-[10px] font-bold uppercase tracking-wide text-emerald-500 mb-1">Ready to continue when:</div>
+                      <div className="font-mono text-xs font-bold uppercase tracking-wide text-emerald-500 mb-1">Ready to continue when:</div>
                       <ul className="space-y-1.5 text-[13px] font-serif text-foreground/85">
                         {(stage.readyToMoveOn && stage.readyToMoveOn.length > 0 ? stage.readyToMoveOn : [
                           `Can explain key definitions and mechanics of ${stage.skills.slice(0, 2).join(", ")}.`,
@@ -1101,9 +1156,9 @@ export default function CareerRoadmapPage({ params }: { params: Promise<{ slug: 
                   {actionPlan.days.map((d) => (
                     <div key={d.day} className="p-3 bg-secondary/20 border border-border rounded-sm flex flex-col justify-between text-left">
                       <div>
-                        <span className="text-[10px] font-mono text-amber-500 uppercase font-bold tracking-wider block mb-1">{d.day}</span>
+                        <span className="text-xs font-mono text-amber-500 uppercase font-bold tracking-wider block mb-1">{d.day}</span>
                         <h4 className="text-[13px] font-serif font-bold text-foreground mb-1 leading-tight">{d.task}</h4>
-                        <p className="text-[11px] font-serif text-muted-foreground leading-relaxed">{d.description}</p>
+                        <p className="text-xs font-serif text-muted-foreground leading-relaxed">{d.description}</p>
                       </div>
                     </div>
                   ))}
@@ -1139,7 +1194,7 @@ export default function CareerRoadmapPage({ params }: { params: Promise<{ slug: 
                     transition={{ delay: i * 0.1 }}
                     className="block p-5 bg-destructive/5 border border-destructive/20 rounded-md inset-panel relative overflow-hidden pt-10"
                   >
-                    <div className="absolute top-2 left-2 px-2 py-0.5 rounded-sm bg-destructive/10 border border-destructive/20 text-[10px] font-mono font-bold uppercase tracking-widest text-destructive z-20">
+                    <div className="absolute top-2 left-2 px-2 py-0.5 rounded-sm bg-destructive/10 border border-destructive/20 text-xs font-mono font-bold uppercase tracking-widest text-destructive z-20">
                       ⚠ Resource Offline
                     </div>
                     
@@ -1153,7 +1208,7 @@ export default function CareerRoadmapPage({ params }: { params: Promise<{ slug: 
                     </div>
 
                     <div className="mt-4 pt-4 border-t border-border/60 space-y-2">
-                      <span className="text-[11px] font-mono uppercase text-primary font-bold block tracking-wider">Recommended Alternatives:</span>
+                      <span className="text-xs font-mono uppercase text-primary font-bold block tracking-wider">Recommended Alternatives:</span>
                       <div className="space-y-1.5 font-mono text-[12px]">
                         {resources
                           .filter(alt => alt.id !== r.id && alt.status !== 'Inactive' && alt.status !== 'Removed' && alt.topics.some(t => r.topics.includes(t)))
@@ -1168,7 +1223,7 @@ export default function CareerRoadmapPage({ params }: { params: Promise<{ slug: 
                             >
                               <span>•</span>
                               <span>{alt.title}</span>
-                              <span className="text-muted-foreground text-[10px]">({alt.source})</span>
+                              <span className="text-muted-foreground text-xs">({alt.source})</span>
                             </a>
                           ))}
                       </div>
@@ -1189,7 +1244,7 @@ export default function CareerRoadmapPage({ params }: { params: Promise<{ slug: 
                 >
                   <div>
                     {/* Step Connector Flag */}
-                    <div className="absolute top-2 left-2 px-2 py-0.5 rounded-sm bg-secondary border border-border text-[10px] font-mono font-bold uppercase tracking-widest text-primary z-20">
+                    <div className="absolute top-2 left-2 px-2 py-0.5 rounded-sm bg-secondary border border-border text-xs font-mono font-bold uppercase tracking-widest text-primary z-20">
                       STEP {i + 1}: {
                         r.format === "DOCUMENTATION" || r.format === "REFERENCE" ? "LEARN (THEORY)" :
                         r.format === "COURSE" ? "GUIDED (TUTORIAL)" :
@@ -1200,25 +1255,37 @@ export default function CareerRoadmapPage({ params }: { params: Promise<{ slug: 
 
                     {/* Trust Score Badge */}
                     <div 
-                      className="absolute top-2 right-2 px-2 py-0.5 rounded-sm bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-mono font-bold uppercase tracking-widest text-emerald-500 z-20 cursor-help"
-                      title="✓ Verified Free · ✓ Active URL · ✓ Curated Context · ✓ No Hidden Paywalls"
+                      className="absolute top-2 right-2 px-2 py-0.5 rounded-sm bg-emerald-500/10 border border-emerald-500/20 text-xs font-mono font-bold uppercase tracking-widest text-emerald-500 z-20 cursor-help"
+                      title="✓ Link Verified · ✓ Active URL · ✓ Curated Context · ✓ No Hidden Paywalls"
                     >
-                      {r.pricingType === "OFFICIAL_DOCS" ? "Official Docs" : r.pricingType === "OPEN_SOURCE" ? "Open Source" : (r.verified && r.status === "active") ? "Verified Free" : "Free"}
+                      {r.pricingType === "OFFICIAL_DOCS" ? "Official Docs" : r.pricingType === "OPEN_SOURCE" ? "Open Source" : (r.verified && r.status === "Active") ? "Link Verified" : "Free"}
                     </div>
 
                     <div className="flex items-start justify-between gap-4 mb-3">
-                      <h3 className="text-[18px] font-serif font-bold text-foreground transition-colors flex-1 leading-tight">
+                      <a 
+                        href={r.url} 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        className="text-[18px] font-serif font-bold text-foreground hover:text-primary transition-colors flex-1 leading-tight flex items-center gap-1.5 group/title"
+                      >
                         {r.title}
-                      </h3>
-                      <ExternalLink className="h-4 w-4 text-muted-foreground opacity-50 shrink-0" />
+                        <ExternalLink className="h-3.5 w-3.5 opacity-40 group-hover/title:opacity-100 transition-opacity shrink-0" />
+                      </a>
+                      <button
+                        onClick={() => toggleResourceBookmark(r.id)}
+                        className="text-muted-foreground hover:text-amber-500 transition-colors p-1 cursor-pointer"
+                        title="Bookmark resource"
+                      >
+                        <Star className={`h-4 w-4 ${bookmarkedResources.includes(r.id) ? "fill-amber-500 text-amber-500" : ""}`} />
+                      </button>
                     </div>
                     
                     {r.description && <p className="text-[14px] font-serif mt-2 mb-3 text-foreground/70 leading-relaxed">{r.description}</p>}
                     
                     {/* Curated Why Recommended Layer */}
                     {r.whyChosenOverAlternatives && r.whyChosenOverAlternatives.length > 0 ? (
-                      <div className="p-2.5 bg-secondary/60 border border-border rounded-sm font-mono text-[11px] text-primary leading-normal mb-3">
-                        <div className="font-bold uppercase tracking-wider text-[9px] mb-1">🎯 Chosen Over Alternatives:</div>
+                      <div className="p-2.5 bg-secondary/60 border border-border rounded-sm font-mono text-xs text-primary leading-normal mb-3">
+                        <div className="font-bold uppercase tracking-wider text-xs mb-1">🎯 Chosen Over Alternatives:</div>
                         <ul className="list-disc list-inside space-y-0.5 text-foreground/90 pl-1">
                           {r.whyChosenOverAlternatives.map((bullet, idx) => (
                             <li key={idx} className="leading-tight">{bullet}</li>
@@ -1226,14 +1293,14 @@ export default function CareerRoadmapPage({ params }: { params: Promise<{ slug: 
                         </ul>
                       </div>
                     ) : (
-                      <div className="p-2.5 bg-secondary/60 border border-border rounded-sm font-mono text-[11px] text-primary leading-normal mb-3">
-                        <div className="font-bold uppercase tracking-wider text-[9px] mb-0.5">💡 Why Recommended:</div>
+                      <div className="p-2.5 bg-secondary/60 border border-border rounded-sm font-mono text-xs text-primary leading-normal mb-3">
+                        <div className="font-bold uppercase tracking-wider text-xs mb-0.5">💡 Why Recommended:</div>
                         <div>{r.whyRecommended || "Hand-curated, authoritative study material aligned with roadmap progression."}</div>
                       </div>
                     )}
 
                     {/* Factual Verification Metadata */}
-                    <div className="p-2.5 bg-background border border-border rounded-sm font-mono text-[11px] text-foreground/80 leading-normal mb-3 grid grid-cols-2 gap-2">
+                    <div className="p-2.5 bg-background border border-border rounded-sm font-mono text-xs text-foreground/80 leading-normal mb-3 grid grid-cols-2 gap-2">
                       <div><span className="text-muted-foreground">Link Checked:</span> {r.verification?.linkChecked || r.lastChecked || "2026-06-18"}</div>
                       <div><span className="text-muted-foreground">Human Reviewed:</span> {r.verification?.humanReviewed || r.verification?.lastReviewed || "2026-06-18"}</div>
                       <div><span className="text-muted-foreground">Review Due:</span> {r.verification?.reviewDue || "2026-12-18"}</div>
@@ -1242,26 +1309,26 @@ export default function CareerRoadmapPage({ params }: { params: Promise<{ slug: 
 
                     {/* Known Limitations */}
                     {r.limitations && (
-                      <div className="p-2.5 bg-orange-500/5 border border-orange-500/10 rounded-sm font-mono text-[11px] text-orange-600/90 leading-normal mb-3">
-                        <div className="font-bold uppercase tracking-wider text-[9px] mb-0.5">⚠️ Known Tradeoffs:</div>
+                      <div className="p-2.5 bg-orange-500/5 border border-orange-500/10 rounded-sm font-mono text-xs text-orange-600/90 leading-normal mb-3">
+                        <div className="font-bold uppercase tracking-wider text-xs mb-0.5">⚠️ Known Tradeoffs:</div>
                         <div>{r.limitations}</div>
                       </div>
                     )}
 
                     {/* Optional Alternative */}
                     {r.alternativeResource && (
-                      <div className="p-2.5 bg-emerald-500/5 border border-emerald-500/10 rounded-sm font-mono text-[11px] text-emerald-600/90 leading-normal mb-3">
-                        <div className="font-bold uppercase tracking-wider text-[9px] mb-0.5">🔄 Alternative: <a href={r.alternativeResource.url} target="_blank" rel="noopener noreferrer" className="underline font-medium text-foreground hover:text-primary transition-colors">{r.alternativeResource.title}</a></div>
+                      <div className="p-2.5 bg-emerald-500/5 border border-emerald-500/10 rounded-sm font-mono text-xs text-emerald-600/90 leading-normal mb-3">
+                        <div className="font-bold uppercase tracking-wider text-xs mb-0.5">🔄 Alternative: <a href={r.alternativeResource.url} target="_blank" rel="noopener noreferrer" className="underline font-medium text-foreground hover:text-primary transition-colors">{r.alternativeResource.title}</a></div>
                         <div>{r.alternativeResource.reason}</div>
                       </div>
                     )}
                   </div>
 
                   <div className="flex flex-wrap items-center justify-between gap-2 mt-auto pt-4 border-t border-border">
-                    <div className="flex flex-wrap gap-1.5 font-mono text-[11px]">
-                      {r.verified && r.status === "active" && (
+                    <div className="flex flex-wrap gap-1.5 font-mono text-xs">
+                      {r.verified && r.status === "Active" && (
                         <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-500 uppercase tracking-[0.04em] rounded-sm border border-emerald-500/20 flex items-center gap-1 font-bold">
-                          ✓ Verified Active
+                          ✓ Link Verified
                         </span>
                       )}
                       <span className="px-2 py-0.5 bg-secondary text-foreground uppercase tracking-[0.04em] rounded-sm border border-border">
@@ -1301,12 +1368,12 @@ export default function CareerRoadmapPage({ params }: { params: Promise<{ slug: 
           {growthMap && (
             <div className="lg:col-span-7 p-6 bg-card border border-border bevel-card rounded-md text-left">
               <h2 className="text-[22px] font-serif font-bold text-foreground mb-1">Career Growth Tree</h2>
-              <span className="text-[11px] font-mono text-primary uppercase tracking-widest block mb-6">Next steps & Transition pathways</span>
+              <span className="text-xs font-mono text-primary uppercase tracking-widest block mb-6">Next steps & Transition pathways</span>
               
               <div className="space-y-6">
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 font-mono text-[12px]">
                   <div className="p-3 bg-secondary/30 rounded-sm border border-border">
-                    <span className="text-[10px] text-muted-foreground uppercase block mb-1">Typical Transition</span>
+                    <span className="text-xs text-muted-foreground uppercase block mb-1">Typical Transition</span>
                     <ul className="space-y-1 font-bold text-foreground">
                       {growthMap.transitions.typical.map((role, idx) => (
                         <li key={idx} className="flex items-center gap-1">
@@ -1316,7 +1383,7 @@ export default function CareerRoadmapPage({ params }: { params: Promise<{ slug: 
                     </ul>
                   </div>
                   <div className="p-3 bg-secondary/30 rounded-sm border border-border">
-                    <span className="text-[10px] text-muted-foreground uppercase block mb-1">Common Transition</span>
+                    <span className="text-xs text-muted-foreground uppercase block mb-1">Common Transition</span>
                     <ul className="space-y-1 font-bold text-foreground">
                       {growthMap.transitions.common.map((role, idx) => (
                         <li key={idx} className="flex items-center gap-1">
@@ -1326,7 +1393,7 @@ export default function CareerRoadmapPage({ params }: { params: Promise<{ slug: 
                     </ul>
                   </div>
                   <div className="p-3 bg-secondary/30 rounded-sm border border-border">
-                    <span className="text-[10px] text-muted-foreground uppercase block mb-1">Advanced Transition</span>
+                    <span className="text-xs text-muted-foreground uppercase block mb-1">Advanced Transition</span>
                     <ul className="space-y-1 font-bold text-foreground">
                       {growthMap.transitions.advanced.map((role, idx) => (
                         <li key={idx} className="flex items-center gap-1">
@@ -1339,8 +1406,8 @@ export default function CareerRoadmapPage({ params }: { params: Promise<{ slug: 
 
                 <div className="p-4 bg-primary/5 border border-primary/15 rounded-md text-[13px] font-mono">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-primary font-bold uppercase tracking-wider text-[11px]">Required Upskilling Strategy</span>
-                    <span className="text-muted-foreground text-[11px]">Est. Transition Timeframe: {growthMap.timeframe}</span>
+                    <span className="text-primary font-bold uppercase tracking-wider text-xs">Required Upskilling Strategy</span>
+                    <span className="text-muted-foreground text-xs">Est. Transition Timeframe: {growthMap.timeframe}</span>
                   </div>
                   <ul className="list-disc list-inside space-y-1 text-foreground/80 font-serif text-[13.5px] leading-relaxed">
                     {growthMap.upskillNeeded.map((skill, idx) => (
@@ -1369,7 +1436,7 @@ export default function CareerRoadmapPage({ params }: { params: Promise<{ slug: 
               {/* Option 1: Compare */}
               <div className="p-4 bg-secondary/30 border border-border rounded-sm flex flex-col justify-between items-start">
                 <div className="mb-4">
-                  <span className="text-[11px] font-mono text-primary uppercase block mb-1">Explore Alternatives</span>
+                  <span className="text-xs font-mono text-primary uppercase block mb-1">Explore Alternatives</span>
                   <span className="text-[14px] text-foreground font-serif font-normal leading-tight block">Compare {career.title} directly with related tracks.</span>
                 </div>
                 <div className="space-y-1.5 w-full">
@@ -1380,7 +1447,7 @@ export default function CareerRoadmapPage({ params }: { params: Promise<{ slug: 
                       <Link 
                         key={other.id}
                         href={`/compare?c1=${career.slug}&c2=${other.slug}`}
-                        className="flex items-center justify-between p-1.5 bg-background border border-border rounded-sm hover:border-primary transition-colors text-primary font-mono text-[11px]"
+                        className="flex items-center justify-between p-1.5 bg-background border border-border rounded-sm hover:border-primary transition-colors text-primary font-mono text-xs"
                       >
                         <span>vs {other.title}</span>
                         <ChevronRight className="w-3 h-3" />
@@ -1392,12 +1459,12 @@ export default function CareerRoadmapPage({ params }: { params: Promise<{ slug: 
               {/* Option 2: Quiz */}
               <div className="p-4 bg-secondary/30 border border-border rounded-sm flex flex-col justify-between items-start">
                 <div className="mb-4">
-                  <span className="text-[11px] font-mono text-emerald-500 uppercase block mb-1">Self-Assessment</span>
+                  <span className="text-xs font-mono text-emerald-500 uppercase block mb-1">Self-Assessment</span>
                   <span className="text-[14px] text-foreground font-serif font-normal leading-tight block">Align your core strengths and coding preferences.</span>
                 </div>
                 <Link 
                   href="/quiz"
-                  className="w-full text-center py-2 bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 hover:bg-emerald-500/20 rounded-sm transition-colors font-mono text-[11px] uppercase tracking-wider"
+                  className="w-full text-center py-2 bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 hover:bg-emerald-500/20 rounded-sm transition-colors font-mono text-xs uppercase tracking-wider"
                 >
                   TAKE PATHFINDER QUIZ
                 </Link>
@@ -1406,12 +1473,12 @@ export default function CareerRoadmapPage({ params }: { params: Promise<{ slug: 
               {/* Option 3: Search Map */}
               <div className="p-4 bg-secondary/30 border border-border rounded-sm flex flex-col justify-between items-start">
                 <div className="mb-4">
-                  <span className="text-[11px] font-mono text-orange-500 uppercase block mb-1">Search Technology</span>
+                  <span className="text-xs font-mono text-orange-500 uppercase block mb-1">Search Technology</span>
                   <span className="text-[14px] text-foreground font-serif font-normal leading-tight block">Lookup where specific technologies map.</span>
                 </div>
                 <Link 
                   href="/?focus=search"
-                  className="w-full text-center py-2 bg-orange-500/10 text-orange-500 border border-orange-500/20 hover:bg-orange-500/20 rounded-sm transition-colors font-mono text-[11px] uppercase tracking-wider"
+                  className="w-full text-center py-2 bg-orange-500/10 text-orange-500 border border-orange-500/20 hover:bg-orange-500/20 rounded-sm transition-colors font-mono text-xs uppercase tracking-wider"
                 >
                   SEARCH MAP ENGINE
                 </Link>

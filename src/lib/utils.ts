@@ -8,7 +8,7 @@ export function cn(...inputs: ClassValue[]) {
 
 export function getResourceConfidenceBadge(r: any): string {
   const trustLabel = getResourceTrustLabel(r);
-  if (trustLabel === "Inactive" || trustLabel === "Needs Review" || trustLabel === "Verified Free") {
+  if (trustLabel === "Inactive" || trustLabel === "Needs Review" || trustLabel === "Link Verified") {
     return trustLabel;
   }
 

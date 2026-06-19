@@ -192,7 +192,7 @@ function SearchPageContent() {
             )}
           </div>
           {q && engineData.intent !== "General" && (
-            <div className="absolute -bottom-6 right-2 text-[10px] uppercase font-bold tracking-wider text-primary">
+            <div className="absolute -bottom-6 right-2 text-xs uppercase font-bold tracking-wider text-primary">
               Detected Intent: {engineData.intent}
             </div>
           )}
@@ -201,7 +201,7 @@ function SearchPageContent() {
         {/* People Also Search suggestions */}
         {q.trim() && peopleAlsoSearch.length > 0 && (
           <div className="mt-4 flex flex-wrap items-center gap-2 text-left">
-            <span className="text-[11px] font-mono uppercase tracking-widest text-muted-foreground self-center mr-1">People also search:</span>
+            <span className="text-xs font-mono uppercase tracking-widest text-muted-foreground self-center mr-1">People also search:</span>
             {peopleAlsoSearch.map((term) => (
               <button
                 key={term}
@@ -217,7 +217,7 @@ function SearchPageContent() {
         {/* Trending */}
         {!q.trim() && (
           <div className="mt-6 flex flex-wrap gap-2 max-w-2xl">
-            <span className="text-[11px] uppercase tracking-widest text-muted-foreground self-center mr-1">Trending</span>
+            <span className="text-xs uppercase tracking-widest text-muted-foreground self-center mr-1">Trending</span>
             {TRENDING_QUERIES.map((t) => (
               <button
                 key={t}
@@ -242,7 +242,7 @@ function SearchPageContent() {
                 <div className="absolute top-0 right-0 w-8 h-8 bg-muted border-b border-l border-border rounded-bl-md -mr-px -mt-px"></div>
                 <div className="flex flex-wrap items-center gap-3 mb-2">
                   <h2 className="text-[24px] font-serif font-bold text-foreground">{matchedSkill.name} Skill Intel</h2>
-                  <span className="inline-flex items-center px-2 py-0.5 rounded-sm bg-primary/10 border border-primary/20 text-[10px] font-mono font-bold uppercase tracking-wider text-primary">
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-sm bg-primary/10 border border-primary/20 text-xs font-mono font-bold uppercase tracking-wider text-primary">
                     {matchedSkill.difficulty} · {matchedSkill.timeEstimate}
                   </span>
                 </div>
@@ -349,7 +349,7 @@ function SearchPageContent() {
                     </p>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div className="p-4 bg-secondary/30 border border-border rounded-sm">
-                        <span className="text-[10px] font-mono font-bold text-muted-foreground uppercase tracking-widest block mb-1">Beginner Stage</span>
+                        <span className="text-xs font-mono font-bold text-muted-foreground uppercase tracking-widest block mb-1">Beginner Stage</span>
                         <h4 className="font-serif font-bold text-[14px] text-foreground mb-1">{matchedProofs.beginner.title}</h4>
                         <p className="text-[12.5px] text-foreground/85 font-serif leading-relaxed mb-3">{matchedProofs.beginner.description}</p>
                         <details className="cursor-pointer text-[12px] font-mono text-muted-foreground">
@@ -362,7 +362,7 @@ function SearchPageContent() {
                         </details>
                       </div>
                       <div className="p-4 bg-secondary/30 border border-border rounded-sm">
-                        <span className="text-[10px] font-mono font-bold text-primary uppercase tracking-widest block mb-1">Intermediate Stage</span>
+                        <span className="text-xs font-mono font-bold text-primary uppercase tracking-widest block mb-1">Intermediate Stage</span>
                         <h4 className="font-serif font-bold text-[14px] text-foreground mb-1">{matchedProofs.intermediate.title}</h4>
                         <p className="text-[12.5px] text-foreground/85 font-serif leading-relaxed mb-3">{matchedProofs.intermediate.description}</p>
                         <details className="cursor-pointer text-[12px] font-mono text-muted-foreground">
@@ -375,7 +375,7 @@ function SearchPageContent() {
                         </details>
                       </div>
                       <div className="p-4 bg-secondary/30 border border-border rounded-sm">
-                        <span className="text-[10px] font-mono font-bold text-amber-500 uppercase tracking-widest block mb-1">Advanced Stage</span>
+                        <span className="text-xs font-mono font-bold text-amber-500 uppercase tracking-widest block mb-1">Advanced Stage</span>
                         <h4 className="font-serif font-bold text-[14px] text-foreground mb-1">{matchedProofs.advanced.title}</h4>
                         <p className="text-[12.5px] text-foreground/85 font-serif leading-relaxed mb-3">{matchedProofs.advanced.description}</p>
                         <details className="cursor-pointer text-[12px] font-mono text-muted-foreground">
@@ -425,7 +425,7 @@ function SearchPageContent() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div className="p-3 bg-card border border-border rounded-sm flex flex-col justify-between">
                             <div>
-                              <span className="text-[10px] font-mono font-bold text-emerald-500 uppercase tracking-wider block mb-1">Primary Resource</span>
+                              <span className="text-xs font-mono font-bold text-emerald-500 uppercase tracking-wider block mb-1">Primary Resource</span>
                               <h4 className="font-serif font-bold text-[14px] text-foreground mb-1">{matchedStyles.recommendations[selectedStyle].primary.title}</h4>
                               <p className="text-[12.5px] text-muted-foreground font-serif leading-relaxed mb-3">{matchedStyles.recommendations[selectedStyle].primary.description}</p>
                             </div>
@@ -440,7 +440,7 @@ function SearchPageContent() {
                           </div>
                           <div className="p-3 bg-card border border-border rounded-sm flex flex-col justify-between">
                             <div>
-                              <span className="text-[10px] font-mono font-bold text-primary uppercase tracking-wider block mb-1">Alternative Option</span>
+                              <span className="text-xs font-mono font-bold text-primary uppercase tracking-wider block mb-1">Alternative Option</span>
                               <h4 className="font-serif font-bold text-[14px] text-foreground mb-1">{matchedStyles.recommendations[selectedStyle].alternative.title}</h4>
                               <p className="text-[12.5px] text-muted-foreground font-serif leading-relaxed mb-3">{matchedStyles.recommendations[selectedStyle].alternative.description}</p>
                             </div>
@@ -479,7 +479,7 @@ function SearchPageContent() {
                         <h4 className="text-[16px] font-serif font-bold text-foreground group-hover:text-primary transition-colors">
                           {c.title}
                         </h4>
-                        <div className="flex items-center justify-between mt-2 font-mono text-[11px] text-muted-foreground">
+                        <div className="flex items-center justify-between mt-2 font-mono text-xs text-muted-foreground">
                           <span>{c.avgSalaryIndia}</span>
                           <span className="text-primary font-bold uppercase tracking-wider group-hover:translate-x-1 transition-transform inline-flex items-center gap-0.5">
                             View Roadmap <ArrowRight className="w-3 h-3" />
@@ -624,7 +624,7 @@ function SearchPageContent() {
                       <div>
                         <h3 className="font-serif text-lg text-primary">Explore Market Signals for "{q}"</h3>
                       </div>
-                      <span className="pill text-[10px] font-bold uppercase tracking-widest bg-primary/10 text-primary border border-primary/20">
+                      <span className="pill text-xs font-bold uppercase tracking-widest bg-primary/10 text-primary border border-primary/20">
                         Market Telemetry
                       </span>
                     </div>
@@ -666,7 +666,7 @@ function ResultsAll({ results, isRecommended = false }: { results: any[], isReco
           <div className="py-4 border-b border-border hover:bg-secondary/30 transition-colors cursor-pointer group">
             {isRecommended && isResource && (
               <div className="mb-2">
-                <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-amber-500/10 text-amber-600 border border-amber-500/20 rounded-sm">
+                <span className="px-2 py-0.5 text-xs font-bold uppercase tracking-wider bg-amber-500/10 text-amber-600 border border-amber-500/20 rounded-sm">
                   ⭐ Recommended First Resource
                 </span>
               </div>
@@ -752,9 +752,9 @@ function ResultsResources({ resources }: { resources: ReturnType<typeof searchRe
             </h3>
             <div className="flex flex-col sm:flex-row sm:items-center gap-2 mt-1.5 text-xs text-muted-foreground">
               <div className="flex flex-wrap items-center gap-2">
-                {r.verified && r.status === "active" && (
+                {r.verified && r.status === "Active" && (
                   <span className="font-bold uppercase tracking-widest text-emerald-500 font-mono bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20">
-                    ✓ Curator-Verified
+                    ✓ Link Verified
                   </span>
                 )}
                 <span className="font-bold uppercase tracking-widest text-foreground font-mono">{getResourceConfidenceBadge(r)}</span>
@@ -833,7 +833,7 @@ function GlobalResults({ query }: { query: string }) {
               className="surface surface-hover p-5 block h-full flex flex-col"
             >
               <div className="flex items-center justify-between mb-3">
-                <span className="text-[11px] font-mono uppercase tracking-widest text-muted-foreground">{r.source}</span>
+                <span className="text-xs font-mono uppercase tracking-widest text-muted-foreground">{r.source}</span>
                 <ExternalLink className="h-3.5 w-3.5 text-muted-foreground" />
               </div>
               <h3 className="font-serif text-lg leading-tight mb-2 group-hover:text-primary transition-colors line-clamp-2">{r.title}</h3>

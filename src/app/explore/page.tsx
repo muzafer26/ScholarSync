@@ -135,7 +135,7 @@ export default function ExplorePage() {
                   >
                     <div className="mb-4 flex items-start justify-between gap-3">
                       <div>
-                        <div className="mb-2 flex flex-wrap items-center gap-2 font-mono text-[11px] uppercase tracking-[0.04em] text-muted-foreground">
+                        <div className="mb-2 flex flex-wrap items-center gap-2 font-mono text-xs uppercase tracking-[0.04em] text-muted-foreground">
                           <span className="rounded-sm border border-primary/20 bg-primary/10 px-1.5 py-0.5 font-bold text-primary">
                             {career.field}
                           </span>
@@ -167,7 +167,7 @@ export default function ExplorePage() {
                       <button
                         onClick={(e) => toggleCompare(career.slug, e)}
                         className={cn(
-                          "rounded-sm border px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.04em] transition-colors",
+                          "rounded-sm border px-2.5 py-1 font-mono text-xs font-bold uppercase tracking-[0.04em] transition-colors",
                           selected
                             ? "border-primary bg-primary text-primary-foreground"
                             : "border-border bg-secondary text-primary hover:border-primary"

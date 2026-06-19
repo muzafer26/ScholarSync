@@ -135,7 +135,7 @@ export function HeroSearch() {
 
       {/* Trending pills */}
       <div className="mt-6 flex flex-wrap justify-center items-center gap-2">
-        <span className="text-[10px] font-bold tracking-widest uppercase text-muted-foreground mr-2">
+        <span className="text-xs font-bold tracking-widest uppercase text-muted-foreground mr-2">
           Examples
         </span>
         {TRENDING_QUERIES.slice(0, 5).map((t) => (
